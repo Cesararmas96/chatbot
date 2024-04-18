@@ -29,7 +29,7 @@
     <div class="flex h-screen antialiased text-gray-800">
         
         <div class="flex flex-row h-full w-full overflow-x-hidden">
-          <div id="navbar" class="flex flex-col py-8 pl-6 pr-2 w-64  flex-shrink-0 !bg-red-950">
+          <div id="navbar" class="transition flex flex-col py-8 pl-6 pr-2 w-64  flex-shrink-0 !bg-red-950">
             <div class="flex flex-row items-center justify-start h-12 w-full">
               <div
                 class="flex items-center justify-center rounded-2xltext-indigo-700  h-10 w-10"

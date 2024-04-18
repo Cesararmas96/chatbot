@@ -1,29 +1,9 @@
 <script>
-import logo from '../../src/assets/troc.png'
-
-  import { json } from "@sveltejs/kit";
-
-    let ask = '';
-    let result = null
-    async function handleSubmit() {
-
-       
-
-      const res = await  fetch('https://ai.trocdigital.net/api/v1/chat/Edu', {
-			method: 'POST',
-			body: JSON.stringify({
-				ask,
-			})
-		})
-		
-		const askjs = await res.json()
-        result = JSON.stringify(json)
-
-    }
-
-    console.log(result)
+  import logo from '../../src/assets/troc.png'
+  
     
 </script>
+
 
 
 <div class="flex h-screen antialiased text-gray-800">
@@ -222,7 +202,6 @@ import logo from '../../src/assets/troc.png'
                 <input
                     placeholder="Send a message."
                   id="ask"
-                  bind:value={ask}
                   type="text"
                   class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
                 />
@@ -230,7 +209,7 @@ import logo from '../../src/assets/troc.png'
               </div>
             </div>
             <div class="ml-4">
-              <button type="button" on:click={handleSubmit}
+              <button type="button" 
                 class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0"
               >
                 <span class="">

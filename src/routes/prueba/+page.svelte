@@ -58,12 +58,10 @@
     }
   </script>
   
-  <style>
-    /* Estilos CSS aquí */
-  </style>
+
   
   <h1>Enviar solicitud de chat</h1>
   
-  <input type="text" bind:value={query} placeholder="Pregunta">
+  <input type="text" id="query" bind:value={query} placeholder="Pregunta">
   <button on:click={sendChatRequest}>Enviar</button>
   

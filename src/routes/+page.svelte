@@ -1,7 +1,8 @@
 <script>
   import logo from '../../src/assets/troc.png'
-
+  let messages = [];
   let query = '';
+  let newMessage=''
     let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM4MTQ0MTEuMTQwODg3LCJpYXQiOjE3MTM0NTQ0MTEsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjozNSwidXNlcm5hbWUiOiJqbGFyYUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjM1LCJpZCI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIn0.x2Mp-7MM-eQgZMy7bZY-BDbgvUoariErL6B4Qv3uDhM';
   
     const username = 'jlara@trocglobal.com';
@@ -32,31 +33,41 @@
       }
     }
   
-    async function sendChatRequest() {
-      try {
-        // await login(); // Autenticarse antes de enviar la solicitud de chat
-  
-        const response = await fetch(`${domain}/api/v1/chat/Edu`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ query })
-        });
-  
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Respuesta del servidor:', data);
-          // Maneja la respuesta como desees en tu aplicación web
-        } else {
-          console.error('Error en la solicitud de chat:', response.statusText);
-          // Maneja errores de solicitud en tu aplicación web
-        }
-      } catch (error) {
-        console.error('Error al enviar la solicitud de chat:', error);
-        // Maneja errores de red u otros errores en tu aplicación web
+    function sendChatRequest() {
+
+      if(newMessage.trim() !== ''){
+        messages = [...messages, {
+          text: newMessage, sender: 'query'}];
+      console.log(messages)
+
+          newMessage = ''
+        
       }
+      // try {
+      //   // await login(); // Autenticarse antes de enviar la solicitud de chat
+  
+      //   const response = await fetch(`${domain}/api/v1/chat/Edu`, {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       'Authorization': `Bearer ${token}`
+      //     },
+      //     body: JSON.stringify({ query })
+      //   });
+  
+      //   if (response.ok) {
+      //     const data = await response.json();
+      //     console.log('Respuesta del servidor:', data);
+      //     // Maneja la respuesta como desees en tu aplicación web
+      //   } else {
+      //     console.error('Error en la solicitud de chat:', response.statusText);
+      //     // Maneja errores de solicitud en tu aplicación web
+      //   }
+      // } catch (error) {
+      //   console.error('Error al enviar la solicitud de chat:', error);
+      //   // Maneja errores de red u otros errores en tu aplicación web
+      // }
+
     }
   
 </script>
@@ -187,6 +198,31 @@
           <div class="flex flex-col h-full overflow-x-auto mb-4 rounded-2xl bg-gray-100 mt-3" id="chatbox">
             <div class="flex flex-col h-full">
               <div class="grid grid-cols-12 gap-y-2">
+                
+               
+                
+                {#each messages as message}
+               
+               
+
+                {#if message.sender == 'query'}
+                
+                <div class="col-start-6 col-end-13 p-3 rounded-lg">
+                  <div class="flex items-center justify-start flex-row-reverse">
+                    <div
+                      class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
+                    >
+                      A
+                    </div>
+                    <div
+                      class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl "
+                    >
+                      <div>{message.text}</div>
+                    </div>
+                  </div>
+                </div>
+                {/if}
+
                 <div class="col-start-1 col-end-8 p-3 rounded-lg">
                   <div class="flex flex-row items-center">
                     <div
@@ -225,24 +261,12 @@
                       </div>
                     </div>
                   </div>
-                </div>
-               
-                <div class="col-start-6 col-end-13 p-3 rounded-lg">
-                  <div class="flex items-center justify-start flex-row-reverse">
-                    <div
-                      class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
-                    >
-                      A
-                    </div>
-                    <div
-                      class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl "
-                    >
-                      <div>I'm ok what about you?</div>
-                    </div>
-                  </div>
-                </div>
-               
+                </div>    
                 
+
+
+                
+              {/each}
                 
                 
               </div>
@@ -256,11 +280,11 @@
            
             <div class="flex-grow ">
               <div class="relative w-full">
-                <input
+                <input  on:keydown={e => e.key === 'Enter' && sendChatRequest()}
                     placeholder="Send a message."
                   id="query"
                   type="text"
-                  bind:value={query}
+                  bind:value={newMessage}
                   class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
                 />
                

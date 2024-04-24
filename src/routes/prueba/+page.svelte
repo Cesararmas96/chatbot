@@ -32,6 +32,8 @@
       }
     }
   
+
+    origin 
     async function sendChatRequest() {
       try {
         // await login(); // Autenticarse antes de enviar la solicitud de chat
@@ -39,8 +41,9 @@
         const response = await fetch(`${domain}/api/v1/chat/Edu`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Referer': 'https://ai.trocdigital.net',
+            'Authorization': `Bearer ${token}`,
+            'Origin': 'https://ai.trocdigital.net'
           },
           body: JSON.stringify({ query })
         });

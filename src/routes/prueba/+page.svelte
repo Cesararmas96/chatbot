@@ -33,7 +33,7 @@
     }
   
 
-    origin 
+   
     async function sendChatRequest() {
       try {
         // await login(); // Autenticarse antes de enviar la solicitud de chat

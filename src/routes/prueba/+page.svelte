@@ -1,4 +1,6 @@
 <script>
+  
+
     let query = '';
     let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM4MTQ0MTEuMTQwODg3LCJpYXQiOjE3MTM0NTQ0MTEsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjozNSwidXNlcm5hbWUiOiJqbGFyYUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjM1LCJpZCI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIn0.x2Mp-7MM-eQgZMy7bZY-BDbgvUoariErL6B4Qv3uDhM';
   

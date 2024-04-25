@@ -1,31 +1,32 @@
-
 <script lang="ts">
 	import { Button, Input, Label, P, Tooltip } from 'flowbite-svelte'
-    
+	
+	let username = "";
+  let password = "";
+  let error = "";
 
-	// export let data
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const response = await fetch("https://api.dev.trocdigital.io/api/v1/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+		"x-auth-method":"BasicAuth",
+		"Origin" : "https://api.dev.trocdigital.io",
+		"Referer" : "https://api.dev.trocdigital.io"
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    if (response.ok) {
+      // Redireccionar al usuario a la página de inicio después de iniciar sesión
+      window.location.href = "/";
+    } else {
+      // Mostrar mensaje de error si las credenciales son inválidas
+      const { error } = await response.json();
+      setError(error);
+    }
+  }
 
-
-
-
-	let showPassword: boolean = false
-
-	let year = new Date().getFullYear()
-
-	// const errorCodes = {
-	// 	'400':
-	// 		'Bad Request. Please double-check your credentials and try again. For persistent issues contact support.',
-	// 	'401':
-	// 		'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
-	// 	'403': 'Incorrect Password: Please double-check your credentials and try again.'
-	// }
-
-	// const keyDownEnter = (e) => {
-	// 	if (e.key === 'Enter') {
-	// 		e.preventDefault()
-	// 		document.getElementById('form')?.dispatchEvent(new Event('submit'))
-	// 	}
-	// }
 
 </script>
 
@@ -66,16 +67,17 @@
 						<form
 							id="form"
 							class="mt-4 flex w-4/5 flex-col items-center"
-							action="?/login"
 							method="POST"
+                            on:submit={handleSubmit}
 						>
 							<div class="w-full">
 								<Label for="email" class="mb-1 font-semibold">Email</Label>
 								<Input
+                                    bind:value={username}
 									type="text"
-									id="email"
+									id="username"
 									defaultClass="block w-full mb-4 p-2.5  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
-									name="email"
+									name="username"
 									placeholder="Email@email.com"
 									required
 									maxlength="100"
@@ -85,12 +87,13 @@
 								<Label for="password" class="mb-1 font-semibold">Password</Label>
 								<Input
 									id="password"
-									type='text'
+									type='password'
 									defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
 									name="password"
 									placeholder="**********"
 									required
 									maxlength="100"
+                                    bind:value={password}
 								>
 									<button
 										slot="right"

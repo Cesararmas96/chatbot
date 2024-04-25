@@ -1,5 +1,6 @@
 <script>
     import "../app.css";
+    // import { goto } from '@sveltejs/kit';
     import {onMount} from 'svelte'
     let isPageLoaded = false;
 
@@ -7,6 +8,11 @@
       isPageLoaded = true;
     }
    
+    // export function init({ page }) {
+    // if (page.path === '/login') {
+    //   goto('/');
+    // }
+  // }
 
   </script>
 

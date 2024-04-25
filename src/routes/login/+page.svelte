@@ -1,29 +1,53 @@
 <script lang="ts">
-	import { Button, Input, Label, P, Tooltip } from 'flowbite-svelte'
+	import { Button, Input, Label } from 'flowbite-svelte'
+	import { enhance } from '$app/forms'
 	
 	let username = "";
   let password = "";
-  let error = "";
+  export let form: ActionData
+
+  
+	const errorCodes = {
+		'400':
+			'Bad Request. Please double-check your credentials and try again. For persistent issues contact support.',
+		'401':
+			'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
+		'403': 'Incorrect Password: Please double-check your credentials and try again.'
+	}
+
+	const keyDownEnter = (e) => {
+		if (e.key === 'Enter') {
+			e.preventDefault()
+			document.getElementById('form')?.dispatchEvent(new Event('submit'))
+		}
+	}
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const response = await fetch("https://api.dev.trocdigital.io/api/v1/login", {
+    const response = await fetch("https://api.trocdigital.io/api/v1/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
 		"x-auth-method":"BasicAuth",
-		"Origin" : "https://api.dev.trocdigital.io",
-		"Referer" : "https://api.dev.trocdigital.io"
+		"Origin" : "https://api.trocdigital.io",
+		"Referer" : "https://api.trocdigital.io"
       },
       body: JSON.stringify({ username, password }),
     });
     if (response.ok) {
+
+	    const responseData = await response.json();
+
       // Redireccionar al usuario a la página de inicio después de iniciar sesión
-      window.location.href = "/";
+	  localStorage.setItem("token", responseData.token);
+
+      window.location.href = "/admin";
+	// console.log(await response.json())
+
     } else {
       // Mostrar mensaje de error si las credenciales son inválidas
       const { error } = await response.json();
-      setError(error);
+      console.log(error);
     }
   }
 
@@ -106,7 +130,24 @@
 							</div>
 
 						
+							{#if form?.credentials}
+								<p
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
+								>
+									{errorCodes[form?.message?.status]
+										? errorCodes[form?.message?.status]
+										: form?.message?.reason}
+								</p>
+							{/if}
 
+
+							{#if form?.invalid}
+								<p
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
+								>
+									Username and password is required.
+								</p>
+							{/if}
 							
 							 
 
@@ -124,13 +165,3 @@
 		</div>
 	</main>
 
-<style>
-	@media (max-width: 768px) {
-		.footer-copyright {
-			position: fixed;
-			bottom: 0;
-			left: 0;
-			width: 100%;
-		}
-	}
-</style>

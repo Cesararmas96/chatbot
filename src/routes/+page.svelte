@@ -24,13 +24,13 @@
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const response = await fetch("https://api.trocdigital.io/api/v1/login", {
+    const response = await fetch("https://api.dev.trocdigital.io/api/v1/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
 		"x-auth-method":"BasicAuth",
-		"Origin" : "https://api.trocdigital.io",
-		"Referer" : "https://api.trocdigital.io"
+		"Origin" : "https://api.dev.trocdigital.io",
+		"Referer" : "https://api.dev.trocdigital.io"
       },
       body: JSON.stringify({ username, password }),
     });

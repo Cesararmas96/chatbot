@@ -35,19 +35,22 @@
       body: JSON.stringify({ username, password }),
     });
     if (response.ok) {
-
-	    const responseData = await response.json();
-
       // Redireccionar al usuario a la página de inicio después de iniciar sesión
-	  localStorage.setItem("token", responseData.token);
 
-      window.location.href = "/admin";
+	  const { token, session } = await response.json();
+    
+    // Guardar el token en el localStorage
+    localStorage.setItem("token", token);
+    localStorage.setItem("session", session);
+	
+	  
+      window.location.href = "/";
 	// console.log(await response.json())
 
     } else {
       // Mostrar mensaje de error si las credenciales son inválidas
       const { error } = await response.json();
-      console.log(error);
+      console.log(error + 'cmd');
     }
   }
 

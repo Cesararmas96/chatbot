@@ -1,113 +1,170 @@
-<main class="pt-10">
+<script lang="ts">
+	import { Button, Input, Label } from 'flowbite-svelte'
+	import { enhance } from '$app/forms'
+	
+	let username = "";
+  let password = "";
+  export let form: ActionData
+
   
-  <ul
-    class="grid grid-cols-2 gap-4 p-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6"
-  >
-  <a href="/edu">
-    <div
-    class="animate__animated animate__zoomIn card cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg   bg-slate-100"
-  >
-    <img
-      alt=""
-      class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
-      src="#"
-    />
+	const errorCodes = {
+		'400':
+			'Bad Request. Please double-check your credentials and try again. For persistent issues contact support.',
+		'401':
+			'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
+		'403': 'Incorrect Password: Please double-check your credentials and try again.'
+	}
+
+	const keyDownEnter = (e) => {
+		if (e.key === 'Enter') {
+			e.preventDefault()
+			document.getElementById('form')?.dispatchEvent(new Event('submit'))
+		}
+	}
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const response = await fetch("https://api.trocdigital.io/api/v1/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+		"x-auth-method":"BasicAuth",
+		"Origin" : "https://api.trocdigital.io",
+		"Referer" : "https://api.trocdigital.io"
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    if (response.ok) {
+      // Redireccionar al usuario a la página de inicio después de iniciar sesión
+
+	  const { token, session } = await response.json();
     
-    <div class="mb-2 mt-6">
-      <h3 class="tracki text-center text-lg font-semibold uppercase">
-        Edu
-      </h3>
-    </div>
-  </div>
+    // Guardar el token en el localStorage
+    localStorage.setItem("token", token);
+    localStorage.setItem("session", session);
+	
+	  
+      window.location.href = "/admin";
+	// console.log(await response.json())
 
-  </a>
-
-  <a href="/AskBrett">
-    <div
-    class="animate__animated animate__zoomIn card cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg   bg-slate-100"
-  >
-    <img
-      alt=""
-      class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
-      src="#"
-    />
-    
-    <div class="mb-2 mt-6">
-      <h3 class="tracki text-center text-lg font-semibold uppercase">
-        AskBrett
-      </h3>
-    </div>
-  </div>
-
-  </a>
-   
-  <a href="/OdooBot">
-    <div
-    class="animate__animated animate__zoomIn card cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg   bg-slate-100"
-  >
-    <img
-      alt=""
-      class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
-      src="#"
-    />
-    
-    <div class="mb-2 mt-6">
-      <h3 class="tracki text-center text-lg font-semibold uppercase">
-        OdooBot
-      </h3>
-    </div>
-  </div>
-
-  </a>
-  
-  <a href="/Cody">
-    <div
-    class="animate__animated animate__zoomIn card cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg   bg-slate-100"
-  >
-    <img
-      alt=""
-      class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
-      src="#"
-    />
-    
-    <div class="mb-2 mt-6">
-      <h3 class="tracki text-center text-lg font-semibold uppercase">
-        Cody
-      </h3>
-    </div>
-  </div>
-
-  </a>
-
-  <a href="/Mark">
-    <div
-    class="animate__animated animate__zoomIn card cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg   bg-slate-100"
-  >
-    <img
-      alt=""
-      class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
-      src="#"
-    />
-    
-    <div class="mb-2 mt-6">
-      <h3 class="tracki text-center text-lg font-semibold uppercase">
-        Mark
-      </h3>
-    </div>
-  </div>
-
-  </a>
-  
-  </ul>
-</main>
-
-<style>
-  .card{
-    border-radius: .375rem;
-    border-width: 1px;
-    --tw-border-opacity: 1;
-    border-color: #e5eff8;
-    --tw-bg-opacity: 1;
-    background-color: rgb(255 255 255)
+    } else {
+      // Mostrar mensaje de error si las credenciales son inválidas
+      const { error } = await response.json();
+      console.log(error + 'cmd');
+    }
   }
-</style>
+
+
+</script>
+
+	<main class="h-screen">
+		<div class="dark:text-white-dark text-black">
+			<div class="flex bg-white">
+				<div
+					class="hidden w-full flex-col !justify-center text-white dark:text-black lg:!flex lg:!w-3/5"
+				>
+
+
+					<div class="absolute bottom-1 ml-2">
+						<div
+							class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
+						>
+							<span class="lg:border-r lg:border-gray-400 lg:pr-1"
+								>Copyright &copy;  Navigator by T-ROC.</span
+							>
+							<span class="lg:border-r lg:border-gray-400 lg:pl-1 lg:pr-1">
+								All rights Reserved.
+							</span>
+							<span class=" pl-1"> Privacy Policy Terms and Conditions Cookies </span>
+						</div>
+					</div>
+				</div>
+				<div class="flex w-full items-center justify-center lg:!w-2/5">
+					<div class=" m-2 flex w-full flex-col items-center justify-center pl-2 pr-2 sm:p-4">
+						<div class="mb-5 self-start">
+							<img src="" alt="-logo" style="max-width: 80px" />
+						</div>
+
+						<div class="text-center text-2xl font-semibold">Welcome Back</div>
+
+						
+					
+
+						
+						<form
+							id="form"
+							class="mt-4 flex w-4/5 flex-col items-center"
+							method="POST"
+                            on:submit={handleSubmit}
+						>
+							<div class="w-full">
+								<Label for="email" class="mb-1 font-semibold">Email</Label>
+								<Input
+                                    bind:value={username}
+									type="text"
+									id="username"
+									defaultClass="block w-full mb-4 p-2.5  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
+									name="username"
+									placeholder="Email@email.com"
+									required
+									maxlength="100"
+								/>
+							</div>
+							<div class="w-full">
+								<Label for="password" class="mb-1 font-semibold">Password</Label>
+								<Input
+									id="password"
+									type='password'
+									defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
+									name="password"
+									placeholder="**********"
+									required
+									maxlength="100"
+                                    bind:value={password}
+								>
+									<button
+										slot="right"
+										
+										class="pointer-events-auto mt-1"
+									>
+										
+									</button>
+								</Input>
+							</div>
+
+						
+							{#if form?.credentials}
+								<p
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
+								>
+									{errorCodes[form?.message?.status]
+										? errorCodes[form?.message?.status]
+										: form?.message?.reason}
+								</p>
+							{/if}
+
+
+							{#if form?.invalid}
+								<p
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
+								>
+									Username and password is required.
+								</p>
+							{/if}
+							
+							 
+
+							<div class="mt-5 w-full">
+								<Button
+									color="blue"
+									class="w-full rounded bg-blue-600 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 focus:outline-none"
+									type="submit">Login</Button
+								>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+

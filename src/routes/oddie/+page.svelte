@@ -148,7 +148,6 @@
     
     
               <div class="flex flex-col h-full overflow-x-auto mb-4 rounded-2xl bg-gray-100 mt-3" id="chatbox">
-                <iframe src="https://webchat.botframework.com/embed/BotBose?s=AV-8Q~pIMaNSMED6ezV7jS2CuzNOLd94atCOWbgG" style="height: 502px; max-height: 502px;"></iframe>
               </div>
               <form>
               <div

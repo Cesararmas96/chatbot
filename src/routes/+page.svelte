@@ -1,19 +1,15 @@
 <script lang="ts">
 	import { Button, Input, Label } from 'flowbite-svelte'
 	import { enhance } from '$app/forms'
+	import type { ActionData } from './$types'
 	
+	let errorMessage = "";
 	let username = "";
-  let password = "";
-  export let form: ActionData
+  	let password = "";
+  	export let form: ActionData
 
-  
-	const errorCodes = {
-		'400':
-			'Bad Request. Please double-check your credentials and try again. For persistent issues contact support.',
-		'401':
-			'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
-		'403': 'Incorrect Password: Please double-check your credentials and try again.'
-	}
+	const apiUrl = import.meta.env.VITE_API_NAVIGATOR;
+
 
 	const keyDownEnter = (e) => {
 		if (e.key === 'Enter') {
@@ -22,38 +18,39 @@
 		}
 	}
 
-  async function handleSubmit(event) {
+	const handleSubmit = async (event) => {
     event.preventDefault();
-    const response = await fetch("https://api.dev.trocdigital.io/api/v1/login", {
+    const response = await fetch(`${apiUrl}/api/v1/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-		"x-auth-method":"BasicAuth",
-		"Origin" : "https://api.dev.trocdigital.io",
-		"Referer" : "https://api.dev.trocdigital.io"
+        "x-auth-method":"BasicAuth",
+        "Origin" : apiUrl,
+        "Referer" : apiUrl
       },
       body: JSON.stringify({ username, password }),
     });
     if (response.ok) {
-      // Redireccionar al usuario a la página de inicio después de iniciar sesión
-
-	  const { token, session } = await response.json();
-    
-    // Guardar el token en el localStorage
-    localStorage.setItem("token", token);
-    localStorage.setItem("session", session);
-	
-	  
+      const { token, session } = await response.json();
+      
+      // Guardar el token en el localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("session", session);
+      
       window.location.href = "/admin";
-	// console.log(await response.json())
-
     } else {
-      // Mostrar mensaje de error si las credenciales son inválidas
-      const { error } = await response.json();
-      console.log(error + 'cmd');
+      const error = await response.json();
+      console.log(error);
+
+	  if(error.status == 401){
+		errorMessage= 'Your email is not registered.'
+	  }
+
+	  if(error.status == 403){
+	  errorMessage = `Forbidden: Incorrect password`; 
+	  }
     }
   }
-
 
 </script>
 
@@ -96,6 +93,7 @@
 							class="mt-4 flex w-4/5 flex-col items-center"
 							method="POST"
                             on:submit={handleSubmit}
+							action="?/login"
 						>
 							<div class="w-full">
 								<Label for="email" class="mb-1 font-semibold">Email</Label>
@@ -133,25 +131,9 @@
 							</div>
 
 						
-							{#if form?.credentials}
-								<p
-									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
-								>
-									{errorCodes[form?.message?.status]
-										? errorCodes[form?.message?.status]
-										: form?.message?.reason}
-								</p>
-							{/if}
-
-
-							{#if form?.invalid}
-								<p
-									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
-								>
-									Username and password is required.
-								</p>
-							{/if}
-							
+						  {#if errorMessage}
+						  <p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">{errorMessage}</p>
+						{/if}
 							 
 
 							<div class="mt-5 w-full">

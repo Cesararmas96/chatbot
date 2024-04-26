@@ -59,7 +59,7 @@
  <div class="chat">
    <div class="message-container">
      {#each messages as message}
-       <div class="message bubble" class:message.sender={message.sender}>
+       <div class="message bubble" >
          <div class="text-bubble">
            {message.text}
          </div>

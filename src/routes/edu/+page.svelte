@@ -1,7 +1,6 @@
 <script lang='ts'>
     import logo from '../../../src/assets/troc.png'
     import axios from 'axios';
-    import SvelteMarkdown from 'svelte-markdown'
    
   let query = '';
   let chatResponse = '';

@@ -14,7 +14,6 @@
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           'Connection' : 'keep-alive',
           'Origin': 'https://ai-dev.trocdigital.net',

@@ -1,8 +1,8 @@
 <script lang='ts'>
     import logo from '../../../src/assets/troc.png'
     import axios from 'axios';
-    import SvelteMarkdown from 'svelte-markdown'
-   
+    // import { marked } from 'marked';
+    import snarkdown from 'snarkdown'
   let query = '';
   let chatResponse = '';
   let token = localStorage.getItem('token');
@@ -11,6 +11,23 @@
   const handleSubmit = async (event) => {
   event.preventDefault();
   console.log(token);
+
+  const source = `
+  # This is a header
+
+This is a paragraph.
+
+* This is a list
+* With two items
+  1. And a sublist
+  2. That is ordered
+    * With another
+    * Sublist inside
+
+| And this is | A table |
+|-------------|---------|
+| With two    | columns |`
+
 
   const apiUrl = 'https://ai-dev.trocdigital.net/api/v1/chat/Edu';
 
@@ -28,6 +45,7 @@
       console.log(data);
       console.log(data.answer);
       messages = [...messages, { text: data.answer }];
+      
       
     } else {
       console.error('Error al obtener la respuesta:', response.statusText);
@@ -121,10 +139,9 @@ function sendChatRequest() {
           >
   
           <select id="selectbot"  onchange="location = this.value;" class="w-[200px] ml-auto  border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500   p-2 ">
-              <option class="text-gray-900" value="edu">Chatbot Edu</option>
-              <option class="text-gray-900" value="mark">Chatbot Mark</option>
-              <option class="text-gray-900" value="cody">Chatbot Cody</option>
-              <option class="text-gray-900" value="oddie">Chatbot Oddie</option>
+              <option class="text-gray-900" value="trocers">T-ROCers Chatbot </option>
+              <option class="text-gray-900" value="askbrett" selected>AskBrett Chatbot </option>
+         
             </select>
   
   
@@ -133,7 +150,7 @@ function sendChatRequest() {
                 <div class="grid grid-cols-12 gap-y-2">
                   
                  
-                  
+
                   {#each messages as message}
 
 
@@ -149,7 +166,9 @@ function sendChatRequest() {
                       >
                         <div>
                           
-                          {message.text}
+                          {message.text} 
+                         
+
                         
                         </div>
                       </div>
@@ -278,33 +297,34 @@ function sendChatRequest() {
       </div>
     </div>
   
-    <style>
-      #navbar{
-          background: linear-gradient(180deg, rgba(244,124,32,1) 1%, rgba(239,80,157,1) 50%, rgba(0,174,229,1) 100%);
-  
-      }
-  
-      /* #chatbox{
-          border: 1px solid transparent; 
-      border-image-slice: 1; 
-      border-image-source: linear-gradient(180deg, rgba(244, 124, 32, 1) 1%, rgba(239, 80, 157, 1) 50%, rgba(0, 174, 229, 1) 100%); /* Utiliza el gradiente como fuente del borde
-      border-radius: 0.75rem; 
-  
-      } */
-  
-      svg{
-          fill: white;
-      }
-  
-      #selectbot{
-          background: rgb(26,211,187);
-          background: linear-gradient(90deg, rgba(26,211,187,1) 1%, rgba(90,185,99,1) 100%);
-          color: white;
-          font-weight: bold;
-      }
-  
-      .buttonnavar:hover,
-      .newchat:hover{
-          background: #8D3D00;
-      }
-    </style>
+ <style>
+     #navbar{
+            background: rgb(28,100,242);
+background: linear-gradient(180deg, rgba(28,100,242,1) 1%, rgba(130,180,216,1) 100%);
+
+        }
+    
+        /* #chatbox{
+            border: 1px solid transparent; 
+        border-image-slice: 1; 
+        border-image-source: linear-gradient(180deg, rgba(244, 124, 32, 1) 1%, rgba(239, 80, 157, 1) 50%, rgba(0, 174, 229, 1) 100%); /* Utiliza el gradiente como fuente del borde
+        border-radius: 0.75rem; 
+    
+        } */
+    
+        svg{
+            fill: white;
+        }
+    
+        #selectbot{
+            background: rgb(26,211,187);
+            background: linear-gradient(120deg, rgba(28,100,242,1) 1%, rgba(130,180,216,1) 100%);
+            color: white;
+            font-weight: bold;
+        }
+    
+        .buttonnavar:hover,
+        .newchat:hover{
+            background: #233B6B;
+        }
+ </style>

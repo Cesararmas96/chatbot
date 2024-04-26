@@ -17,6 +17,7 @@
 		"autoprefixer": "^10.4.19",
 		"flowbite": "^2.3.0",
 		"flowbite-svelte": "^0.45.1",
+		"mdsvex": "^0.11.0",
 		"postcss": "^8.4.38",
 		"svelte": "^4.2.7",
 		"svelte-check": "^3.6.0",
@@ -29,6 +30,8 @@
 		"@popperjs/core": "^2.11.8",
 		"axios": "^1.6.8",
 		"flowbite-svelte-icons": "^1.5.0",
+		"marked": "^12.0.2",
+		"snarkdown": "^2.0.0",
 		"svelte-markdown": "^0.4.1",
 		"svelte-routing": "^2.12.0",
 		"tailwind-merge": "^2.3.0"

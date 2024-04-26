@@ -19,7 +19,10 @@ const config = {
 			split: false
 		})
 	},
-	preprocess: vitePreprocess()
+	preprocess: vitePreprocess(),
+
+	extensions: ['.svelte'], // Add this
+
 
 };
 

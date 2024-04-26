@@ -40,7 +40,7 @@
       localStorage.setItem("token", token);
       localStorage.setItem("session", session);
       
-      window.location.href = "/edu";
+      window.location.href = "/trocers";
 
     } else {
       const error = await response.json();

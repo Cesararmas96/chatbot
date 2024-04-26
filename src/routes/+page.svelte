@@ -8,7 +8,7 @@
   	let password = "";
   	export let form: ActionData
 
-	const apiUrl = import.meta.env.VITE_API_NAVIGATOR;
+	const apiUrl = 'https://api.dev.trocdigital.io'
 
 
 	const keyDownEnter = (e) => {
@@ -31,13 +31,17 @@
       body: JSON.stringify({ username, password }),
     });
     if (response.ok) {
+
+		// console.log(await response.json()) 
       const { token, session } = await response.json();
-      
+	
+	 
       // Guardar el token en el localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("session", session);
       
       window.location.href = "/admin";
+
     } else {
       const error = await response.json();
       console.log(error);

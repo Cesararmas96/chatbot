@@ -1,55 +1,53 @@
 <script lang='ts'>
-   import { set } from 'svelte/store';
-    import logo from '../../../src/assets/troc.png';
+    import logo from '../../../src/assets/troc.png'
     import axios from 'axios';
-    import SvelteMarkdown from 'svelte-markdown';
+    import SvelteMarkdown from 'svelte-markdown'
+   
+  let query = '';
+  let chatResponse = '';
+  let token = localStorage.getItem('token');
+  let newMessage='' //mensaje enviado
+  let messages = []; //lista mensajes
+  const handleSubmit = async (event) => {
+  event.preventDefault();
+  console.log(token);
 
-    let query = '';
-    let chatResponse = '';
-    let token = localStorage.getItem('token');
-    let newMessage = ''; // mensaje enviado
-    // Utiliza la función set() para crear una variable reactiva para messages
-    import { writable } from 'svelte/store';
-    let messages = writable([]); // lista mensajes
+  const apiUrl = 'https://ai-dev.trocdigital.net/api/v1/chat/Edu';
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        console.log(token);
+  try {
+    const response = await axios.post(apiUrl, { query }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-        const apiUrl = 'https://ai-dev.trocdigital.net/api/v1/chat/Edu';
-
-        try {
-            const response = await axios.post(apiUrl, { query }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.status === 200) {
-                query = '';
-                const data = response.data;
-                console.log(data);
-                console.log(data.answer);
-                // Actualiza la lista de mensajes utilizando la función update() de la variable reactiva
-                messages.update(msgs => [...msgs, { text: data.answer, sender: 'response' }]);
-            } else {
-                console.error('Error al obtener la respuesta:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Hubo un problema con la operación de fetch:', error);
-        }
-    };
-
-    function sendChatRequest() {
-
-        if (newMessage.trim() !== '') {
-            // Actualiza la lista de mensajes utilizando la función update() de la variable reactiva
-            messages.update(msgs => [...msgs, { text: newMessage, sender: 'query' }]);
-            console.log(messages)
-            newMessage = ''
-        }
+    if (response.status === 200) {
+      query='';
+      const data = response.data;
+      console.log(data);
+      console.log(data.answer);
+      messages = [...messages, { text: data.answer }];
+      
+    } else {
+      console.error('Error al obtener la respuesta:', response.statusText);
     }
+  } catch (error) {
+    console.error('Hubo un problema con la operación de fetch:', error);
+  }
+};
+
+
+function sendChatRequest() {
+  
+  if(query.trim() !== ''){
+    messages = [...messages, { text: query, sender: 'query'}];
+  console.log(messages)
+
+      query = ''
+    
+  }
+}
   </script>
   
   

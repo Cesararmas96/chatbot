@@ -40,7 +40,7 @@
       localStorage.setItem("token", token);
       localStorage.setItem("session", session);
       
-      window.location.href = "/admin";
+      window.location.href = "/edu";
 
     } else {
       const error = await response.json();

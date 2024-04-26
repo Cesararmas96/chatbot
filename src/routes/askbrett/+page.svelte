@@ -139,8 +139,9 @@ function sendChatRequest() {
           >
   
           <select id="selectbot"  onchange="location = this.value;" class="w-[200px] ml-auto  border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500   p-2 ">
-              <option class="text-gray-900" value="trocers">T-ROCers Chatbot </option>
-              <option class="text-gray-900" value="askbrett" selected>AskBrett Chatbot </option>
+            <option class="text-gray-900" value="trocers">T-ROCers Chatbot</option>
+            <option class="text-gray-900" value="oddie">Odoo Chatbot</option>
+            <option class="text-gray-900" value="askbrett" selected>AskBrett Chatbot</option>
          
             </select>
   

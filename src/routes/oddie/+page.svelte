@@ -140,10 +140,9 @@
             >
     
             <select  onchange="location = this.value;"  id="selectbot" class="w-[200px] ml-auto  border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500   p-2 ">
-                <option class="text-gray-900" value="/">Chatbot Edu</option>
-                <option class="text-gray-900" value="mark" >Chatbot Mark</option>
-                <option class="text-gray-900" value="cody" >Chatbot Cody</option>
-                <option class="text-gray-900" value="oddie" selected>Chatbot Oddie</option>
+              <option class="text-gray-900" value="trocers">T-ROCers Chatbot</option>
+              <option class="text-gray-900" value="oddie" selected>Odoo Chatbot</option>
+              <option class="text-gray-900" value="askbrett">AskBrett Chatbot</option>
               </select>
     
     

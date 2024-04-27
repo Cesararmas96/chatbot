@@ -132,11 +132,10 @@
           <option class="text-gray-900" value="trocers" selected
             >T-ROCers Chatbot</option
           >
-          <option class="text-gray-900" value="oddie">Odoo Chatbot</option>
           <option class="text-gray-900" value="askbrett"
             >AskBrett Chatbot</option
           >
-          <option class="text-gray-900" value="bosse">Bosse Chatbot</option>
+          <option class="text-gray-900" value="bose">Bose Chatbot</option>
         </select>
 
         <div

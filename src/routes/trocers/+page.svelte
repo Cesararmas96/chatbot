@@ -136,6 +136,9 @@
             >AskBrett Chatbot</option
           >
           <option class="text-gray-900" value="bose">Bose Chatbot</option>
+
+          <option class="text-gray-900" value="oddie" >Oddie Chatbot</option>
+
         </select>
 
         <div

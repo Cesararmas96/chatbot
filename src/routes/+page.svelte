@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Button, Input, Label } from 'flowbite-svelte'
-	import { enhance } from '$app/forms'
 	import type { ActionData } from './$types'
+	import ImgLogin from '../assets/slider.png'
+
 	
 	let errorMessage = "";
 	let username = "";
@@ -65,11 +66,11 @@
 					class="hidden w-full flex-col !justify-center text-white dark:text-black lg:!flex lg:!w-3/5"
 				>
 
-
 					<div class="absolute bottom-1 ml-2">
 						<div
-							class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
+							class="mt-10 flex  flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
 						>
+						
 							<span class="lg:border-r lg:border-gray-400 lg:pr-1"
 								>Copyright &copy;  Navigator by T-ROC.</span
 							>
@@ -83,7 +84,7 @@
 				<div class="flex w-full items-center justify-center lg:!w-2/5">
 					<div class=" m-2 flex w-full flex-col items-center justify-center pl-2 pr-2 sm:p-4">
 						<div class="mb-5 self-start">
-							<img src="" alt="-logo" style="max-width: 80px" />
+							<img src="{ImgLogin}" alt="" style="max-width: 80px" />
 						</div>
 
 						<div class="text-center text-2xl font-semibold">Welcome Back</div>

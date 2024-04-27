@@ -2,36 +2,40 @@
   import logo from "../../../src/assets/troc.png";
   import axios from "axios";
   import { marked } from "marked";
-
+  // import { useState } from 'svelte';
+  // import { useLoading } from '@sveltejs/kit';
+  // const [loading, {start, done}] = useLoading(); // Variable de estado para controlar el estado de carga
  
   let query = "";
+  let chatResponse = '';
+
   let token = localStorage.getItem("token");
   const username = localStorage.getItem("username").charAt(0);
   let messages = []; //lista mensajes
+
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(token);
-
     const apiUrl = "https://ai-dev.trocdigital.net/api/v1/chat/TROCers";
-
     try {
       const response = await axios.post(
         apiUrl,
         { query },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
       );
 
       if (response.status === 200) {
-        query = "";
         const data = response.data;
         console.log(data);
-        // console.log(data.answer);
-        messages = [...messages, { text: data.answer, query:data.question }];
+        console.log(data.answer);
+        messages = [...messages, { text: data.answer, query: data.question }];
+        query = "";
+
       } else {
         console.error("Error al obtener la respuesta:", response.statusText);
       }
@@ -40,14 +44,13 @@
     }
   };
 
-  function sendChatRequest() {
-    if (query.trim() !== "") {
-      messages = [...messages, { text: query, sender: "query" }];
-      console.log(messages);
 
-      query = "";
-    }
-  }
+//   function sendChatRequest() {
+//   if (query.trim() !== "") {
+//     messages = [...messages, { text: query, sender: "query" }];
+//     query = ""; // Limpiar el contenido del input
+//   }
+// }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -148,7 +151,7 @@
           <div class="flex flex-col h-full">
             <div class="grid grid-cols-12 gap-y-2">
               {#each messages as message}
-                {#if message.sender === 'query'}
+                <!-- {#if message.sender === 'query'} -->
                 
                 <div class="col-start-6 col-end-13 p-3 rounded-lg">
                   <div class="flex items-center justify-start flex-row-reverse">
@@ -162,14 +165,14 @@
                     >
                       <div>
                         
-                        {message.text}
+                        {message.query}
                       
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {:else}
+                <!-- {:else} -->
 
                 <div class="col-start-1 col-end-8 p-3 rounded-lg">
                   <div class="flex flex-row ">
@@ -182,40 +185,19 @@
                       class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
                     >
                       <div>{@html marked(message.text)}</div>
-                      <div class="flex justify-end mt-1 ">
-                        <svg class="mr-2" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clip-path="url(#clip0_568_2079)">
-                            <path d="M9.18164 0.963818C9.94336 1.11616 10.4385 1.85737 10.2861 2.61909L10.2188 2.95308C10.0635 3.7353 9.77637 4.47944 9.375 5.1562H13.5938C14.3701 5.1562 15 5.78608 15 6.56245C15 7.10444 14.6924 7.57612 14.2412 7.8105C14.5605 8.06831 14.7656 8.46382 14.7656 8.9062C14.7656 9.59175 14.2734 10.163 13.626 10.2861C13.7549 10.5 13.8281 10.749 13.8281 11.0156C13.8281 11.6396 13.4209 12.1699 12.8584 12.3515C12.8789 12.4482 12.8906 12.5507 12.8906 12.6562C12.8906 13.4326 12.2607 14.0624 11.4844 14.0624H8.62793C8.07129 14.0624 7.5293 13.8984 7.06641 13.5908L5.93848 12.8378C5.15625 12.3164 4.6875 11.4374 4.6875 10.497V9.37495V7.9687V7.23921C4.6875 6.38374 5.07715 5.57808 5.74219 5.04194L5.95898 4.86909C6.73535 4.248 7.26562 3.37495 7.45898 2.40229L7.52637 2.06831C7.67871 1.30659 8.41992 0.811475 9.18164 0.963818ZM0.9375 5.62495H2.8125C3.33105 5.62495 3.75 6.0439 3.75 6.56245V13.1249C3.75 13.6435 3.33105 14.0624 2.8125 14.0624H0.9375C0.418945 14.0624 0 13.6435 0 13.1249V6.56245C0 6.0439 0.418945 5.62495 0.9375 5.62495Z" fill="#CCCCCC"/>
-                            </g>
-                            <defs>
-                            <clipPath id="clip0_568_2079">
-                            <rect width="15" height="15" fill="white"/>
-                            </clipPath>
-                            </defs>
-                            </svg>
-
-                            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_568_2081)">
-                                <path d="M9.18164 14.0361C9.94336 13.8838 10.4385 13.1426 10.2861 12.3809L10.2188 12.0469C10.0635 11.2646 9.77637 10.5205 9.375 9.84375H13.5938C14.3701 9.84375 15 9.21387 15 8.4375C15 7.89551 14.6924 7.42383 14.2412 7.18945C14.5605 6.93164 14.7656 6.53613 14.7656 6.09375C14.7656 5.4082 14.2734 4.83691 13.626 4.71387C13.7549 4.5 13.8281 4.25098 13.8281 3.98438C13.8281 3.36035 13.4209 2.83008 12.8584 2.64844C12.8789 2.55176 12.8906 2.44922 12.8906 2.34375C12.8906 1.56738 12.2607 0.9375 11.4844 0.9375H8.62793C8.07129 0.9375 7.5293 1.10156 7.06641 1.40918L5.93848 2.16211C5.15625 2.68359 4.6875 3.5625 4.6875 4.50293V5.625V7.03125V7.76074C4.6875 8.61621 5.07715 9.42188 5.74219 9.95801L5.95898 10.1309C6.73535 10.752 7.26562 11.625 7.45898 12.5977L7.52637 12.9316C7.67871 13.6934 8.41992 14.1885 9.18164 14.0361ZM0.9375 11.25H2.8125C3.33105 11.25 3.75 10.8311 3.75 10.3125V3.75C3.75 3.23145 3.33105 2.8125 2.8125 2.8125H0.9375C0.418945 2.8125 0 3.23145 0 3.75V10.3125C0 10.8311 0.418945 11.25 0.9375 11.25Z" fill="#CCCCCC"/>
-                                </g>
-                                <defs>
-                                <clipPath id="clip0_568_2081">
-                                <rect width="15" height="15" fill="white"/>
-                                </clipPath>
-                                </defs>
-                                </svg>
-                                
-                            
-                      </div>
+                     
                     </div>
                   </div>
                 </div>   
 
 
 
-                {/if}
+                <!-- {/if} -->
                
               {/each}
+
+
+              <!-- <div class="loading" style="display: {loading ? 'block' : 'none'}">Cargando...</div> -->
 
 
            
@@ -229,9 +211,7 @@
             <div class="flex-grow">
               <div class="relative w-full">
                 <input
-                  on:keydown={(e) => e.key === "Enter" && sendChatRequest()}
                   placeholder="Send a message."
-                  id="query"
                   type="text"
                   bind:value={query}
                   class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"

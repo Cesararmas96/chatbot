@@ -6,7 +6,6 @@
   // import { useLoading } from '@sveltejs/kit';
   // const [loading, {start, done}] = useLoading(); // Variable de estado para controlar el estado de carga
   import { onMount } from 'svelte';
-  
   let isLoading = false;
 
 
@@ -22,7 +21,7 @@
     event.preventDefault();
     isLoading = true; // Mostrar el div de carga
 
-    const apiUrl = "https://ai.trocdigital.net/api/v1/chat/AskBrett";
+    const apiUrl = "https://ai-dev.trocdigital.net/api/v1/chat/AskBrett";
     try {
       const response = await axios.post(
         apiUrl,
@@ -143,10 +142,10 @@
           <option class="text-gray-900" value="trocers" 
             >T-ROCers Chatbot</option
           >
-          <option selected class="text-gray-900" value="askbrett"
+          <option class="text-gray-900" value="askbrett" selected
             >AskBrett Chatbot</option
           >
-          <option class="text-gray-900" value="bose" >Bose Chatbot</option>
+          <option class="text-gray-900" value="bose">Bose Chatbot</option>
 
           <option class="text-gray-900" value="oddie" >Oddie Chatbot</option>
 
@@ -164,7 +163,7 @@
                 <div class="col-start-6 col-end-13 p-3 rounded-lg">
                   <div class="flex items-center justify-start flex-row-reverse">
                     <div
-                      class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-blue-600 flex-shrink-0 text-white"
+                      class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
                     >
                     {username}
                     </div>
@@ -266,7 +265,7 @@
               <button
               disabled={isLoading}
                 type="submit"
-                class="flex items-center justify-center bg-slate-600 hover:bg-slate-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}" >
+                class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}" >
                 <span class="">
                   <svg
                     class="w-4 h-4 transform rotate-45 -mt-px"
@@ -291,7 +290,6 @@
     </div>
   </div>
 </div>
-
 
 <style>
   #navbar{

@@ -40,6 +40,8 @@
       // Guardar el token en el localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("session", session);
+      localStorage.setItem("username", username);
+
       
       window.location.href = "/trocers";
 

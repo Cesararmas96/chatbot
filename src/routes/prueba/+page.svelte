@@ -2,6 +2,14 @@
   import { onMount } from 'svelte';
   import axios from 'axios';
 
+  import {marked} from 'marked';
+
+
+let markdownText = '# Esto es un encabezado\n\n¡Hola, **mundo**!';
+let htmlText = marked(markdownText);
+
+
+
   let query = '';
   let chatResponse = '';
   let token = localStorage.getItem('token');
@@ -39,4 +47,12 @@ const handleSubmit = async (event) => {
     <button type="submit">Submit</button>
   </form>
   <pre>{chatResponse}</pre>
+
+  <div>{@html htmlText}</div>
+
 </main>
+
+<!-- 
+answer es para markdown
+
+la pregunta es question  -->

@@ -5,7 +5,10 @@
   // import { useState } from 'svelte';
   // import { useLoading } from '@sveltejs/kit';
   // const [loading, {start, done}] = useLoading(); // Variable de estado para controlar el estado de carga
- 
+  import { onMount } from 'svelte';
+  let isLoading = false;
+
+
   let query = "";
   let chatResponse = '';
 
@@ -16,6 +19,8 @@
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    isLoading = true; // Mostrar el div de carga
+
     const apiUrl = "https://ai-dev.trocdigital.net/api/v1/chat/TROCers";
     try {
       const response = await axios.post(
@@ -41,6 +46,8 @@
       }
     } catch (error) {
       console.error("Hubo un problema con la operación de fetch:", error);
+    }finally{
+      isLoading = false;
     }
   };
 
@@ -188,18 +195,50 @@
                      
                     </div>
                   </div>
-                </div>   
+                </div>  
+
+              
 
 
 
                 <!-- {/if} -->
                
-              {/each}
+                {/each}
+                
+                {#if isLoading}
+                <div class="col-start-1 col-end-8 p-3 rounded-lg">
+                  <div class="flex flex-row ">
+                    <div
+                      class="flex items-center justify-center h-10 w-10 rounded-full  flex-shrink-0"
+                    >
+                    <img src={logo} alt="sd">
+                    </div>
+                    <div
+                      class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl p-4 max-w-sm w-full mx-auto"
+                    >
 
-
-              <!-- <div class="loading" style="display: {loading ? 'block' : 'none'}">Cargando...</div> -->
-
-
+                      <div class="animate-pulse flex space-x-4">
+                        <div class="flex-1 space-y-6 py-1">
+                          <div class="h-2 bg-slate-300 rounded"></div>
+                          <div class="space-y-3">
+                            <div class="grid grid-cols-3 gap-4">
+                              <div class="h-2 bg-slate-300 rounded col-span-2"></div>
+                              <div class="h-2 bg-slate-300 rounded col-span-1"></div>
+                            </div>
+                            <div class="h-2 bg-slate-300 rounded"></div>
+                            <div class="h-2 bg-slate-300 rounded"></div>
+                            <div class="h-2 bg-slate-300 rounded"></div>
+                          </div>
+                        </div>
+                      </div>
+                   
+                     
+                    </div>
+                  </div>
+                </div>  
+                {/if}
+                
+                
            
             </div>
           </div>
@@ -213,16 +252,20 @@
                 <input
                   placeholder="Send a message."
                   type="text"
+                  disabled={isLoading}
                   bind:value={query}
-                  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
+                  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}"
                 />
+
+                
               </div>
             </div>
             <div class="ml-4">
+
               <button
+              disabled={isLoading}
                 type="submit"
-                class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0"
-              >
+                class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}" >
                 <span class="">
                   <svg
                     class="w-4 h-4 transform rotate-45 -mt-px"

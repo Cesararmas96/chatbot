@@ -18,7 +18,7 @@ const handleSubmit = async (event) => {
   event.preventDefault();
   console.log(token);
 
-  const apiUrl = 'https://ai-dev.trocdigital.net/api/v1/chat/Edu';
+  const apiUrl = 'https://ai-dev.trocdigital.net/api/v1/chat/TROCers';
 
   try {
     const response = await axios.post(apiUrl, { query }, {

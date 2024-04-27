@@ -65,6 +65,9 @@
 				<div
 					class="hidden w-full flex-col !justify-center text-white dark:text-black lg:!flex lg:!w-3/5"
 				>
+				<div class="carousel">
+					<img src={ImgLogin} alt="Image 1" >
+				</div>
 
 					<div class="absolute bottom-1 ml-2">
 						<div
@@ -81,8 +84,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="flex w-full items-center justify-center lg:!w-2/5">
-					<div class=" m-2 flex w-full flex-col items-center justify-center pl-2 pr-2 sm:p-4">
+				<div class="flex w-full  justify-center lg:!w-2/5">
+					<div class=" m-2 flex w-full flex-col items-center  pl-2 pr-2 sm:p-4">
 						<div class="mb-5 self-start">
 							<img src="{ImgLogin}" alt="" style="max-width: 80px" />
 						</div>
@@ -155,3 +158,11 @@
 		</div>
 	</main>
 
+<style>
+	.carousel{
+		height: 100vh;
+		position: relative;
+		overflow: hidden;
+		max-width: 80%;
+	}
+</style>   

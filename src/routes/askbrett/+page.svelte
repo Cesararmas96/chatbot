@@ -21,7 +21,7 @@
     event.preventDefault();
     isLoading = true; // Mostrar el div de carga
 
-    const apiUrl = "https://ai.trocdigital.net/api/v1/chat/AskBrett";
+    const apiUrl = "https://ai-dev.trocdigital.net/api/v1/chat/AskBrett";
     try {
       const response = await axios.post(
         apiUrl,
@@ -79,7 +79,7 @@
         >
           <img src={logo} alt="sd" />
         </div>
-        <div class="ml-2 font-bold text-2xl text-white">Troc-Chat</div>
+        <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
       </div>
 
       <div class="flex flex-col h-full justify-end text-white">

@@ -36,7 +36,7 @@
               >
               <img src={logo} alt="sd">
               </div>
-              <div class="ml-2 font-bold text-2xl text-white">Troc-Chat</div>
+              <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
             </div>
             
             <div class="flex flex-col mt-8">

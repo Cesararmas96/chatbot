@@ -21,7 +21,7 @@
       event.preventDefault();
       isLoading = true; // Mostrar el div de carga
   
-      const apiUrl = "https://ai-dev.trocdigital.net/api/v1/chat/Bose";
+      const apiUrl = "https://ai.trocdigital.net/api/v1/chat/Bose";
       try {
         const response = await axios.post(
           apiUrl,

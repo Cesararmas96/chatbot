@@ -2,6 +2,7 @@
     import logo from "../../../src/assets/troc.png";
     import axios from "axios";
     import { marked } from "marked";
+    import AvatarNameChat from "../../components/AvatarNameChat.svelte";
     // import { useState } from 'svelte';
     // import { useLoading } from '@sveltejs/kit';
     // const [loading, {start, done}] = useLoading(); // Variable de estado para controlar el estado de carga
@@ -13,7 +14,6 @@
     let chatResponse = '';
   
     let token = localStorage.getItem("token");
-    const username = localStorage.getItem("username").charAt(0);
     let messages = []; //lista mensajes
   
   
@@ -165,7 +165,10 @@
                       <div
                         class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
                       >
-                      {username}
+                      
+                       <AvatarNameChat/>
+                      
+                      
                       </div>
                       <div
                         class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl "

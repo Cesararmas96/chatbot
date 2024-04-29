@@ -1,25 +1,25 @@
 <script lang="ts">
-  import logo from "../../../src/assets/troc.png";
+  import SelectBots from "$lib/SelectBots.svelte";
+import logo from "../../../src/assets/troc.png";
   import axios from "axios";
   import { marked } from "marked";
   // import { useState } from 'svelte';
   // import { useLoading } from '@sveltejs/kit';
   // const [loading, {start, done}] = useLoading(); // Variable de estado para controlar el estado de carga
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
+  // import AvatarNameChat from "../../components/AvatarNameChat.svelte";
   let isLoading = false;
-
-
+  let lorem = "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium alias nulla possimus corrupti ad, repellendus id animi aspernatur totam harum, ratione voluptates dolores nobis dolorum incidunt ullam! Aspernatur, at ratione."
   let query = "";
-  let chatResponse = '';
+  let chatResponse = "";
 
   let token = localStorage.getItem("token");
-  const username = localStorage.getItem("username").charAt(0);
   let messages = []; //lista mensajes
-
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     isLoading = true; // Mostrar el div de carga
+
 
     const apiUrl = "https://ai.trocdigital.net/api/v1/chat/TROCers";
     try {
@@ -28,7 +28,7 @@
         { query },
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -40,24 +40,22 @@
         console.log(data.answer);
         messages = [...messages, { text: data.answer, query: data.question }];
         query = "";
-
       } else {
         console.error("Error al obtener la respuesta:", response.statusText);
       }
     } catch (error) {
       console.error("Hubo un problema con la operación de fetch:", error);
-    }finally{
+    } finally {
       isLoading = false;
     }
   };
 
-
-//   function sendChatRequest() {
-//   if (query.trim() !== "") {
-//     messages = [...messages, { text: query, sender: "query" }];
-//     query = ""; // Limpiar el contenido del input
-//   }
-// }
+  //   function sendChatRequest() {
+  //   if (query.trim() !== "") {
+  //     messages = [...messages, { text: query, sender: "query" }];
+  //     query = ""; // Limpiar el contenido del input
+  //   }
+  // }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -83,9 +81,6 @@
       </div>
 
       <div class="flex flex-col h-full justify-end text-white">
-
-        
-        
         <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
           <div class="flex items-center justify-center h-6 w-6">
             <svg
@@ -137,46 +132,80 @@
 
     <div class="flex flex-col flex-auto h-full p-6">
       <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
-        <select
-          id="selectbot"
-          onchange="location = this.value;"
-          class="w-[200px] ml-auto border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
-        >
-          <option class="text-gray-900" value="trocers" selected
-            >T-ROCers Chatbot</option
-          >
-          <option class="text-gray-900" value="askbrett"
-            >AskBrett Chatbot</option
-          >
-          <option class="text-gray-900" value="bose">Bose Chatbot</option>
-
-          <option class="text-gray-900" value="oddie" >Oddie Chatbot</option>
-
-        </select>
-
+        
+        <SelectBots/>
         <div
           class="flex flex-col h-full overflow-x-auto mb-4 rounded-2xl bg-gray-100 mt-3"
           id="chatbox"
         >
           <div class="flex flex-col h-full">
             <div class="grid grid-cols-12 gap-y-2">
+              <div class="col-start-1 col-end-8 p-3 rounded-lg">
+                <div class="flex flex-row">
+                  <div
+                    class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
+                  >
+                    <img src={logo} alt="sd" />
+                  </div>
+                  <div
+                    class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                  >
+                    <div>{lorem}</div>
+                    <div class="flex justify-end mt-1">
+                      <svg
+                        class="mr-2"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 15 15"
+                        fill="gray"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g clip-path="url(#clip0_568_2079)">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 448 512"
+                            ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
+                              d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"
+                            /></svg
+                          >
+                        </g>
+                        <defs>
+                          <clipPath id="clip0_568_2079">
+                            <rect width="15" height="15" fill="white" />
+                          </clipPath>
+                        </defs>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Borrar esto luego -->
+              
+              <div class="col-start-6 col-end-13 p-3 rounded-lg">
+                <div class="flex items-center justify-start flex-row-reverse">
+                  <!-- <AvatarNameChat/> -->
+                  <div
+                    class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                  >
+                    <div>
+                      dd
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {#each messages as message}
                 <!-- {#if message.sender === 'query'} -->
-                
+
                 <div class="col-start-6 col-end-13 p-3 rounded-lg">
                   <div class="flex items-center justify-start flex-row-reverse">
+                    <AvatarNameChat/>
                     <div
-                      class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
-                    >
-                    {username}
-                    </div>
-                    <div
-                      class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl "
+                      class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
                     >
                       <div>
-                        
                         {message.query}
-                      
                       </div>
                     </div>
                   </div>
@@ -185,62 +214,67 @@
                 <!-- {:else} -->
 
                 <div class="col-start-1 col-end-8 p-3 rounded-lg">
-                  <div class="flex flex-row ">
+                  <div class="flex flex-row">
                     <div
-                      class="flex items-center justify-center h-10 w-10 rounded-full  flex-shrink-0"
+                      class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
                     >
-                    <img src={logo} alt="sd">
+                      <img src={logo} alt="sd" />
                     </div>
                     <div
                       class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
                     >
                       <div>{@html marked(message.text)}</div>
-                      <div class="flex justify-end mt-1 ">
-                        <svg class="mr-2" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clip-path="url(#clip0_568_2079)">
-                            <path d="M9.18164 0.963818C9.94336 1.11616 10.4385 1.85737 10.2861 2.61909L10.2188 2.95308C10.0635 3.7353 9.77637 4.47944 9.375 5.1562H13.5938C14.3701 5.1562 15 5.78608 15 6.56245C15 7.10444 14.6924 7.57612 14.2412 7.8105C14.5605 8.06831 14.7656 8.46382 14.7656 8.9062C14.7656 9.59175 14.2734 10.163 13.626 10.2861C13.7549 10.5 13.8281 10.749 13.8281 11.0156C13.8281 11.6396 13.4209 12.1699 12.8584 12.3515C12.8789 12.4482 12.8906 12.5507 12.8906 12.6562C12.8906 13.4326 12.2607 14.0624 11.4844 14.0624H8.62793C8.07129 14.0624 7.5293 13.8984 7.06641 13.5908L5.93848 12.8378C5.15625 12.3164 4.6875 11.4374 4.6875 10.497V9.37495V7.9687V7.23921C4.6875 6.38374 5.07715 5.57808 5.74219 5.04194L5.95898 4.86909C6.73535 4.248 7.26562 3.37495 7.45898 2.40229L7.52637 2.06831C7.67871 1.30659 8.41992 0.811475 9.18164 0.963818ZM0.9375 5.62495H2.8125C3.33105 5.62495 3.75 6.0439 3.75 6.56245V13.1249C3.75 13.6435 3.33105 14.0624 2.8125 14.0624H0.9375C0.418945 14.0624 0 13.6435 0 13.1249V6.56245C0 6.0439 0.418945 5.62495 0.9375 5.62495Z" fill="#CCCCCC"/>
-                            </g>
-                            <defs>
+                      <div class="flex justify-end mt-1">
+                        <svg
+                          class="mr-2"
+                          width="15"
+                          height="15"
+                          viewBox="0 0 15 15"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_568_2079)">
+                            <path
+                              d="M9.18164 0.963818C9.94336 1.11616 10.4385 1.85737 10.2861 2.61909L10.2188 2.95308C10.0635 3.7353 9.77637 4.47944 9.375 5.1562H13.5938C14.3701 5.1562 15 5.78608 15 6.56245C15 7.10444 14.6924 7.57612 14.2412 7.8105C14.5605 8.06831 14.7656 8.46382 14.7656 8.9062C14.7656 9.59175 14.2734 10.163 13.626 10.2861C13.7549 10.5 13.8281 10.749 13.8281 11.0156C13.8281 11.6396 13.4209 12.1699 12.8584 12.3515C12.8789 12.4482 12.8906 12.5507 12.8906 12.6562C12.8906 13.4326 12.2607 14.0624 11.4844 14.0624H8.62793C8.07129 14.0624 7.5293 13.8984 7.06641 13.5908L5.93848 12.8378C5.15625 12.3164 4.6875 11.4374 4.6875 10.497V9.37495V7.9687V7.23921C4.6875 6.38374 5.07715 5.57808 5.74219 5.04194L5.95898 4.86909C6.73535 4.248 7.26562 3.37495 7.45898 2.40229L7.52637 2.06831C7.67871 1.30659 8.41992 0.811475 9.18164 0.963818ZM0.9375 5.62495H2.8125C3.33105 5.62495 3.75 6.0439 3.75 6.56245V13.1249C3.75 13.6435 3.33105 14.0624 2.8125 14.0624H0.9375C0.418945 14.0624 0 13.6435 0 13.1249V6.56245C0 6.0439 0.418945 5.62495 0.9375 5.62495Z"
+                              fill="#CCCCCC"
+                            />
+                          </g>
+                          <defs>
                             <clipPath id="clip0_568_2079">
-                            <rect width="15" height="15" fill="white"/>
+                              <rect width="15" height="15" fill="white" />
                             </clipPath>
-                            </defs>
-                            </svg>
-
-                        
-                            
+                          </defs>
+                        </svg>
                       </div>
                     </div>
                   </div>
-                </div>  
-
-              
-
-
+                </div>
 
                 <!-- {/if} -->
-               
-                {/each}
-                
-                {#if isLoading}
+              {/each}
+
+              {#if isLoading}
                 <div class="col-start-1 col-end-8 p-3 rounded-lg">
-                  <div class="flex flex-row ">
+                  <div class="flex flex-row">
                     <div
-                      class="flex items-center justify-center h-10 w-10 rounded-full  flex-shrink-0"
+                      class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
                     >
-                    <img src={logo} alt="sd">
+                      <img src={logo} alt="sd" />
                     </div>
                     <div
                       class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl p-4 max-w-sm w-full mx-auto"
                     >
-
                       <div class="animate-pulse flex space-x-4">
                         <div class="flex-1 space-y-6 py-1">
                           <div class="h-2 bg-slate-300 rounded"></div>
                           <div class="space-y-3">
                             <div class="grid grid-cols-3 gap-4">
-                              <div class="h-2 bg-slate-300 rounded col-span-2"></div>
-                              <div class="h-2 bg-slate-300 rounded col-span-1"></div>
+                              <div
+                                class="h-2 bg-slate-300 rounded col-span-2"
+                              ></div>
+                              <div
+                                class="h-2 bg-slate-300 rounded col-span-1"
+                              ></div>
                             </div>
                             <div class="h-2 bg-slate-300 rounded"></div>
                             <div class="h-2 bg-slate-300 rounded"></div>
@@ -248,15 +282,10 @@
                           </div>
                         </div>
                       </div>
-                   
-                     
                     </div>
                   </div>
-                </div>  
-                {/if}
-                
-                
-           
+                </div>
+              {/if}
             </div>
           </div>
         </div>
@@ -271,18 +300,20 @@
                   type="text"
                   disabled={isLoading}
                   bind:value={query}
-                  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}"
+                  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading
+                    ? 'bg-gray-200 cursor-not-allowed opacity-50'
+                    : ''}"
                 />
-
-                
               </div>
             </div>
             <div class="ml-4">
-
               <button
-              disabled={isLoading}
+                disabled={isLoading}
                 type="submit"
-                class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}" >
+                class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading
+                  ? 'bg-gray-200 cursor-not-allowed opacity-50'
+                  : ''}"
+              >
                 <span class="">
                   <svg
                     class="w-4 h-4 transform rotate-45 -mt-px"
@@ -326,20 +357,4 @@
 
     } */
 
-  svg {
-    fill: white;
-  }
-
-  #selectbot {
-    background: rgb(26, 211, 187);
-    background: linear-gradient(
-      90deg,
-      rgba(26, 211, 187, 1) 1%,
-      rgba(90, 185, 99, 1) 100%
-    );
-    color: white;
-    font-weight: bold;
-  }
-
-  
 </style>

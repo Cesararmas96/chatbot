@@ -34,13 +34,15 @@
     if (response.ok) {
 
 		// console.log(await response.json()) 
+
       const { token, session } = await response.json();
 	
 	 
       // Guardar el token en el localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("session", session);
-      localStorage.setItem("username", username);
+      localStorage.setItem("first_name", session.first_name);
+      localStorage.setItem("last_name", session.last_name);
 
       
       window.location.href = "/trocers";

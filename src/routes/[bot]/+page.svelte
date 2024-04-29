@@ -88,8 +88,7 @@
         
         <!-- componente nav -->
         <div
-        id="navbar"
-        class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 {bot}"
+        class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 sidebar {bot}"
       >
         <div class="flex flex-row items-center justify-start h-12 w-full">
           <div
@@ -359,23 +358,4 @@
     </div>
   </div>
   
-  <style>
-    #navbar.trocers {
-      background: linear-gradient(
-        180deg,
-        rgba(244, 124, 32, 1) 1%,
-        rgba(239, 80, 157, 1) 50%,
-        rgba(0, 174, 229, 1) 100%
-      );
-    }
-  
-    /* #chatbox{
-          border: 1px solid transparent; 
-      border-image-slice: 1; 
-      border-image-source: linear-gradient(180deg, rgba(244, 124, 32, 1) 1%, rgba(239, 80, 157, 1) 50%, rgba(0, 174, 229, 1) 100%); /* Utiliza el gradiente como fuente del borde
-      border-radius: 0.75rem; 
-  
-      } */
-  
-  </style>
-  
+

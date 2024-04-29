@@ -1,18 +1,12 @@
 <script>
     import "../app.css";
-    // import { goto } from '@sveltejs/kit';
-    import {onMount} from 'svelte'
+    import "../style.css"
     let isPageLoaded = false;
 
     const pageLoaded = () =>{
       isPageLoaded = true;
     }
-   
-    // export function init({ page }) {
-    // if (page.path === '/login') {
-    //   goto('/');
-    // }
-  // }
+
 
   </script>
 

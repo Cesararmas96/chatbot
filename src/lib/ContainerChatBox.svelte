@@ -2,6 +2,8 @@
   import BotMessage from "./BotMessage.svelte";
   import LoadingMessage from "./LoadingMessage.svelte";
   import QuestionMessage from "./QuestionMessage.svelte";
+  import WelcomeChat from "./WelcomeChat.svelte";
+  
   export let isLoading;
   export let messages;
   console.log(messages)
@@ -11,9 +13,8 @@
   class="flex flex-col h-full overflow-x-auto mb-4 rounded-2xl bg-gray-100 mt-3 chatbox"
 >
   <div class="flex flex-col h-full">
+    {#if messages && messages.length > 0}
     <div class="grid grid-cols-12 gap-y-2">
-
-      {#if messages && messages.length > 0}
       {#each messages as message}
         <QuestionMessage {message} />
         <BotMessage {message} />
@@ -22,13 +23,10 @@
       {#if isLoading}
         <LoadingMessage />
       {/if}
-      {:else}
-      <p class="text-gray-500">No hay mensajes disponibles.</p>
-
-      {/if}
-
-
-   
     </div>
+    {/if}
+
+    <WelcomeChat/>
+
   </div>
 </div>

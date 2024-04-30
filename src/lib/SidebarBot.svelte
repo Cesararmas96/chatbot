@@ -1,4 +1,5 @@
 <script>
+  import { enhance } from "$app/forms";
   import { page } from "$app/stores";
 
   export let user;
@@ -7,12 +8,6 @@
 
   const firstname = user.first_name;
   const lastname = user.last_name;
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("session");
-    window.location.href = "/";
-  };
 </script>
 
 <div class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 sidebar {bot}">
@@ -78,9 +73,11 @@
           /></svg
         >
       </div>
-      <button on:click={handleLogout}>
-        <div class="ml-2 text-sm font-semibold">Logout</div>
-      </button>
+      <form action="/logout" method="POST" use:enhance>
+        <button type="submit">
+          <div class="ml-2 text-sm font-semibold">Logout</div>
+        </button>
+      </form>
     </button>
   </div>
 </div>

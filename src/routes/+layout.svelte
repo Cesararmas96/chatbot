@@ -1,11 +1,11 @@
 <script>
-    import "../app.css";
-    import "../style.css"
-    let isPageLoaded = false;
+  import "../app.css";
+  import "../style.css";
+  let isPageLoaded = false;
 
-    const pageLoaded = (p0: HTMLDivElement) =>{
-      isPageLoaded = true;
-    }
+  const pageLoaded = () => {
+    isPageLoaded = true;
+  };
 </script>
 
 {#if !isPageLoaded}

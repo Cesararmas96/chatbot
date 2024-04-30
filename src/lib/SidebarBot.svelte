@@ -1,10 +1,14 @@
 <script>
   import { page } from "$app/stores";
-  const bot = $page.params.bot.toString();
-  const firstname = localStorage.getItem("first_name");
-  const lastname = localStorage.getItem("last_name");
 
-    const handleLogout = () => {
+  export let user;
+
+  const bot = $page.params.bot.toString();
+
+  const firstname = user.first_name;
+  const lastname = user.last_name;
+
+  const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("session");
     window.location.href = "/";
@@ -12,17 +16,17 @@
 </script>
 
 <div class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 sidebar {bot}">
-    <div class="flex flex-row items-center justify-start h-12 w-full">
-      <div
-        class="flex items-center justify-center rounded-2xltext-indigo-700 h-10 w-10 "
-      >
-        <img src='/troc.png' alt="sd" />
-      </div>
-      <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
+  <div class="flex flex-row items-center justify-start h-12 w-full">
+    <div
+      class="flex items-center justify-center rounded-2xltext-indigo-700 h-10 w-10"
+    >
+      <img src="/troc.png" alt="sd" />
     </div>
+    <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
+  </div>
 
-    <div class="flex flex-col h-full justify-end text-white">
-      <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
+  <div class="flex flex-col h-full justify-end text-white">
+    <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
           <div class="flex items-center justify-center h-6 w-6">
             <svg
               width="25"
@@ -39,7 +43,7 @@
           </div>
           <div class="ml-2 text-sm font-semibold">FAQ</div>
         </button> -->
-      <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
+    <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
           <div class="flex items-center justify-center h-6 w-6">
             <svg
               width="24"
@@ -57,26 +61,26 @@
           <div class="ml-2 text-sm font-semibold">Setting</div>
         </button> -->
 
-        <dIi class="flex flex-row items-center  rounded-xl p-2">
-          <div
-          class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
+    <dIi class="flex flex-row items-center rounded-xl p-2">
+      <div
+        class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
+      >
+        {firstname.charAt(0)}{lastname.charAt(0)}
+      </div>
+
+      <div class="ml-2 text-sm font-semibold">{firstname} {lastname}</div>
+    </dIi>
+    <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
+      <div class="flex items-center justify-center h-6 w-6">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+          ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
+            d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"
+          /></svg
         >
-          {firstname.charAt(0)}{lastname.charAt(0)}
-        </div>
-        
-          <div class="ml-2 text-sm font-semibold">{firstname} {lastname}</div>
-        </dIi>
-      <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
-        <div class="flex items-center justify-center h-6 w-6">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-            ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-              d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"
-            /></svg
-          >
-        </div>
-        <button on:click={handleLogout}>
-          <div class="ml-2 text-sm font-semibold">Logout</div>
-        </button>
+      </div>
+      <button on:click={handleLogout}>
+        <div class="ml-2 text-sm font-semibold">Logout</div>
       </button>
-    </div>
+    </button>
   </div>
+</div>

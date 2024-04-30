@@ -7,13 +7,17 @@
   import { ApiChatBot } from "$lib/helpers/commons";
   import axios from "axios";
 
+  export let data;
+
+  const { user } = data;
+
   let isLoading = false;
   let query = "";
   const bot = $page.params.bot.toString();
   let token = localStorage.getItem("token");
-  let messages = []; 
+  let messages: any[] = [];
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     isLoading = true; // Mostrar el div de carga
 
@@ -41,25 +45,20 @@
       }
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
-
     } finally {
       isLoading = false;
     }
   };
-
 </script>
 
 <div class="flex h-screen antialiased text-gray-800">
   <div class="flex flex-row h-full w-full overflow-x-hidden">
-
-    <SidebarBot />
+    <SidebarBot {user} />
 
     <div class="flex flex-col flex-auto h-full p-6">
       <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
-       
         <SelectBots />
         <ContainerChatBox {isLoading} {messages} />
-
 
         <form on:submit={handleSubmit}>
           <div

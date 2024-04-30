@@ -1,6 +1,8 @@
 <script>
   import { page } from "$app/stores";
   const bot = $page.params.bot.toString();
+  const firstname = localStorage.getItem("first_name");
+  const lastname = localStorage.getItem("last_name");
 
     const handleLogout = () => {
     localStorage.removeItem("token");
@@ -54,6 +56,16 @@
           </div>
           <div class="ml-2 text-sm font-semibold">Setting</div>
         </button> -->
+
+        <dIi class="flex flex-row items-center  rounded-xl p-2">
+          <div
+          class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
+        >
+          {firstname.charAt(0)}{lastname.charAt(0)}
+        </div>
+        
+          <div class="ml-2 text-sm font-semibold">{firstname} {lastname}</div>
+        </dIi>
       <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
         <div class="flex items-center justify-center h-6 w-6">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"

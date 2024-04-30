@@ -24,9 +24,10 @@
         <LoadingMessage />
       {/if}
     </div>
+    {:else}
+    <WelcomeChat/>
     {/if}
 
-    <WelcomeChat/>
 
   </div>
 </div>

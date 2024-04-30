@@ -1,19 +1,47 @@
 .sidebar.trocers {
     background: linear-gradient(180deg,
             rgba(244, 124, 32, 1) 1%,
-            rgba(239, 80, 157, 1) 50%,
+            rgb(239, 80, 157) 50%,
             rgba(0, 174, 229, 1) 100%);
 }
 
 .sidebar.askbrett {
-    background: linear-gradient(180deg, rgba(28, 100, 242, 1) 1%, rgba(130, 180, 216, 1) 100%);
+    background: linear-gradient(180deg, rgb(28, 100, 242) 1%, rgba(130, 180, 216, 1) 100%);
 }
 
 .sidebar.bose {
-    background: linear-gradient(186deg, rgba(26, 26, 26, 1) 1%, rgba(115, 115, 115, 1) 50%, rgba(204, 204, 204, 1) 100%);
+    background: linear-gradient(186deg, rgba(26, 26, 26, 1) 1%, hsl(0, 0%, 45%) 50%, rgba(204, 204, 204, 1) 100%);
 
 }
 
 .sidebar.oddie {
-    background: linear-gradient(100deg, rgba(113, 75, 103, 1) 1%, rgba(239, 80, 157, 1) 100%);
+    background: linear-gradient(100deg, rgb(113, 75, 103) 1%, rgba(239, 80, 157, 1) 100%);
 }
+
+
+  /* #selectbot {
+    background: rgb(26, 211, 187);
+    background: linear-gradient(
+      90deg,
+      rgba(26, 211, 187, 1) 1%,
+      rgba(90, 185, 99, 1) 100%
+    );
+    color: white;
+    font-weight: bold;
+  } */
+
+  .namebot.trocers{
+    color: #ef509d;
+  }
+
+  .namebot.askbrett{
+    color: #1c64f2;
+  }
+
+  .namebot.bose{
+    color: #737373;
+  }
+
+  .namebot.oddie{
+    color: #714b67;
+  }

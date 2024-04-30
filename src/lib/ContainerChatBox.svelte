@@ -4,6 +4,7 @@
   import QuestionMessage from "./QuestionMessage.svelte";
   export let isLoading;
   export let messages;
+  console.log(messages)
 </script>
 
 <div
@@ -11,6 +12,8 @@
 >
   <div class="flex flex-col h-full">
     <div class="grid grid-cols-12 gap-y-2">
+
+      {#if messages && messages.length > 0}
       {#each messages as message}
         <QuestionMessage {message} />
         <BotMessage {message} />
@@ -19,6 +22,13 @@
       {#if isLoading}
         <LoadingMessage />
       {/if}
+      {:else}
+      <p class="text-gray-500">No hay mensajes disponibles.</p>
+
+      {/if}
+
+
+   
     </div>
   </div>
 </div>

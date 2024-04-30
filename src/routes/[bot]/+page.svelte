@@ -61,6 +61,7 @@
 
     <div class="flex flex-col flex-auto h-full p-6">
       <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
+       
         <SelectBots />
         <ContainerChatBox {isLoading} {messages} />
 

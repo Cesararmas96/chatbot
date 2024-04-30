@@ -1,17 +1,11 @@
-<script lang="ts">
-  import "../app.css";
+<script>
+    import "../app.css";
+    import "../style.css"
+    let isPageLoaded = false;
 
-  let isPageLoaded = false;
-
-  const pageLoaded = (p0: HTMLDivElement) => {
-    isPageLoaded = true;
-  };
-
-  // export function init({ page }) {
-  // if (page.path === '/login') {
-  //   goto('/');
-  // }
-  // }
+    const pageLoaded = (p0: HTMLDivElement) =>{
+      isPageLoaded = true;
+    }
 </script>
 
 {#if !isPageLoaded}

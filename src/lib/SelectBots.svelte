@@ -1,8 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { page } from "$app/stores";
+  import { ApiChatBot } from "./helpers/commons";
 	
-  let bot = "";
+  let bot = $page.params.bot;
+
   let NameBot = "";
 	
 
@@ -12,24 +14,15 @@
     { id: "askbrett", name: "AskBrett" },
     { id: "oddie", name: "Oddie" },
   ];
-  enum ApiChatBot {
-    trocers = "trocers",
-    bose = "bose",
-    askbrett = "askbrett",
-    oddie = "oddie",
-  }
-  let aqui = "";
+
   onMount(() => {
     bot = $page.params.bot;
   });
 </script>
 <div class="flex items-center">
   <div class="font-bold text-xl ">
-    {#each chatBotNames as { id, name }}
-      {#if id === bot }
-        <p class="namebot {bot}">{name} ChatBot</p>
-      {/if}
-  {/each} 
+   
+   <p class="namebot {bot}">{ApiChatBot[bot]} ChatBot</p>
 
   </div>
   <select

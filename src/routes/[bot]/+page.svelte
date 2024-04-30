@@ -3,6 +3,7 @@
   import ContainerChatBox from "$lib/ContainerChatBox.svelte";
   import SelectBots from "$lib/SelectBots.svelte";
   import SidebarBot from "$lib/SidebarBot.svelte";
+  import { ApiChatBot } from "$lib/helpers/commons";
   import axios from "axios";
 
   let isLoading = false;
@@ -17,13 +18,7 @@
 
     //   add env
 
-    enum ApiChatBot {
-      trocers = "TROCers",
-      bose = "Bose",
-      askbrett = "AskBrett",
-      oddie = "Oddie",
-    }
-
+   
 
     // pendiente pasar el dominio a un env
     const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${ApiChatBot[bot]}`;

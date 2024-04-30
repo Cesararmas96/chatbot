@@ -1,107 +1,99 @@
 <script lang="ts">
   import { page } from "$app/stores";
-    import SelectBots from "$lib/SelectBots.svelte";
+  import SelectBots from "$lib/SelectBots.svelte";
   import logo from "../../../src/assets/troc.png";
-    import axios from "axios";
-    import { marked } from "marked";
-    // import { useState } from 'svelte';
-    // import { useLoading } from '@sveltejs/kit';
-    // const [loading, {start, done}] = useLoading(); // Variable de estado para controlar el estado de carga
-    import { onMount } from "svelte";
-    // import AvatarNameChat from "../../components/AvatarNameChat.svelte";
-    let isLoading = false;
-    let lorem = "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium alias nulla possimus corrupti ad, repellendus id animi aspernatur totam harum, ratione voluptates dolores nobis dolorum incidunt ullam! Aspernatur, at ratione."
-    let query = "";
-    let chatResponse = "";
+  import axios from "axios";
+  import { marked } from "marked";
+  import AvatarNameChat from "../../components/AvatarNameChat.svelte";
 
+  export let data;
 
-    const bot = $page.params.bot.toString();
+  let isLoading = false;
+  let lorem =
+    "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium alias nulla possimus corrupti ad, repellendus id animi aspernatur totam harum, ratione voluptates dolores nobis dolorum incidunt ullam! Aspernatur, at ratione.";
+  let query = "";
+  let chatResponse = "";
 
-    console.log(bot)
+  enum ApiChatBot {
+    trocers = "TROCers",
+    bose = "Bose",
+    askbrett = "AskBrett",
+    oddie = "Oddie",
+  }
+  const bot: keyof typeof ApiChatBot = $page.params
+    .bot as keyof typeof ApiChatBot;
 
+  let token = data?.user?.token;
+  let messages: any[] = []; //lista mensajes
 
-    let token = localStorage.getItem("token");
-    let messages = []; //lista mensajes
-  
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      isLoading = true; // Mostrar el div de carga
-    
-    //   add env
-    
-    enum ApiChatBot {
-        trocers = "TROCers",
-        bose = "Bose",
-        askbrett = "AskBrett",
-        oddie = "Oddie"
-    }
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    isLoading = true; // Mostrar el div de carga
 
-    // pendiente pasar el dominio a un env
-     const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${ApiChatBot[bot]}`;
+    const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/chat/${ApiChatBot[bot]}`;
 
-      try {
-        const response = await axios.post(
-          apiUrl,
-          { query },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        if (response.status === 200) {
-          const data = response.data;
-          console.log(data);
-          console.log(data.answer);
-          messages = [...messages, { text: data.answer, query: data.question }];
-          query = "";
-        } else {
-          console.error("Error al obtener la respuesta:", response.statusText);
+    try {
+      const response = await axios.post(
+        apiUrl,
+        { query },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        console.error("Hubo un problema con la operación de fetch:", error);
-      } finally {
-        isLoading = false;
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+        console.log(data);
+        console.log(data.answer);
+        messages = [...messages, { text: data.answer, query: data.question }];
+        query = "";
+      } else {
+        console.error("Error al obtener la respuesta:", response.statusText);
       }
-    };
-  
-    //   function sendChatRequest() {
-    //   if (query.trim() !== "") {
-    //     messages = [...messages, { text: query, sender: "query" }];
-    //     query = ""; // Limpiar el contenido del input
-    //   }
-    // }
-  
-    // mover al compente navbar
-    const handleLogout = () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("session");
-  
-      window.location.href = "/";
-    };
-  </script>
-  
-  <div class="flex h-screen antialiased text-gray-800">
-    <div class="flex flex-row h-full w-full overflow-x-hidden">
-        
-        <!-- componente nav -->
+    } catch (error) {
+      console.error("Hubo un problema con la operación de fetch:", error);
+    } finally {
+      isLoading = false;
+    }
+  };
+
+  //   function sendChatRequest() {
+  //   if (query.trim() !== "") {
+  //     messages = [...messages, { text: query, sender: "query" }];
+  //     query = ""; // Limpiar el contenido del input
+  //   }
+  // }
+
+  // mover al compente navbar
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("session");
+
+    window.location.href = "/";
+  };
+</script>
+
+<div class="flex h-screen antialiased text-gray-800">
+  <div class="flex flex-row h-full w-full overflow-x-hidden">
+    <!-- componente nav -->
+    <div
+      id="navbar"
+      class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 {bot}"
+    >
+      <div class="flex flex-row items-center justify-start h-12 w-full">
         <div
-        id="navbar"
-        class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 {bot}"
-      >
-        <div class="flex flex-row items-center justify-start h-12 w-full">
-          <div
-            class="flex items-center justify-center rounded-2xltext-indigo-700 h-10 w-10"
-          >
-            <img src={logo} alt="sd" />
-          </div>
-          <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
+          class="flex items-center justify-center rounded-2xltext-indigo-700 h-10 w-10"
+        >
+          <img src={logo} alt="sd" />
         </div>
-  
-        <div class="flex flex-col h-full justify-end text-white">
-          <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
+        <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
+      </div>
+
+      <div class="flex flex-col h-full justify-end text-white">
+        <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
             <div class="flex items-center justify-center h-6 w-6">
               <svg
                 width="25"
@@ -118,7 +110,7 @@
             </div>
             <div class="ml-2 text-sm font-semibold">FAQ</div>
           </button> -->
-          <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
+        <!-- <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
             <div class="flex items-center justify-center h-6 w-6">
               <svg
                 width="24"
@@ -135,31 +127,101 @@
             </div>
             <div class="ml-2 text-sm font-semibold">Setting</div>
           </button> -->
-          <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
-            <div class="flex items-center justify-center h-6 w-6">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-                ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-                  d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"
-                /></svg
-              >
-            </div>
-            <button on:click={handleLogout}>
-              <div class="ml-2 text-sm font-semibold">Logout</div>
-            </button>
+        <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
+          <div class="flex items-center justify-center h-6 w-6">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+              ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
+                d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"
+              /></svg
+            >
+          </div>
+          <button on:click={handleLogout}>
+            <div class="ml-2 text-sm font-semibold">Logout</div>
           </button>
-        </div>
+        </button>
       </div>
-  
-      <div class="flex flex-col flex-auto h-full p-6">
-        <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
-          
-          <SelectBots/>
-          <div
-            class="flex flex-col h-full overflow-x-auto mb-4 rounded-2xl bg-gray-100 mt-3"
-            id="chatbox"
-          >
-            <div class="flex flex-col h-full">
-              <div class="grid grid-cols-12 gap-y-2">
+    </div>
+
+    <div class="flex flex-col flex-auto h-full p-6">
+      <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
+        <SelectBots />
+        <div
+          class="flex flex-col h-full overflow-x-auto mb-4 rounded-2xl bg-gray-100 mt-3"
+          id="chatbox"
+        >
+          <div class="flex flex-col h-full">
+            <div class="grid grid-cols-12 gap-y-2">
+              <div class="col-start-1 col-end-8 p-3 rounded-lg">
+                <div class="flex flex-row">
+                  <div
+                    class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
+                  >
+                    <img src={logo} alt="sd" />
+                  </div>
+                  <div
+                    class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                  >
+                    <div>{lorem}</div>
+                    <div class="flex justify-end mt-1">
+                      <svg
+                        class="mr-2"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 15 15"
+                        fill="gray"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g clip-path="url(#clip0_568_2079)">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 448 512"
+                            ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
+                              d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"
+                            /></svg
+                          >
+                        </g>
+                        <defs>
+                          <clipPath id="clip0_568_2079">
+                            <rect width="15" height="15" fill="white" />
+                          </clipPath>
+                        </defs>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Borrar esto luego -->
+
+              <div class="col-start-6 col-end-13 p-3 rounded-lg">
+                <div class="flex items-center justify-start flex-row-reverse">
+                  <!-- <AvatarNameChat/> -->
+                  <div
+                    class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                  >
+                    <div>dd</div>
+                  </div>
+                </div>
+              </div>
+
+              {#each messages as message}
+                <!-- {#if message.sender === 'query'} -->
+
+                <div class="col-start-6 col-end-13 p-3 rounded-lg">
+                  <div class="flex items-center justify-start flex-row-reverse">
+                    <AvatarNameChat />
+                    <div
+                      class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                    >
+                      <div>
+                        {message.query}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- {:else} -->
+
                 <div class="col-start-1 col-end-8 p-3 rounded-lg">
                   <div class="flex flex-row">
                     <div
@@ -170,24 +232,21 @@
                     <div
                       class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
                     >
-                      <div>{lorem}</div>
+                      <div>{@html marked(message.text)}</div>
                       <div class="flex justify-end mt-1">
                         <svg
                           class="mr-2"
                           width="15"
                           height="15"
                           viewBox="0 0 15 15"
-                          fill="gray"
+                          fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <g clip-path="url(#clip0_568_2079)">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 448 512"
-                              ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-                                d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"
-                              /></svg
-                            >
+                            <path
+                              d="M9.18164 0.963818C9.94336 1.11616 10.4385 1.85737 10.2861 2.61909L10.2188 2.95308C10.0635 3.7353 9.77637 4.47944 9.375 5.1562H13.5938C14.3701 5.1562 15 5.78608 15 6.56245C15 7.10444 14.6924 7.57612 14.2412 7.8105C14.5605 8.06831 14.7656 8.46382 14.7656 8.9062C14.7656 9.59175 14.2734 10.163 13.626 10.2861C13.7549 10.5 13.8281 10.749 13.8281 11.0156C13.8281 11.6396 13.4209 12.1699 12.8584 12.3515C12.8789 12.4482 12.8906 12.5507 12.8906 12.6562C12.8906 13.4326 12.2607 14.0624 11.4844 14.0624H8.62793C8.07129 14.0624 7.5293 13.8984 7.06641 13.5908L5.93848 12.8378C5.15625 12.3164 4.6875 11.4374 4.6875 10.497V9.37495V7.9687V7.23921C4.6875 6.38374 5.07715 5.57808 5.74219 5.04194L5.95898 4.86909C6.73535 4.248 7.26562 3.37495 7.45898 2.40229L7.52637 2.06831C7.67871 1.30659 8.41992 0.811475 9.18164 0.963818ZM0.9375 5.62495H2.8125C3.33105 5.62495 3.75 6.0439 3.75 6.56245V13.1249C3.75 13.6435 3.33105 14.0624 2.8125 14.0624H0.9375C0.418945 14.0624 0 13.6435 0 13.1249V6.56245C0 6.0439 0.418945 5.62495 0.9375 5.62495Z"
+                              fill="#CCCCCC"
+                            />
                           </g>
                           <defs>
                             <clipPath id="clip0_568_2079">
@@ -199,183 +258,111 @@
                     </div>
                   </div>
                 </div>
-  
-                <!-- Borrar esto luego -->
-                
-                <div class="col-start-6 col-end-13 p-3 rounded-lg">
-                  <div class="flex items-center justify-start flex-row-reverse">
-                    <!-- <AvatarNameChat/> -->
+
+                <!-- {/if} -->
+              {/each}
+
+              {#if isLoading}
+                <div class="col-start-1 col-end-8 p-3 rounded-lg">
+                  <div class="flex flex-row">
                     <div
-                      class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                      class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
                     >
-                      <div>
-                        dd
-                      </div>
+                      <img src={logo} alt="sd" />
                     </div>
-                  </div>
-                </div>
-  
-                {#each messages as message}
-                  <!-- {#if message.sender === 'query'} -->
-  
-                  <div class="col-start-6 col-end-13 p-3 rounded-lg">
-                    <div class="flex items-center justify-start flex-row-reverse">
-                      <AvatarNameChat/>
-                      <div
-                        class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
-                      >
-                        <div>
-                          {message.query}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-  
-                  <!-- {:else} -->
-  
-                  <div class="col-start-1 col-end-8 p-3 rounded-lg">
-                    <div class="flex flex-row">
-                      <div
-                        class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
-                      >
-                        <img src={logo} alt="sd" />
-                      </div>
-                      <div
-                        class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
-                      >
-                        <div>{@html marked(message.text)}</div>
-                        <div class="flex justify-end mt-1">
-                          <svg
-                            class="mr-2"
-                            width="15"
-                            height="15"
-                            viewBox="0 0 15 15"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g clip-path="url(#clip0_568_2079)">
-                              <path
-                                d="M9.18164 0.963818C9.94336 1.11616 10.4385 1.85737 10.2861 2.61909L10.2188 2.95308C10.0635 3.7353 9.77637 4.47944 9.375 5.1562H13.5938C14.3701 5.1562 15 5.78608 15 6.56245C15 7.10444 14.6924 7.57612 14.2412 7.8105C14.5605 8.06831 14.7656 8.46382 14.7656 8.9062C14.7656 9.59175 14.2734 10.163 13.626 10.2861C13.7549 10.5 13.8281 10.749 13.8281 11.0156C13.8281 11.6396 13.4209 12.1699 12.8584 12.3515C12.8789 12.4482 12.8906 12.5507 12.8906 12.6562C12.8906 13.4326 12.2607 14.0624 11.4844 14.0624H8.62793C8.07129 14.0624 7.5293 13.8984 7.06641 13.5908L5.93848 12.8378C5.15625 12.3164 4.6875 11.4374 4.6875 10.497V9.37495V7.9687V7.23921C4.6875 6.38374 5.07715 5.57808 5.74219 5.04194L5.95898 4.86909C6.73535 4.248 7.26562 3.37495 7.45898 2.40229L7.52637 2.06831C7.67871 1.30659 8.41992 0.811475 9.18164 0.963818ZM0.9375 5.62495H2.8125C3.33105 5.62495 3.75 6.0439 3.75 6.56245V13.1249C3.75 13.6435 3.33105 14.0624 2.8125 14.0624H0.9375C0.418945 14.0624 0 13.6435 0 13.1249V6.56245C0 6.0439 0.418945 5.62495 0.9375 5.62495Z"
-                                fill="#CCCCCC"
-                              />
-                            </g>
-                            <defs>
-                              <clipPath id="clip0_568_2079">
-                                <rect width="15" height="15" fill="white" />
-                              </clipPath>
-                            </defs>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-  
-                  <!-- {/if} -->
-                {/each}
-  
-                {#if isLoading}
-                  <div class="col-start-1 col-end-8 p-3 rounded-lg">
-                    <div class="flex flex-row">
-                      <div
-                        class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
-                      >
-                        <img src={logo} alt="sd" />
-                      </div>
-                      <div
-                        class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl p-4 max-w-sm w-full mx-auto"
-                      >
-                        <div class="animate-pulse flex space-x-4">
-                          <div class="flex-1 space-y-6 py-1">
-                            <div class="h-2 bg-slate-300 rounded"></div>
-                            <div class="space-y-3">
-                              <div class="grid grid-cols-3 gap-4">
-                                <div
-                                  class="h-2 bg-slate-300 rounded col-span-2"
-                                ></div>
-                                <div
-                                  class="h-2 bg-slate-300 rounded col-span-1"
-                                ></div>
-                              </div>
-                              <div class="h-2 bg-slate-300 rounded"></div>
-                              <div class="h-2 bg-slate-300 rounded"></div>
-                              <div class="h-2 bg-slate-300 rounded"></div>
+                    <div
+                      class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl p-4 max-w-sm w-full mx-auto"
+                    >
+                      <div class="animate-pulse flex space-x-4">
+                        <div class="flex-1 space-y-6 py-1">
+                          <div class="h-2 bg-slate-300 rounded"></div>
+                          <div class="space-y-3">
+                            <div class="grid grid-cols-3 gap-4">
+                              <div
+                                class="h-2 bg-slate-300 rounded col-span-2"
+                              ></div>
+                              <div
+                                class="h-2 bg-slate-300 rounded col-span-1"
+                              ></div>
                             </div>
+                            <div class="h-2 bg-slate-300 rounded"></div>
+                            <div class="h-2 bg-slate-300 rounded"></div>
+                            <div class="h-2 bg-slate-300 rounded"></div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                {/if}
-              </div>
+                </div>
+              {/if}
             </div>
           </div>
-          <form on:submit={handleSubmit}>
-            <div
-              class="flex flex-row items-center h-16 rounded-xl bg-white w-full"
-            >
-              <div class="flex-grow">
-                <div class="relative w-full">
-                  <input
-                    placeholder="Send a message."
-                    type="text"
-                    disabled={isLoading}
-                    bind:value={query}
-                    class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading
-                      ? 'bg-gray-200 cursor-not-allowed opacity-50'
-                      : ''}"
-                  />
-                </div>
-              </div>
-              <div class="ml-4">
-                <button
+        </div>
+        <form on:submit={handleSubmit}>
+          <div
+            class="flex flex-row items-center h-16 rounded-xl bg-white w-full"
+          >
+            <div class="flex-grow">
+              <div class="relative w-full">
+                <input
+                  placeholder="Send a message."
+                  type="text"
                   disabled={isLoading}
-                  type="submit"
-                  class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading
+                  bind:value={query}
+                  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading
                     ? 'bg-gray-200 cursor-not-allowed opacity-50'
                     : ''}"
-                >
-                  <span class="">
-                    <svg
-                      class="w-4 h-4 transform rotate-45 -mt-px"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      ></path>
-                    </svg>
-                  </span>
-                </button>
+                />
               </div>
             </div>
-          </form>
-        </div>
+            <div class="ml-4">
+              <button
+                disabled={isLoading}
+                type="submit"
+                class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading
+                  ? 'bg-gray-200 cursor-not-allowed opacity-50'
+                  : ''}"
+              >
+                <span class="">
+                  <svg
+                    class="w-4 h-4 transform rotate-45 -mt-px"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                    ></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-  
-  <style>
-    #navbar.trocers {
-      background: linear-gradient(
-        180deg,
-        rgba(244, 124, 32, 1) 1%,
-        rgba(239, 80, 157, 1) 50%,
-        rgba(0, 174, 229, 1) 100%
-      );
-    }
-  
-    /* #chatbox{
+</div>
+
+<style>
+  #navbar.trocers {
+    background: linear-gradient(
+      180deg,
+      rgba(244, 124, 32, 1) 1%,
+      rgba(239, 80, 157, 1) 50%,
+      rgba(0, 174, 229, 1) 100%
+    );
+  }
+
+  /* #chatbox{
           border: 1px solid transparent; 
       border-image-slice: 1; 
       border-image-source: linear-gradient(180deg, rgba(244, 124, 32, 1) 1%, rgba(239, 80, 157, 1) 50%, rgba(0, 174, 229, 1) 100%); /* Utiliza el gradiente como fuente del borde
       border-radius: 0.75rem; 
   
       } */
-  
-  </style>
-  
+</style>

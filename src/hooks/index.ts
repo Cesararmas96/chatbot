@@ -1,13 +1,49 @@
-// // src/hooks/index.ts
-// import { redirectTo } from '@sveltejs/kit';
+import { decrypt, encrypt } from "$lib/helpers/auth/auth";
+import { redirect, type Handle } from "@sveltejs/kit";
 
-// export const handle = async ({ request, resolve }) => {
-//   const response = await resolve(request);
+export const handle: Handle = async ({ event, resolve }) => {
+  let token;
+  try {
+    if (
+      !event.cookies.get("_session1") ||
+      !event.cookies.get("_session2") ||
+      !event.cookies.get("_session3")
+    ) {
+      return await resolve(event);
+    }
+    const decoded1 = decrypt(event.cookies.get("_session1"));
+    const decoded2 = decrypt(event.cookies.get("_session2"));
+    const decoded3 = decrypt(event.cookies.get("_session3"));
+    if (!decoded1 || !decoded2 || !decoded3) return await resolve(event);
+    token = decoded1 + decoded2 + decoded3;
+  } catch (error) {
+    return await resolve(event);
+  }
 
-//   // Si la ruta es "/", redireccionar al usuario a "/login"
-//   if (response.status === 404 && request.path === '/') {
-//     return redirectTo('/login');
-//   }
-
-//   return response;
-// };
+  try {
+    let session;
+    if (token) {
+      const rawSession = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/user/session`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (rawSession.status !== 401) session = await rawSession.json();
+    }
+    if (session) {
+      event.locals.user = { ...session.session };
+      event.locals.user.aux = { ...session };
+      delete event.locals.user.aux.session;
+      event.locals.user.token = token;
+    }
+  } catch (error) {
+    console.log("hooks", error);
+    return await resolve(event);
+  }
+  return await resolve(event);
+};

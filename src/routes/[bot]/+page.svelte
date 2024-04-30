@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores";
+
   import ContainerChatBox from "$lib/ContainerChatBox.svelte";
   import SelectBots from "$lib/SelectBots.svelte";
   import SidebarBot from "$lib/SidebarBot.svelte";
@@ -16,12 +17,7 @@
     event.preventDefault();
     isLoading = true; // Mostrar el div de carga
 
-    //   add env
-
-   
-
-    // pendiente pasar el dominio a un env
-    const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${ApiChatBot[bot]}`;
+    const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/chat/${ApiChatBot[bot]}`;
 
     try {
       const response = await axios.post(
@@ -37,6 +33,7 @@
 
       if (response.status === 200) {
         const data = response.data;
+
         messages = [...messages, { text: data.answer, query: data.question }];
         query = "";
       } else {
@@ -44,14 +41,17 @@
       }
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
+
     } finally {
       isLoading = false;
     }
   };
+
 </script>
 
 <div class="flex h-screen antialiased text-gray-800">
   <div class="flex flex-row h-full w-full overflow-x-hidden">
+
     <SidebarBot />
 
     <div class="flex flex-col flex-auto h-full p-6">
@@ -59,6 +59,7 @@
        
         <SelectBots />
         <ContainerChatBox {isLoading} {messages} />
+
 
         <form on:submit={handleSubmit}>
           <div

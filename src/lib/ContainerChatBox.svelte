@@ -7,6 +7,19 @@
   export let isLoading;
   export let messages;
   console.log(messages)
+  import { afterUpdate } from 'svelte';
+	let element;
+  // Either afterUpdate()
+  console.log(messages)
+  afterUpdate(() => {
+    if (messages && messages.length > 0) 
+      scrollToBottom(element)
+    
+  });
+
+  const scrollToBottom = async (node) => {
+    node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
+  }; 
 </script>
 
 <div
@@ -14,7 +27,7 @@
 >
   <div class="flex flex-col h-full">
     {#if messages && messages.length > 0}
-    <div class="grid grid-cols-12 gap-y-2">
+    <div class="grid grid-cols-12 gap-y-2 overflow-auto" bind:this={element}>
       {#each messages as message}
         <QuestionMessage {message} />
         <BotMessage {message} />

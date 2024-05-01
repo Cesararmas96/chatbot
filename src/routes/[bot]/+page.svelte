@@ -14,10 +14,13 @@
   let isLoading = false;
   let query = "";
   const bot = $page.params.bot.toString();
-  let token = localStorage.getItem("token");
+  let token = user?.token;
+  localStorage.setItem("token", token);
+  localStorage.setItem("first_name", user?.first_name);
+  localStorage.setItem("last_name", user?.last_name);
   let messages: any[] = [];
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     isLoading = true; // Mostrar el div de carga
 

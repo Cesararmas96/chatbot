@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from "$app/stores";
 
-  import ContainerChatBox from "$lib/ContainerChatBox.svelte";
   import SelectBots from "$lib/SelectBots.svelte";
   import SidebarBot from "$lib/SidebarBot.svelte";
+  import ContainerChatBox from "$lib/ContainerChatBox.svelte";
   import { ApiChatBot } from "$lib/helpers/commons";
   import axios from "axios";
 
@@ -20,7 +20,7 @@
   localStorage.setItem("last_name", user?.last_name);
   let messages: any[] = [];
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
     isLoading = true; // Mostrar el div de carga
 
@@ -40,8 +40,8 @@
 
       if (response.status === 200) {
         const data = response.data;
-        console.log(data)
-        messages = [...messages, { text: data.response, query: data.question }];
+        console.log(data);
+        messages = [...messages, { text: data.answer, query: data.question }];
         query = "";
       } else {
         console.error("Error getting response:", response.statusText);

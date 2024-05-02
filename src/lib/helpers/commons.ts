@@ -1,9 +1,9 @@
 export enum ApiChatBot {
-    trocers = "TROCers",
-    bose = "BoseBot",
-    askbrett = "AskBrett",
-    oddie = "Oddie",
-  }
+  trocers = "TROCers",
+  bose = "Bose",
+  askbrett = "AskBrett",
+  oddie = "Oddie",
+}
 
 export enum NameChatBot {
   trocers = "T-ROCers",
@@ -11,4 +11,3 @@ export enum NameChatBot {
   askbrett = "AskBrett",
   oddie = "Oddie",
 }
-

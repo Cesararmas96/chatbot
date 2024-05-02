@@ -1,24 +1,23 @@
-<script>
+<script lang="ts">
   import BotMessage from "./BotMessage.svelte";
   import LoadingMessage from "./LoadingMessage.svelte";
   import QuestionMessage from "./QuestionMessage.svelte";
   import WelcomeChat from "./WelcomeChat.svelte";
-  
+
   export let isLoading;
   export let messages;
-  import { afterUpdate } from 'svelte';
-	let element;
+  import { afterUpdate } from "svelte";
+  let element: HTMLDivElement;
   // Either afterUpdate()
-  console.log(messages)
+  console.log(messages);
   afterUpdate(() => {
-    if (messages && messages.length > 0) 
-      scrollToBottom(element)
-    
+    if (messages && messages.length > 0) scrollToBottom(element);
   });
 
-  const scrollToBottom = async (node) => {
-    node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
-  }; 
+  const scrollToBottom = async (node: HTMLDivElement) => {
+    console.log(node);
+    node.scroll({ top: node.scrollHeight, behavior: "smooth" });
+  };
 </script>
 
 <div
@@ -26,20 +25,21 @@
 >
   <div class="flex flex-col h-full">
     {#if messages && messages.length > 0}
-    <div class="grid grid-cols-12 gap-y-2 overflow-auto" bind:this={element}>
-      {#each messages as message}
-        <QuestionMessage {message} />
-        <BotMessage {message} />
-      {/each}
+      <div class="grid grid-cols-12 gap-y-2 overflow-auto" bind:this={element}>
+        {#each messages as message}
+          <QuestionMessage {message} />
+          <BotMessage
+            {message}
+            on:scrollToBottom={() => scrollToBottom(element)}
+          />
+        {/each}
 
-      {#if isLoading}
-        <LoadingMessage />
-      {/if}
-    </div>
+        {#if isLoading}
+          <LoadingMessage />
+        {/if}
+      </div>
     {:else}
-    <WelcomeChat/>
+      <WelcomeChat />
     {/if}
-
-
   </div>
 </div>

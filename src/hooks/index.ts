@@ -1,4 +1,4 @@
-import { decrypt, encrypt } from "$lib/helpers/auth/auth";
+import { decrypt, encrypt } from "$lib/helpers/auth";
 import { redirect, type Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {

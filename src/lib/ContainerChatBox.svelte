@@ -6,7 +6,6 @@
   
   export let isLoading;
   export let messages;
-  console.log(messages)
   import { afterUpdate } from 'svelte';
 	let element;
   // Either afterUpdate()

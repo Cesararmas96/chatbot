@@ -40,8 +40,8 @@
 
       if (response.status === 200) {
         const data = response.data;
-
-        messages = [...messages, { text: data.answer, query: data.question }];
+        console.log(data)
+        messages = [...messages, { text: data.response, query: data.question }];
         query = "";
       } else {
         console.error("Error getting response:", response.statusText);

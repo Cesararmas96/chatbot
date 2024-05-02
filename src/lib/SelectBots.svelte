@@ -1,10 +1,9 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { ApiChatBot } from "./helpers/commons";
+  import {  NameChatBot } from "./helpers/commons";
 
   let bot = $page.params.bot;
 
-  let NameBot = "";
 
   let chatBotNames = [
     { id: "trocers", name: "T-ROCers" },
@@ -16,7 +15,7 @@
 
 <div class="flex items-center">
   <div class="font-bold text-xl">
-    <p class="namebot {bot}">{ApiChatBot[bot]} ChatBot</p>
+    <p class="namebot {bot}">{NameChatBot[bot]} ChatBot</p>
   </div>
   <select
     id="selectbot"

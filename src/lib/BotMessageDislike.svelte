@@ -26,15 +26,17 @@
     reason =
       event.target.textContent !== "Submit" ? event.target.textContent : reason;
 
-    const apiUrl = `${import.meta.env.VITE_API_URL}/support/api/v1/support_ticket`;
+    const apiUrl = `${import.meta.env.VITE_API_URL}/support/api/v1/anon_ticket`;
     const body = JSON.stringify({ ...message, reason });
     const payload = {
-      type: "Request",
+      title: `${message.query}`,
+      subject: 'My subject',
+      service_catalog: "Navigator::Chatbots::Other",
+      type: "Incident",
       group: "People Team",
       attachments: [],
-      service_catalog: "",
-      title: `${bot} Dislike`,
-      body,
+      non_anonymous: true,
+      body
     };
 
     const token = localStorage.getItem("token");

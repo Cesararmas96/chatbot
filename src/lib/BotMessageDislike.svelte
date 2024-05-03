@@ -9,32 +9,44 @@
   let inputDisabled = true;
 
   const bot = $page.params.bot.toString();
+  let reason: string = "";
+  let catalog: any;
 
-  enum Reason {
-    Offensive = "Offensive / Unsafe",
-    NotFactuallyCorrect = "Not factually correct",
-    Other = "Other",
-  }
+  const reasons = [
+    {
+      name: "Offensive/Unsafe",
+      value: "Navigator::Chatbots::Offensive/Unsafe",
+    },
+    {
+      name: "Not factually correct",
+      value: "Navigator::Chatbots::Not factually correct",
+    },
+    {
+      name: "Other",
+      value: "Navigator::Chatbots::Other",
+    },
+  ];
+
+  const handleCatalog = async (cat: any) => {
+    catalog = cat;
+    if (catalog.name !== "Other") {
+      reason = catalog.name;
+      handleDislikeSubmit(null);
+    }
+  };
 
   const handleDislikeSubmit = async (event: any) => {
-    if (event.target.textContent === Reason.Other) {
-      inputDisabled = false;
-      reason = "";
-      return;
-    }
+    const apiUrl = `${import.meta.env.VITE_API_URL}/support/api/v1/anon_ticket`;
 
-    reason =
-      event.target.textContent !== "Submit" ? event.target.textContent : reason;
-
-    const apiUrl = `${import.meta.env.VITE_API_URL}/support/api/v1/support_ticket`;
-    const body = JSON.stringify({ ...message, reason });
+    const body = message.text + "\n\n" + reason;
     const payload = {
-      type: "Request",
-      group: "People Team",
+      type: "Incident",
+      group: "Navigator Support",
       attachments: [],
-      service_catalog: "",
-      title: `${bot} Dislike`,
+      service_catalog: catalog.value,
+      title: "TEST " + message.query,
       body,
+      non_anonymous: true,
     };
 
     const token = localStorage.getItem("token");
@@ -45,7 +57,7 @@
         { ...payload },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -56,8 +68,6 @@
 
     dispatch("close");
   };
-
-  let reason: string = "";
 </script>
 
 <div
@@ -73,9 +83,11 @@
     </div>
   </div>
   <div class="flex flex-row gap-2">
-    {#each Object.values(Reason) as item}
-      <Button color="light" class="px-3 py-0" on:click={handleDislikeSubmit}
-        >{item}</Button
+    {#each reasons as item}
+      <Button
+        color="light"
+        class="px-3 py-0"
+        on:click={() => handleCatalog(item)}>{item.name}</Button
       >
     {/each}
   </div>
@@ -85,7 +97,7 @@
       bind:value={reason}
       placeholder="Provide additional feedback"
       size="md"
-      disabled={inputDisabled}
+      disabled={catalog?.name !== "Other"}
     />
   </div>
   <div>
@@ -93,7 +105,7 @@
       on:click={handleDislikeSubmit}
       color="light"
       size="xs"
-      disabled={inputDisabled}>Submit</Button
+      disabled={catalog?.name !== "Other"}>Submit</Button
     >
   </div>
 </div>

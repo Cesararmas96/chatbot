@@ -9,13 +9,12 @@
   import { afterUpdate } from "svelte";
   let element: HTMLDivElement;
   // Either afterUpdate()
-  console.log(messages);
+
   afterUpdate(() => {
     if (messages && messages.length > 0) scrollToBottom(element);
   });
 
   const scrollToBottom = async (node: HTMLDivElement) => {
-    console.log(node);
     node.scroll({ top: node.scrollHeight, behavior: "smooth" });
   };
 </script>

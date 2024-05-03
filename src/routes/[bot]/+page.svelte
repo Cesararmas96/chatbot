@@ -1,23 +1,23 @@
 <script lang="ts">
   import { page } from "$app/stores";
 
-  import SelectBots from "$lib/SelectBots.svelte";
-  import SidebarBot from "$lib/SidebarBot.svelte";
-  import ContainerChatBox from "$lib/ContainerChatBox.svelte";
+  import SelectBots from "$lib/components/chat/SelectBots.svelte";
+  import ContainerChatBox from "$lib/components/chat/ContainerChatBox.svelte";
+  import SidebarBot from "$lib/components/SidebarBot.svelte";
   import { ApiChatBot } from "$lib/helpers/commons";
-  import axios from "axios";
+  import { getApiData } from "$lib/services/getData.js";
+  import { storeUser } from "$lib/stores/session.js";
 
   export let data;
 
   const { user } = data;
 
+  storeUser.set(user);
+
   let isLoading = false;
   let query = "";
   const bot = $page.params.bot.toString();
   let token = user?.token;
-  localStorage.setItem("token", token);
-  localStorage.setItem("first_name", user?.first_name);
-  localStorage.setItem("last_name", user?.last_name);
   let messages: any[] = [];
 
   const handleSubmit = async (event: SubmitEvent) => {
@@ -27,25 +27,22 @@
     const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/chat/${ApiChatBot[bot]}`;
 
     try {
-      const response = await axios.post(
+      const { answer, question } = await getApiData(
         apiUrl,
+        "POST",
         { query },
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
+        null,
+        true
       );
 
-      if (response.status === 200) {
-        const data = response.data;
-        console.log(data);
-        messages = [...messages, { text: data.answer, query: data.question }];
-        query = "";
-      } else {
-        console.error("Error getting response:", response.statusText);
-      }
+      messages = [...messages, { text: answer, query: question }];
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     } finally {
@@ -56,7 +53,7 @@
 
 <div class="flex h-screen antialiased text-gray-800">
   <div class="flex flex-row h-full w-full overflow-x-hidden">
-    <SidebarBot {user} />
+    <SidebarBot />
 
     <div class="flex flex-col flex-auto h-full p-6">
       <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">

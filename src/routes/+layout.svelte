@@ -1,6 +1,10 @@
 <script>
   import "../app.css";
   import "../style.css";
+  import "iconify-icon";
+
+  import Toasts from "$lib/components/common/Toasts.svelte";
+
   let isPageLoaded = false;
 
   const pageLoaded = () => {
@@ -42,3 +46,4 @@
 {:else}
   <slot />
 {/if}
+<Toasts />

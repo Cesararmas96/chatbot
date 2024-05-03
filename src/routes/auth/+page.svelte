@@ -7,52 +7,10 @@
   let username = "";
   let password = "";
 
-  // mandarlo env
-  const apiUrl = import.meta.env.VITE_API_URL;
-
   const keyDownEnter = (e: any) => {
     if (e.key === "Enter") {
       e.preventDefault();
       document.getElementById("form")?.dispatchEvent(new Event("submit"));
-    }
-  };
-
-  // Hook crearle
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
-    const response = await fetch(`${apiUrl}/api/v1/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-auth-method": "BasicAuth",
-        Origin: apiUrl,
-        Referer: apiUrl,
-      },
-      body: JSON.stringify({ username, password }),
-    });
-    if (response.ok) {
-      // console.log(await response.json())
-
-      const { token, session } = await response.json();
-
-      // Guardar el token en el localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("session", session);
-      localStorage.setItem("first_name", session.first_name);
-      localStorage.setItem("last_name", session.last_name);
-
-      window.location.href = "/trocers";
-    } else {
-      const error = await response.json();
-      console.log(error);
-
-      if (error.status == 401) {
-        errorMessage = "Your email is not registered.";
-      }
-
-      if (error.status == 403) {
-        errorMessage = `Forbidden: Incorrect password`;
-      }
     }
   };
 </script>

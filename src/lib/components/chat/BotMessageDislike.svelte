@@ -1,8 +1,12 @@
 <script lang="ts">
   import { Button, Input } from "flowbite-svelte";
   import { createEventDispatcher } from "svelte";
-  import axios from "axios";
   import { page } from "$app/stores";
+  import { putData } from "$lib/services/getData";
+  import {
+    sendErrorNotification,
+    sendSuccessNotification,
+  } from "$lib/stores/toast";
 
   export let message;
   const dispatch = createEventDispatcher();
@@ -49,20 +53,24 @@
       non_anonymous: true,
     };
 
-    const token = localStorage.getItem("token");
-
     try {
-      const response = await axios.put(
-        apiUrl,
-        { ...payload },
-        {
-          headers: {
-            // Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // const response = await axios.put(
+      //   apiUrl,
+      //   { ...payload },
+      //   {
+      //     headers: {
+      //       // Authorization: `Bearer ${token}`,
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+
+      // const response = await putData(apiUrl, { ...payload });
+      // console.log("response", response);
+
+      sendSuccessNotification("Your feedback has been submitted successfully");
     } catch (error) {
+      sendErrorNotification(error);
       console.error("There was a problem with the fetch operation:", error);
     }
 

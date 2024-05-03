@@ -15,17 +15,16 @@
   storeUser.set(user);
 
   let isLoading = false;
-  let query = "";
   const bot = $page.params.bot.toString();
   let token = user?.token;
   let messages: any[] = [];
-
-  const handleSubmit = async (event: SubmitEvent) => {
-    event.preventDefault();
+  let query = "";
+  let lastQuestion = '';
+  const fetchData = async () => {
     isLoading = true; // Mostrar el div de carga
 
     const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/chat/${ApiChatBot[bot]}`;
-
+    query += lastQuestion
     try {
       const { answer, question } = await getApiData(
         apiUrl,
@@ -43,6 +42,8 @@
       );
 
       messages = [...messages, { text: answer, query: question }];
+      query = '';
+      lastQuestion = question;
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     } finally {
@@ -50,6 +51,15 @@
       query = ''
     }
   };
+
+  const handleSubmit = async () => {
+    // event.preventDefault();
+    await fetchData(); // Llama a fetchData para realizar la llamada a la API
+  };
+  const handleRegenerate = async () => {
+   await fetchData(lastQuestion); // Llama a fetchData para realizar la llamada a la API
+ };
+
 </script>
 
 <div class="flex h-screen antialiased text-gray-800">
@@ -59,7 +69,7 @@
     <div class="flex flex-col flex-auto h-full p-6">
       <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
         <SelectBots />
-        <ContainerChatBox {isLoading} {messages} />
+        <ContainerChatBox {isLoading} {messages} {handleRegenerate}/>
 
         <form on:submit={handleSubmit}>
           <div

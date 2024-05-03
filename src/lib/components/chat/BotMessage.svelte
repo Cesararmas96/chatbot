@@ -7,10 +7,12 @@
     sendErrorNotification,
     sendSuccessNotification,
   } from "$lib/stores/toast";
+  export let handleRegenerate;
 
   const dispatch = createEventDispatcher();
 
   export let message;
+  export let last;
 
   console.log(message);
 
@@ -72,7 +74,8 @@
             >
           </button>
 
-          <button class="mr-3"  title="Regenerate">
+          {#if last === 'true'}
+          <button class="mr-3 " on:click={handleRegenerate} title="Regenerate" >
             <svg
               width="17"
               height="17"
@@ -84,6 +87,8 @@
               /></svg
             >
           </button>
+          {/if}
+
 
           {#if !dislike}
             <button title="Dislike" class="mr-3" on:click={handleDislike}>

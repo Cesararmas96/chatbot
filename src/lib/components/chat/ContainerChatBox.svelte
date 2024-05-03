@@ -3,7 +3,8 @@
   import LoadingMessage from "./LoadingMessage.svelte";
   import QuestionMessage from "./QuestionMessage.svelte";
   import WelcomeChat from "./WelcomeChat.svelte";
-
+  export let handleRegenerate;
+  let last;
   export let isLoading;
   export let messages;
   import { afterUpdate } from "svelte";
@@ -25,11 +26,13 @@
   <div class="flex flex-col h-full">
     {#if messages && messages.length > 0}
       <div class="grid grid-cols-12 gap-y-2 overflow-auto" bind:this={element}>
-        {#each messages as message}
+        {#each messages as message, index}
           <QuestionMessage {message} />
           <BotMessage
             {message}
             on:scrollToBottom={() => scrollToBottom(element)}
+            handleRegenerate={handleRegenerate}
+            last={index === messages.length - 1 ? 'true' : 'false'}
           />
         {/each}
 

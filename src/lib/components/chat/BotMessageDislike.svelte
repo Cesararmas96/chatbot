@@ -33,10 +33,6 @@
 
   const handleCatalog = async (cat: any) => {
     catalog = cat;
-    if (catalog.name !== "Other") {
-      reason = catalog.name;
-      handleDislikeSubmit(null);
-    }
   };
 
   const handleDislikeSubmit = async (event: any) => {
@@ -94,7 +90,9 @@
     {#each reasons as item}
       <Button
         color="light"
-        class="px-3 py-0"
+        class="px-3 py-0 {item.name === catalog?.name
+          ? 'border-2 border-primary-500'
+          : ''}"
         on:click={() => handleCatalog(item)}>{item.name}</Button
       >
     {/each}
@@ -105,7 +103,7 @@
       bind:value={reason}
       placeholder="Provide additional feedback"
       size="md"
-      disabled={catalog?.name !== "Other"}
+      disabled={catalog === undefined}
     />
   </div>
   <div>
@@ -113,7 +111,7 @@
       on:click={handleDislikeSubmit}
       color="light"
       size="xs"
-      disabled={catalog?.name !== "Other"}>Submit</Button
+      disabled={catalog === undefined}>Submit</Button
     >
   </div>
 </div>

@@ -1,13 +1,8 @@
 <script>
   import { enhance } from "$app/forms";
   import { page } from "$app/stores";
-
-  export let user;
-
+  import Avatar from "./common/Avatar.svelte";
   const bot = $page.params.bot.toString();
-
-  const firstname = user.first_name;
-  const lastname = user.last_name;
 </script>
 
 <div class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 sidebar {bot}">
@@ -56,7 +51,7 @@
           <div class="ml-2 text-sm font-semibold">Setting</div>
         </button> -->
 
-    <dIi class="flex flex-row items-center rounded-xl p-2">
+    <!-- <dIi class="flex flex-row items-center rounded-xl p-2">
       <div
         class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
       >
@@ -64,7 +59,8 @@
       </div>
 
       <div class="ml-2 text-sm font-semibold">{firstname} {lastname}</div>
-    </dIi>
+    </dIi> -->
+    <Avatar showFullName={true} />
     <button class="flex flex-row items-center buttonnavar rounded-xl p-2">
       <div class="flex items-center justify-center h-6 w-6">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"

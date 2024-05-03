@@ -3,6 +3,10 @@
   import { createEventDispatcher } from "svelte";
   import BotMessageDislike from "./BotMessageDislike.svelte";
   import { convert } from "html-to-text";
+  import {
+    sendErrorNotification,
+    sendSuccessNotification,
+  } from "$lib/stores/toast";
 
   const dispatch = createEventDispatcher();
 
@@ -22,12 +26,14 @@
       .writeText(clipboard)
       .then(() => {
         copied = true;
+        sendSuccessNotification("Answer copied to the clickboard successfully");
+
         setTimeout(() => {
           copied = false;
         }, 2000);
       })
       .catch((error) => {
-        console.error("Error copying to clipboard:", error);
+        sendErrorNotification(error);
       });
   }
 
@@ -55,9 +61,9 @@
         <div class="flex justify-end mt-5 mb-2">
           <button class="mr-3" on:click={copyToClipboard} title="Copy">
             <svg
-              width="20"
-              height="20"
-              class="svg dislike"
+              width="17"
+              height="17"
+              class="svg actions"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 448 512"
               ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
@@ -66,11 +72,11 @@
             >
           </button>
 
-          <button class="mr-3" on:click={copyToClipboard} title="Regenerate">
+          <button class="mr-3"  title="Regenerate">
             <svg
-              width="20"
-              height="20"
-              class="svg"
+              width="17"
+              height="17"
+              class="svg actions"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 448 512"
               ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
@@ -82,8 +88,9 @@
           {#if !dislike}
             <button title="Dislike" class="mr-3" on:click={handleDislike}>
               <svg
-                width="20"
-                height="20"
+                class="svg actions"
+                width="17"
+                height="17"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
@@ -102,7 +109,11 @@
 </div>
 
 <style>
-  .svg.dislike {
-    /* fill: gray; */
+  .svg.actions {
+    fill: gray;
   }
+  .svg.actions:hover {
+    fill: rgb(88, 88, 88);
+  }
+
 </style>

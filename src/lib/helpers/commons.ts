@@ -11,3 +11,9 @@ export enum NameChatBot {
   askbrett = "AskBrett",
   oddie = "Oddie",
 }
+
+
+export enum LlmChatBot {
+  vertex = "Google Gemini",
+  claude = "Anthropic Claude",
+}

@@ -5,6 +5,7 @@
   import WelcomeChat from "./WelcomeChat.svelte";
   export let handleRegenerate;
   let last;
+  let NumberMessage;
   export let isLoading;
   export let messages;
   import { afterUpdate } from "svelte";
@@ -30,6 +31,7 @@
           <QuestionMessage {message} />
           <BotMessage
             {message}
+            NumberMessages={index}
             on:scrollToBottom={() => scrollToBottom(element)}
             handleRegenerate={handleRegenerate}
             last={index === messages.length - 1 ? 'true' : 'false'}

@@ -55,11 +55,12 @@
     <div
       class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
     >
-      <img src="/troc.png" alt="sd" />
+      <img src="/troc.png" alt="logo" />
     </div>
     <div class="flex flex-col">
       <div class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
         <div>{@html marked(message.text)}</div>
+        
         <div class="flex justify-end mt-5 mb-2">
           <button class="mr-3" on:click={copyToClipboard} title="Copy">
             <svg
@@ -75,7 +76,7 @@
           </button>
 
           {#if last === 'true'}
-          <button class="mr-3 " on:click={handleRegenerate} title="Regenerate" >
+          <button class="mr-3 "  on:click={() => handleRegenerate(message.query)}  title="Regenerate" >
             <svg
               width="17"
               height="17"

@@ -22,7 +22,7 @@
         class="hidden w-full flex-col !justify-center text-white dark:text-black lg:!flex lg:!w-3/5"
       >
         <div class="carousel">
-          <img src={ImgLogin} alt="Image 1" />
+          <img src={ImgLogin} alt="Carrousel" />
         </div>
 
         <div class="absolute bottom-1 ml-2">

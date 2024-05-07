@@ -63,7 +63,7 @@ const login: Action = async ({ cookies, request }) => {
     return fail(400, { credentials: true, message: await response.json() });
   }
   // redirect the user
-  throw redirect(302, "/");
+  throw redirect(302, "/home");
 };
 
 export const actions: Actions = { login };

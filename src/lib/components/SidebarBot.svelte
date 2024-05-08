@@ -5,7 +5,7 @@
   const bot = $page.params.bot.toString();
 </script>
 
-<div class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 sidebar {bot}">
+<div class="flex flex-col py-8 pl-6 pr-2 flex-shrink-0 sidebar {bot} h-full">
   <div class="flex flex-row items-center justify-start h-12 w-full">
     <div
       class="flex items-center justify-center rounded-2xltext-indigo-700 h-10 w-10"

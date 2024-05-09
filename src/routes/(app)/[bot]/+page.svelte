@@ -71,7 +71,7 @@
     {#if !shared}
       <SidebarBot />
     {/if}
-    <div class="flex flex-col flex-auto h-full p-6">
+    <div class="flex flex-col flex-auto h-full" class:p-6={!shared}>
       <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
         {#if !hidebot}<SelectBots />{/if}
         {#if !hidellm}<SelectLlm

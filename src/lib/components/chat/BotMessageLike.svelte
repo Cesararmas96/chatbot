@@ -18,12 +18,12 @@
 
   const reasons = [
     {
-      name: "Offensive/Unsafe",
-      value: "Navigator::Chatbots::Offensive/Unsafe",
+      name: "Awesome",
+      value: "Navigator::Chatbots::Awesome",
     },
     {
-      name: "Not factually correct",
-      value: "Navigator::Chatbots::Not factually correct",
+      name: "Usefull",
+      value: "Navigator::Chatbots::Usefull",
     },
     {
       name: "Other",
@@ -91,7 +91,7 @@
       <Button
         color="light"
         class="px-3 py-0 {item.name === catalog?.name
-          ? 'border-2 border-primary-500'
+          ? 'border-2 border-green-500'
           : ''}"
         on:click={() => handleCatalog(item)}>{item.name}</Button
       >
@@ -103,7 +103,8 @@
       bind:value={reason}
       placeholder="Provide additional feedback"
       size="md"
-      disabled={catalog === undefined}
+      class=""
+      
     />
   </div>
   <div>

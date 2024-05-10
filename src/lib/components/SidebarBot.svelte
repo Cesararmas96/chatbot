@@ -10,13 +10,13 @@
     <div
       class="flex items-center justify-center rounded-2xltext-indigo-700 h-10 w-10"
     >
-      <img src="/troc.png" alt="sd" />
+      <img src="/troc.png" alt="logo" />
     </div>
     <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
   </div>
 
   <div class="flex flex-col h-full justify-end text-white">
-    <a
+    <!-- <a
       href="{bot}/setting"
       class="flex flex-row items-center buttonnavar rounded-xl p-2 hover:bg-slate-600"
     >
@@ -34,7 +34,7 @@
       </div>
       <div class="ml-2 text-sm font-semibold">Setting</div>
     </a>
-    
+     -->
     <a
       href="/home"
       class="flex flex-row items-center buttonnavar rounded-xl p-2 hover:bg-slate-600"

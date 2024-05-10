@@ -5,19 +5,22 @@
   const bot = $page.params.bot.toString();
 </script>
 
-<div class="flex flex-col py-8 pl-6 pr-2 w-64 flex-shrink-0 sidebar {bot}">
+<div class="flex flex-col py-8 pl-6 pr-2 flex-shrink-0 sidebar {bot} h-full">
   <div class="flex flex-row items-center justify-start h-12 w-full">
     <div
       class="flex items-center justify-center rounded-2xltext-indigo-700 h-10 w-10"
     >
-      <img src="/troc.png" alt="sd" />
+      <img src="/troc.png" alt="logo" />
     </div>
     <div class="ml-2 font-bold text-2xl text-white">T-ROC Chatbot</div>
   </div>
 
   <div class="flex flex-col h-full justify-end text-white">
+
+
     <a
       href="/{bot}/setting"
+
       class="flex flex-row items-center buttonnavar rounded-xl p-2 hover:bg-slate-600"
     >
       <div class="flex items-center justify-center h-6 w-6">
@@ -35,6 +38,7 @@
       </div>
       <div class="ml-2 text-sm font-semibold">Setting</div>
     </a>
+
 
     <a
       href="/home"

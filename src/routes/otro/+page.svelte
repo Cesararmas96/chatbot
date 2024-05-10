@@ -7,7 +7,7 @@
   import { ApiChatBot } from "$lib/helpers/commons";
   import { getApiData } from "$lib/services/getData.js";
   import { storeUser } from "$lib/stores/session.js";
-  import SelectLlm from "$lib/components/chat/SelectLlm.svelte";
+
   export let data;
 
   const { user } = data;
@@ -19,24 +19,21 @@
   let token = user?.token;
   let messages: any[] = [];
   let query = "";
+  let lastQuestion = '';
+  const fetchData = async () => {
+    isLoading = true; // Mostrar el div de carga
 
-  let shared = $page.url.searchParams.get("shared") === "true";
-  let hidebot = $page.url.searchParams.get("hidebot") === "true";
-  let hidellm = $page.url.searchParams.get("hidellm") === "true";
-  let llm = $page.url.searchParams.get("llm") || "vertex";
-
-  const fetchData = async (lastquery = "") => {
-    isLoading = true;
-
-    const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/chat/${ApiChatBot[bot]}?use_llm=${llm}`;
+    const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/chat/${ApiChatBot[bot]}`;
+    query += lastQuestion
     try {
       const { answer, question } = await getApiData(
         apiUrl,
         "POST",
-        { query: query || lastquery },
+        { query },
         {},
         {
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         },
@@ -45,42 +42,36 @@
       );
 
       messages = [...messages, { text: answer, query: question }];
-      query = "";
+      query = '';
+      lastQuestion = question;
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     } finally {
       isLoading = false;
+      query = ''
     }
   };
 
-  const handleRegenerate = async (lastquery) => {
-    await fetchData(lastquery);
-  };
-
   const handleSubmit = async () => {
-    await fetchData();
+    // event.preventDefault();
+    await fetchData(); // Llama a fetchData para realizar la llamada a la API
   };
+  const handleRegenerate = async () => {
+   await fetchData(lastQuestion); // Llama a fetchData para realizar la llamada a la API
+ };
 
-  const handleSelectChange = (event) => {
-    llm = event.detail.value;
-  };
 </script>
 
 <div class="flex h-screen antialiased text-gray-800">
   <div class="flex flex-row h-full w-full overflow-x-hidden">
-    {#if !shared}
-      <SidebarBot />
-    {/if}
-    <div class="flex flex-col flex-auto h-full" class:p-6={!shared}>
-      <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
-        {#if !hidebot}<SelectBots />{/if}
-        {#if !hidellm}<SelectLlm
-            {llm}
-            on:selectChange={handleSelectChange}
-          />{/if}
-        <ContainerChatBox {isLoading} {messages} {handleRegenerate} />
+    <SidebarBot />
 
-        <form>
+    <div class="flex flex-col flex-auto h-full p-6">
+      <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
+        <SelectBots />
+        <ContainerChatBox {isLoading} {messages} {handleRegenerate}/>
+
+        <form on:submit={handleSubmit}>
           <div
             class="flex flex-row items-center h-16 rounded-xl bg-white w-full"
           >
@@ -94,22 +85,16 @@
                   class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading
                     ? 'bg-gray-200 cursor-not-allowed opacity-50'
                     : ''}"
-                  on:keydown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSubmit();
-                    }
-                  }}
                 />
               </div>
             </div>
             <div class="ml-4">
               <button
                 disabled={isLoading}
-                type="button"
+                type="submit"
                 class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading
                   ? 'bg-gray-200 cursor-not-allowed opacity-50'
                   : ''}"
-                on:click={handleSubmit}
               >
                 <span class="">
                   <svg

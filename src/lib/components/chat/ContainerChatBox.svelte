@@ -1,5 +1,6 @@
 <script lang="ts">
   import BotMessage from "./BotMessage.svelte";
+  import LoadingMessageBot from "./LoadingMessageBot.svelte";
   import LoadingMessage from "./LoadingMessage.svelte";
   import QuestionMessage from "./QuestionMessage.svelte";
   import WelcomeChat from "./WelcomeChat.svelte";
@@ -8,6 +9,7 @@
   let NumberMessage;
   export let isLoading;
   export let messages;
+  export let query;
   import { afterUpdate } from "svelte";
   let element: HTMLDivElement;
   // Either afterUpdate()
@@ -33,15 +35,20 @@
             {message}
             NumberMessages={index}
             on:scrollToBottom={() => scrollToBottom(element)}
-            handleRegenerate={handleRegenerate}
-            last={index === messages.length - 1 ? 'true' : 'false'}
+            {handleRegenerate}
+            last={index === messages.length - 1 ? "true" : "false"}
+            {isLoading}
           />
         {/each}
 
         {#if isLoading}
-          <LoadingMessage />
+          <LoadingMessage  />
+          <LoadingMessageBot />
         {/if}
       </div>
+    {:else if isLoading}
+      <LoadingMessage  />
+      <LoadingMessageBot />
     {:else}
       <WelcomeChat />
     {/if}

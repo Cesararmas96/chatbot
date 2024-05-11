@@ -59,7 +59,7 @@
 
   const handleSelectChange = (event) => {
     llm = event.detail.value;
-  }
+  };
 </script>
 
 <div class="flex h-screen antialiased text-gray-800">
@@ -70,23 +70,36 @@
       <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
         <SelectBots />
         <SelectLlm on:selectChange={handleSelectChange} />
-        <ContainerChatBox {isLoading} {messages} {handleRegenerate} />
+        <ContainerChatBox {isLoading} {messages} {handleRegenerate} {query}/>
 
         <form on:submit={handleSubmit}>
           <div
             class="flex flex-row items-center h-16 rounded-xl bg-white w-full"
           >
             <div class="flex-grow">
-              <div class="relative w-full">
+              <div class="relative">
                 <input
                   placeholder="Send a message."
                   type="text"
                   disabled={isLoading}
                   bind:value={query}
-                  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading
+                  class=" flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-10 h-10 {isLoading
                     ? 'bg-gray-200 cursor-not-allowed opacity-50'
                     : ''}"
                 />
+
+                <div
+                  class="absolute inset-y-0 left-0 pl-3
+                            flex items-center
+                            pointer-events-none"
+                >
+                  {#if isLoading}
+                    <i class="fa-solid fa-spinner animate-spin text-gray-400"
+                    ></i>
+                  {:else}
+                    <i class="fas fa-search text-gray-400 "></i>
+                  {/if}
+                </div>
               </div>
             </div>
             <div class="ml-4">
@@ -97,7 +110,7 @@
                   ? 'bg-gray-200 cursor-not-allowed opacity-50'
                   : ''}"
               >
-                <span class="">
+                <span>
                   <svg
                     class="w-4 h-4 transform rotate-45 -mt-px"
                     fill="none"
@@ -121,3 +134,18 @@
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite; /* cambia la duración según desees */
+  }
+</style>

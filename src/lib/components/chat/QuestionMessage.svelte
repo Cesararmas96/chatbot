@@ -10,7 +10,7 @@
     >
       <Avatar showFullName={false} />
     </div>
-    <div class="relative mr-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
+    <div class="relative mr-3 text-sm  dark:bg-gray-600 dark:text-white bg-white py-2 px-4 shadow rounded-xl">
       <div>
         {message.query}
       </div>

@@ -17,6 +17,28 @@
 
     %sveltekit.head%
   </head>
+
+  <script>
+    if (!('theme-mode' in localStorage)) localStorage.setItem('theme-mode', 'light')
+			if (!('theme-color' in localStorage)) localStorage.setItem('theme-color', 'blue')
+			if (
+				localStorage.getItem('theme-mode') === 'dark' ||
+				(!('theme-mode' in localStorage) &&
+					window.matchMedia('(prefers-color-scheme: dark)').matches)
+			) {
+				document.documentElement.classList.add('dark')
+			} else {
+				document.documentElement.classList.remove('dark')
+			}
+			document.documentElement.setAttribute(
+				'data-theme',
+				localStorage.getItem('theme-mode') || 'light'
+			)
+			document.documentElement.setAttribute(
+				'data-theme-color',
+				localStorage.getItem('backup-theme-color') || localStorage.getItem('theme-color') || 'blue'
+			)
+  </script>
 	<body data-sveltekit-prefetch class="bg-white dark:bg-gray-900">
 
     <div style="display: contents">%sveltekit.body%</div>

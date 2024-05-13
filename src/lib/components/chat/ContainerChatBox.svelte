@@ -24,7 +24,7 @@
 </script>
 
 <div
-  class="flex flex-col h-full overflow-x-auto mb-4 rounded-2xl bg-gray-100 mt-3 chatbox"
+  class="flex flex-col h-full overflow-x-auto rounded-2xl bg-gray-100 mt-3 chatbox dark:bg-gray-800"
 >
   <div class="flex flex-col h-full">
     {#if messages && messages.length > 0}

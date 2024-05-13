@@ -65,7 +65,7 @@
       <img src="/troc.png" alt="logo" />
     </div>
     <div class="flex flex-col">
-      <div  class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
+      <div  class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl dark:bg-gray-600 dark:text-white">
         
       
         <!-- <div use:concurrent={{ interval: 30 }} data-static> -->
@@ -149,6 +149,10 @@
 <style>
   .svg.actions {
     fill: rgb(85, 85, 85);
+  }
+
+  [data-theme='dark']  .svg.actions {
+    fill: rgb(121, 10, 10);
   }
   .svg.actions:hover {
     fill: rgb(47, 47, 47);

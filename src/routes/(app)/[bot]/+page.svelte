@@ -102,9 +102,9 @@
 
 <div class="sm:ml-64">
 
-  <header class="flex-none w-full mx-auto bg-white dark:bg-slate-950">
+  <header class="w-full mx-auto bg-white dark:bg-slate-950 ">
     <Navbar>
-        <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white ">
+        <span class="ml-5 whitespace-nowrap text-xl font-semibold dark:text-white ">
           {NameChatBot[bot]} ChatBot
         </span>
       <div class="flex items-center ml-auto">
@@ -119,16 +119,16 @@
 
 <div class="flex h-screen antialiased text-gray-800">
   <div class="flex flex-row h-full w-full overflow-x-hidden">
-    <!-- {#if !shared} -->
+    {#if !shared}
       <SidebarBot />
-    <!-- {/if} -->
+    {/if}
     <div class="flex flex-col flex-auto h-full" class:p-6={!shared} >
       <div class="flex flex-col flex-auto flex-shrink-0  h-full p-4">
-        <!-- {#if !hidebot}<SelectBots />{/if}
+        {#if !hidebot}<SelectBots />{/if}
         {#if !hidellm}<SelectLlm
             {llm}
             on:selectChange={handleSelectChange}
-          />{/if} -->
+          />{/if}
         <ContainerChatBox {isLoading} {messages} {handleRegenerate} />
 
         <form on:submit={handleSubmit}>

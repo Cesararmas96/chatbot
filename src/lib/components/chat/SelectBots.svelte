@@ -6,9 +6,7 @@
 </script>
 
 <div class="flex items-center">
-  <div class="font-bold text-xl">
-    <p class="namebot {bot}">{NameChatBot[bot]} ChatBot</p>
-  </div>
+  
   <select
     id="selectbot"
     onchange="location = this.value;"

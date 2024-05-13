@@ -24,7 +24,8 @@
   let shared = $page.url.searchParams.get("shared") === "true";
   let hidebot = $page.url.searchParams.get("hidebot") === "true";
   let hidellm = $page.url.searchParams.get("hidellm") === "true";
-  let llm = "vertex";
+
+  let llm = $page.url.searchParams.get("llm") || "vertex";
 
 
   const fetchData = async (lastquery = "") => {
@@ -66,6 +67,7 @@
   const handleSelectChange = (event) => {
     llm = event.detail.value;
   };
+
 
 
   
@@ -112,82 +114,80 @@
     </Navbar>
   </header>
 
-  <div class="flex h-svh	antialiased text-gray-800">
-    <div class="flex flex-row h-full w-full overflow-x-hidden">
-      {#if !shared}
-        <SidebarBot />
-      {/if}
-      
-      <div class="flex flex-col flex-auto h-full" class:p-6={!shared}>
-        <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full ">
-          <div class="flex ">
-            {#if !hidebot}<SelectBots />{/if}
-            {#if !hidellm}<SelectLlm
-               
-                on:selectChange={handleSelectChange}
-              />{/if}
+        
 
-          </div>
-          <ContainerChatBox {isLoading} {messages} {handleRegenerate} />
-  
-          <form>
-            <div
-              class="flex flex-row items-center h-16 rounded-xl bg-white w-full"
-            >
-              <div class="flex-grow">
-                <div class="relative w-full">
-                  <input
-                    placeholder="Send a message."
-                    type="text"
-                    disabled={isLoading}
-                    bind:value={query}
-                    class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading
-                      ? 'bg-gray-200 cursor-not-allowed opacity-50'
-                      : ''}"
-                    on:keydown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSubmit();
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-              <div class="ml-4">
-                <button
+
+
+<div class="flex h-screen antialiased text-gray-800">
+  <div class="flex flex-row h-full w-full overflow-x-hidden">
+    {#if !shared}
+      <SidebarBot />
+    {/if}
+    <div class="flex flex-col flex-auto h-full" class:p-6={!shared}>
+      <div class="flex flex-col flex-auto flex-shrink-0 bg-white h-full p-4">
+        {#if !hidebot}<SelectBots />{/if}
+        {#if !hidellm}<SelectLlm
+            {llm}
+            on:selectChange={handleSelectChange}
+          />{/if}
+        <ContainerChatBox {isLoading} {messages} {handleRegenerate} />
+
+        <form>
+          <div
+            class="flex flex-row items-center h-16 rounded-xl bg-white w-full"
+          >
+            <div class="flex-grow">
+              <div class="relative w-full">
+                <input
+                  placeholder="Send a message."
+                  type="text"
                   disabled={isLoading}
-                  type="button"
-                  class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading
+                  bind:value={query}
+                  class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 {isLoading
                     ? 'bg-gray-200 cursor-not-allowed opacity-50'
                     : ''}"
-                  on:click={handleSubmit}
-                >
-                  <span class="">
-                    <svg
-                      class="w-4 h-4 transform rotate-45 -mt-px"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      ></path>
-                    </svg>
-                  </span>
-                </button>
+                  on:keydown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSubmit();
+                    }
+                  }}
+                />
               </div>
             </div>
-          </form>
+            <div class="ml-4">
+              <button
+                disabled={isLoading}
+                type="button"
+                class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading
+                  ? 'bg-gray-200 cursor-not-allowed opacity-50'
+                  : ''}"
+                on:click={handleSubmit}
+              >
+                <span class="">
+                  <svg
+                    class="w-4 h-4 transform rotate-45 -mt-px"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                    ></path>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
         </div>
+
       </div>
     </div>
   </div>
-  
-  
-  
 </div>
 
 <style>

@@ -151,9 +151,6 @@
     fill: rgb(85, 85, 85);
   }
 
-  [data-theme='dark']  .svg.actions {
-    fill: rgb(121, 10, 10);
-  }
   .svg.actions:hover {
     fill: rgb(47, 47, 47);
   }

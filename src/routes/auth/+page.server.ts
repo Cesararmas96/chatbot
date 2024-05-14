@@ -21,7 +21,7 @@ const login: Action = async ({ cookies, request }) => {
     return fail(400, { invalid: true });
   }
 
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/login`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
     method: "POST",
     headers: {
       "x-auth-method": "BasicAuth",

@@ -10,6 +10,7 @@
   export let isLoading;
   export let messages;
   export let query;
+  export let botName;
   import { afterUpdate } from "svelte";
   let element: HTMLDivElement;
   // Either afterUpdate()
@@ -48,7 +49,7 @@
       <LoadingMessage  />
       <LoadingMessageBot />
     {:else}
-      <WelcomeChat />
+      <WelcomeChat {botName}/>
     {/if}
   </div>
 </div>

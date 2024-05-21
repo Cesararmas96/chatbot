@@ -2,32 +2,18 @@
   import ContainerChatBox from "$lib/components/chat/ContainerChatBox.svelte";
   import { getApiData } from "$lib/services/getData.js";
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
+ 
   let messages: any[] = [];
   let isLoading = false;
   let query = "";
- 
-
-  // let nameBot = '';
+  let apiKey = $page.url.searchParams.get("apiKey");
+  let botName = $page.url.searchParams.get("botName")
   
-
-
-  // function getQueryParam(param) {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   return urlParams.get(param);
-  // }
-
-  // onMount(() => {
-  //   nameBot = getQueryParam('nameBot');
-  //   console.log("Nombre del ChatBot:", nameBot);
-  //   // Aquí puedes utilizar nameBot según tus necesidades
-  // });
-  let apiKey = "";
-
-
   const fetchData = async (lastquery = "") => {
     isLoading = true;
 
-    const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/TROCers`;
+    const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${botName}`;
 
     try {
       const { answer, question } = await getApiData(
@@ -74,7 +60,7 @@
   
     <div class="flex flex-col flex-auto h-full">
       <div class="flex flex-col flex-auto flex-shrink-0  h-full p-4">
-        <ContainerChatBox {isLoading} {messages} {handleRegenerate} {query}/>
+        <ContainerChatBox {isLoading} {messages} {handleRegenerate} {query} {botName}/>
         
 
         <form on:submit={handleSubmit} >

@@ -18,8 +18,11 @@ document.addEventListener("DOMContentLoaded", function () {
     chatBotContainer.id = "chatbot-container";
     chatBotContainer.classList.add("chatbot-container-closed");
 
+    chatBotName = Troc.NameBot;
+    console.log(chatBotName)
     const chatBotIframe = document.createElement("iframe");
-    chatBotIframe.src = Troc.BotURL;
+    chatBotIframe.src = `${Troc.BotURL}?nameBot=${encodeURIComponent(chatBotName)}`;
+
     chatBotIframe.id = "chatbot-iframe";
     chatBotContainer.appendChild(chatBotIframe);
 
@@ -33,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Añadir icono al botón del chatbot
     const chatBotFabIcon = document.createElement("img");
-    chatBotFabIcon.src = "http://localhost:5173/troc.png"; // URL de la imagen del icono
+    chatBotFabIcon.src = Troc.Logo; // URL de la imagen del icono
     
     chatBotFabIcon.id = "chatbot-picture";
     chatBotFab.appendChild(chatBotFabIcon);

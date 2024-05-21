@@ -33,11 +33,9 @@
           <QuestionMessage {message} />
           <BotMessage
             {message}
-            NumberMessages={index}
             on:scrollToBottom={() => scrollToBottom(element)}
             {handleRegenerate}
             last={index === messages.length - 1 ? "true" : "false"}
-            {isLoading}
           />
         {/each}
 

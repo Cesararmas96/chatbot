@@ -3,7 +3,7 @@
       <div
         class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
       >
-        <img src='troc.png' alt="Loading" />
+        <img src='/troc.png' alt="BOT" />
       </div>
       <div
         class="relative ml-3 text-sm  dark:bg-gray-600 dark:text-white bg-white py-2 px-4 shadow rounded-xl p-4 max-w-lg w-full mx-auto"

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { marked, options } from "marked";
   import { createEventDispatcher } from "svelte";
   import BotMessageDislike from "./BotMessageDislike.svelte";
@@ -15,7 +15,6 @@
   export let handleRegenerate;
   export let message;
   export let last;
-  export let isLoading;
 
   let copied = false;
   let dislike = false;
@@ -23,6 +22,8 @@
   let clipboard = marked(message.text);
 
   clipboard = convert(clipboard, options);
+
+  
 
   function copyToClipboard() {
     navigator.clipboard

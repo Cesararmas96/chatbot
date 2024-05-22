@@ -37,28 +37,28 @@ const login: Action = async ({ cookies, request }) => {
     const token2 = encrypt(data.token.substring(length, 2 * length));
     const token3 = encrypt(data.token.substring(2 * length));
 
-    cookies.set("_session1", token1, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "none",
-      secure: true, //import.meta.env.ENV === 'production',
-      maxAge: 60 * 60 * 24 * 30,
-    });
-    cookies.set("_session2", token2, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "none",
-      secure: true, //import.meta.env.ENV === 'production',
-      maxAge: 60 * 60 * 24 * 30,
-    });
-    cookies.set("_session3", token3, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "none",
-      secure: true, //import.meta.env.ENV === 'production',
-      maxAge: 60 * 60 * 24 * 30,
-    });
-    cookies.delete("_program", { path: "/" });
+    // cookies.set("_session1", token1, {
+    //   path: "/",
+    //   httpOnly: true,
+    //   sameSite: "none",
+    //   secure: true, //import.meta.env.ENV === 'production',
+    //   maxAge: 60 * 60 * 24 * 30,
+    // });
+    // cookies.set("_session2", token2, {
+    //   path: "/",
+    //   httpOnly: true,
+    //   sameSite: "none",
+    //   secure: true, //import.meta.env.ENV === 'production',
+    //   maxAge: 60 * 60 * 24 * 30,
+    // });
+    // cookies.set("_session3", token3, {
+    //   path: "/",
+    //   httpOnly: true,
+    //   sameSite: "none",
+    //   secure: true, //import.meta.env.ENV === 'production',
+    //   maxAge: 60 * 60 * 24 * 30,
+    // });
+    // cookies.delete("_program", { path: "/" });
   } else {
     return fail(400, { credentials: true, message: await response.json() });
   }

@@ -1,5 +1,4 @@
 function toggleChatbot() {
-    console.log(window.innerWidth);
     const container = document.querySelector("#chatbot-container");
     container.classList.toggle("chatbot-container-closed");
 

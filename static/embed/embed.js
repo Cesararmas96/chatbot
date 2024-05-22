@@ -2,9 +2,7 @@
 let llm = ConfigBot.Llm !== undefined ? `&llm=${ConfigBot.Llm}` : '';
 
 const Url =  `${ConfigBot.BotLink}?botName=${ConfigBot.BotName}${llm}&apiKey=${ConfigBot.ApiKey}`;
-console.log(Url)
 function toggleChatbot() {
-    console.log(window.innerWidth);
     if (window.innerWidth < 768) {
         return window.open(Url, "_blank");
     }
@@ -51,6 +49,5 @@ document.addEventListener("DOMContentLoaded", function () {
     // Mostrar el botón del chatbot (chatbot-fab) siempre
     chatBotFab.classList.remove("button-hidden");
 
-    console.log(Url)
 
 });

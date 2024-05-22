@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const head = document.querySelector("head");
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "http://localhost:5173/embed/style.css";
+    link.href = "https://navai.trocdigital.net/embed/style.css";
     head.appendChild(link);
 
     const chatBotContainer = document.createElement("div");

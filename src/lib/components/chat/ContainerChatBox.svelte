@@ -10,6 +10,7 @@
   export let isLoading;
   export let messages;
   export let query;
+  export let botName;
   import { afterUpdate } from "svelte";
   let element: HTMLDivElement;
   // Either afterUpdate()
@@ -33,11 +34,9 @@
           <QuestionMessage {message} />
           <BotMessage
             {message}
-            NumberMessages={index}
             on:scrollToBottom={() => scrollToBottom(element)}
             {handleRegenerate}
             last={index === messages.length - 1 ? "true" : "false"}
-            {isLoading}
           />
         {/each}
 
@@ -50,7 +49,7 @@
       <LoadingMessage  />
       <LoadingMessageBot />
     {:else}
-      <WelcomeChat />
+      <WelcomeChat {botName}/>
     {/if}
   </div>
 </div>

@@ -11,7 +11,6 @@
   let botName = $page.url.searchParams.get("botName")
   let llm = $page.url.searchParams.get("llm") || "vertex";
 
-  console.log(botName)
 
   const fetchData = async (lastquery = "") => {
     isLoading = true;
@@ -35,7 +34,6 @@
 
       messages = [...messages, { text: answer, query: question }];
       query = "";
-      console.log(messages)
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     } finally {

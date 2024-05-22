@@ -1,7 +1,12 @@
+
+let llm = ConfigBot.Llm !== undefined ? `&llm=${ConfigBot.Llm}` : '';
+
+const Url =  `${ConfigBot.BotLink}?botName=${ConfigBot.BotName}${llm}&apiKey=${ConfigBot.ApiKey}`;
+console.log(Url)
 function toggleChatbot() {
     console.log(window.innerWidth);
     if (window.innerWidth < 768) {
-        return window.open(Troc.BotURL, "_blank");
+        return window.open(Url, "_blank");
     }
     const container = document.querySelector("#chatbot-container");
     container.classList.toggle("chatbot-container-closed");
@@ -18,10 +23,9 @@ document.addEventListener("DOMContentLoaded", function () {
     chatBotContainer.id = "chatbot-container";
     chatBotContainer.classList.add("chatbot-container-closed");
 
-    chatBotName = Troc.NameBot;
-    console.log(chatBotName)
+    // chatBotName = Troc.nombre;
     const chatBotIframe = document.createElement("iframe");
-    chatBotIframe.src = `${Troc.BotURL}?nameBot=${encodeURIComponent(chatBotName)}`;
+    chatBotIframe.src = Url;
 
     chatBotIframe.id = "chatbot-iframe";
     chatBotContainer.appendChild(chatBotIframe);
@@ -36,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Añadir icono al botón del chatbot
     const chatBotFabIcon = document.createElement("img");
-    chatBotFabIcon.src = Troc.Logo; // URL de la imagen del icono
+    chatBotFabIcon.src = ConfigBot.Logo; // URL de la imagen del icono
     
     chatBotFabIcon.id = "chatbot-picture";
     chatBotFab.appendChild(chatBotFabIcon);
@@ -46,4 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Mostrar el botón del chatbot (chatbot-fab) siempre
     chatBotFab.classList.remove("button-hidden");
+
+    console.log(Url)
+
 });

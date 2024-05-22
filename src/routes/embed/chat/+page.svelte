@@ -9,11 +9,14 @@
   let query = "";
   let apiKey = $page.url.searchParams.get("apiKey");
   let botName = $page.url.searchParams.get("botName")
-  
+  let llm = $page.url.searchParams.get("llm") || "vertex";
+
+  console.log(botName)
+
   const fetchData = async (lastquery = "") => {
     isLoading = true;
 
-    const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${botName}`;
+    const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${botName}?use_llm=${llm}`;
 
     try {
       const { answer, question } = await getApiData(

@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     chatBotContainer.id = "chatbot-container";
     chatBotContainer.classList.add("chatbot-container-closed");
 
-    chatBotName = Troc.nombre;
+    chatBotName = ConfigBot.BotName;
     const chatBotIframe = document.createElement("iframe");
     chatBotIframe.src = Url;
 

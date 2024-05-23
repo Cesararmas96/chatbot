@@ -30,14 +30,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.body.appendChild(chatBotContainer);
 
-    // Crear y agregar el botón del chatbot
     const chatBotFab = document.createElement("button");
     chatBotFab.id = "chatbot-fab";
     chatBotFab.classList.add("button-hidden");
 
-    // Añadir icono al botón del chatbot
     const chatBotFabIcon = document.createElement("img");
-    chatBotFabIcon.src = ConfigBot.Logo; // URL de la imagen del icono
+    chatBotFabIcon.src = ConfigBot.Logo;
     
     chatBotFabIcon.id = "chatbot-picture";
     chatBotFab.appendChild(chatBotFabIcon);
@@ -45,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
     chatBotFab.addEventListener("click", toggleChatbot);
     document.body.appendChild(chatBotFab);
 
-    // Mostrar el botón del chatbot (chatbot-fab) siempre
     chatBotFab.classList.remove("button-hidden");
 
 

@@ -45,7 +45,8 @@
     await fetchData(lastquery);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: Event) => {
+    event.preventDefault();
     await fetchData();
   };
   

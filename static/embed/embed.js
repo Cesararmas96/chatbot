@@ -1,4 +1,3 @@
-console.log('aw')
 let llm = ConfigBot.Llm !== undefined ? `&llm=${ConfigBot.Llm}` : '';
 
 const Url =  `${ConfigBot.BotLink}?botName=${ConfigBot.BotName}${llm}&apiKey=${ConfigBot.ApiKey}`;

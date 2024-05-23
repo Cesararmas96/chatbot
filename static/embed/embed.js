@@ -21,12 +21,12 @@ document.addEventListener("DOMContentLoaded", function () {
     chatBotContainer.id = "chatbot-container";
     chatBotContainer.classList.add("chatbot-container-closed");
 
-    // chatBotName = Troc.nombre;
-    // const chatBotIframe = document.createElement("iframe");
-    // chatBotIframe.src = Url;
+    chatBotName = Troc.nombre;
+    const chatBotIframe = document.createElement("iframe");
+    chatBotIframe.src = Url;
 
-    // chatBotIframe.id = "chatbot-iframe";
-    // chatBotContainer.appendChild(chatBotIframe);
+    chatBotIframe.id = "chatbot-iframe";
+    chatBotContainer.appendChild(chatBotIframe);
 
 
     document.body.appendChild(chatBotContainer);

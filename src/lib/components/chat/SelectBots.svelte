@@ -36,7 +36,7 @@
 		<div>
 			<button
 				type="button"
-				class="inline-flex justify-center w-full rounded-md px-4 py-2 bg-white text-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
+				class="inline-flex   justify-center w-full rounded-md px-4 py-2 bg-white text-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
 				on:click={() => showOptions.update((n) => !n)}
 			>
 				{#if $selectedBot && NameChatBot[$selectedBot]}
@@ -62,12 +62,12 @@
 
 		{#if $showOptions}
 			<div
-				class="absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 dark:bg-gray-600"
+				class="absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 dark:bg-gray-600 "
 			>
 				<div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
 					{#each Object.keys(NameChatBot) as key}
 						<button
-							class="block px-4 py-2 text-sm text-gray-700 dark:text-white hover:bg-gray-500 w-full text-left"
+							class="block px-4 py-2 text-sm text-gray-700 dark:text-white black:hover:bg-gray-500 w-full text-left hover:bg-slate-400 hover:text-white"
 							role="menuitem"
 							on:click={() => handleSelect(key)}
 						>

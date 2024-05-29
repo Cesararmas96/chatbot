@@ -4,15 +4,15 @@
   import LoadingMessage from "./LoadingMessage.svelte";
   import QuestionMessage from "./QuestionMessage.svelte";
   import WelcomeChat from "./WelcomeChat.svelte";
+  import { afterUpdate } from "svelte";
+ 
   export let handleRegenerate;
+  export let messages;
+  export let isLoading;
+ 
+  let element: HTMLDivElement;
   let last;
   let NumberMessage;
-  export let isLoading;
-  export let messages;
-  export let query;
-  export let botName;
-  import { afterUpdate } from "svelte";
-  let element: HTMLDivElement;
   // Either afterUpdate()
 
   afterUpdate(() => {
@@ -25,7 +25,7 @@
 </script>
 
 <div
-  class="flex flex-col h-full overflow-x-auto rounded-2xl bg-gray-100 mt-3 chatbox dark:bg-gray-800"
+  class="flex flex-col h-full overflow-x-auto rounded-2xl bg-gray-100  chatbox dark:bg-gray-800"
 >
   <div class="flex flex-col h-full">
     {#if messages && messages.length > 0}
@@ -49,7 +49,7 @@
       <LoadingMessage  />
       <LoadingMessageBot />
     {:else}
-      <WelcomeChat {botName}/>
+      <WelcomeChat/>
     {/if}
   </div>
 </div>

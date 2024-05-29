@@ -9,7 +9,7 @@
 <div class="sm:ml-64">
   <Header />
 
-  <div class="flex h-screen antialiased text-gray-800">
+  <div class="flex h-screen antialiased text-gray-800  ">
     <div class="flex flex-row h-full w-full overflow-x-hidden">
       {#if !shared}
         <SidebarBot />

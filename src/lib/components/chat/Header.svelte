@@ -2,13 +2,14 @@
   import { DarkMode, Navbar } from "flowbite-svelte";
   import { page } from "$app/stores";
   import { NameChatBot } from "$lib/helpers/commons";
+  import SelectBots from "./SelectBots.svelte";
 
   const bot = $page.params.bot.toString();
   let shared = $page.url.searchParams.get("shared") === "true";
 
 </script>
 
-<header class="w-full mx-auto bg-white dark:bg-slate-950">
+<header class="w-full mx-auto mb-0  dark:bg-slate-950">
   {#if !shared}
     <button
       id="toggle-drawer-button"
@@ -33,13 +34,16 @@
     </button>
   {/if}
 
-  <Navbar>
+  <Navbar class=" pb-0">
+    
     <span class="ml-5 whitespace-nowrap text-xl font-semibold dark:text-white">
-      {NameChatBot[bot]} ChatBot
+
+      <SelectBots />
+
     </span>
     <div class="flex items-center ml-auto">
       <DarkMode
-        class="inline-block dark:hover:text-white hover:text-gray-900"
+        class="inline-block dark:hover:text-white hover:text-gray-900 mr-5"
       />
     </div>
   </Navbar>

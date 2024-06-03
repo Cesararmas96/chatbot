@@ -106,7 +106,7 @@
     </ul>
     <div class="mt-auto pb-5">
       <ul>
-        <!-- <li>
+        <li>
           <a
             href="/{bot}/setting"
           class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
@@ -131,7 +131,7 @@
             <span class="ms-3">Setting</span>
             
           </a>
-        </li> -->
+        </li>
         <li class="group text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
           <form action="/logout" method="POST" use:enhance class="w-full">
             <button

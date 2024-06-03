@@ -10,7 +10,7 @@
     };
   </script>
   
-  <form on:submit={handleSubmit}>
+  <form on:submit={handleSubmit} class="mr-2 ml-2">
     <div class="flex flex-row items-center h-16 rounded-xl w-full">
       <div class="flex-grow">
         <div class="relative">
@@ -19,7 +19,7 @@
             type="text"
             disabled={isLoading}
             bind:value={query}
-            class="dark:text-white dark:bg-gray-800 flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-10 h-10 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}"
+            class="dark:text-white text-sm md:text-base dark:bg-gray-800 flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-10 h-10 {isLoading ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''}"
           />
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             {#if isLoading}

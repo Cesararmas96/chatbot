@@ -60,7 +60,7 @@
   <button
     id="close-drawer-button"
     type="button"
-    class="sm:hidden absolute top-4 right-4 p-2  hover:text-gray-700 focus:outline-none"
+    class="sm:hidden absolute top-3 right-4 p-2 text-sm hover:text-gray-700 focus:outline-none"
   >
     <span class="sr-only">Close sidebar</span>
     <svg

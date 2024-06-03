@@ -34,17 +34,4 @@
     </button>
   {/if}
 
-  <Navbar class=" pb-0">
-    
-    <span class="ml-5 whitespace-nowrap text-xl font-semibold dark:text-white">
-
-      <SelectBots />
-
-    </span>
-    <div class="flex items-center ml-auto">
-      <DarkMode
-        class="inline-block dark:hover:text-white hover:text-gray-900 mr-5"
-      />
-    </div>
-  </Navbar>
 </header>

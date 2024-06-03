@@ -11,7 +11,7 @@
 </script>
 
 <div class="flex flex-col justify-center items-center w-full h-full">
-  <img src="/troc.png" width="150" alt="troc-logo" />
-  <h2 class="font-bold text-lg dark:text-white">Welcome Back to {getNameChatBot(bot, NameChatBot) !== "" ? getNameChatBot(bot, NameChatBot) : botName}  Chatbot</h2>
-  <p class="text-gray-500">How can I help you today?</p>
+  <img src="/troc.png" class="w-32 md:w-36" alt="troc-logo" />
+  <h2 class="font-bold md:text-lg dark:text-white text-sm">Welcome Back to {getNameChatBot(bot, NameChatBot) !== "" ? getNameChatBot(bot, NameChatBot) : botName}  Chatbot</h2>
+  <p class="text-gray-500 md:text-base text-xs">How can I help you today?</p>
 </div>

@@ -33,10 +33,9 @@
 
 <div class="flex items-center">
 	<div class="relative inline-block text-left custom-select">
-		<div>
 			<button
 				type="button"
-				class="inline-flex   justify-center w-full rounded-md px-4 py-2 bg-white text-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
+				class="inline-flex  ml-0 justify-center w-full rounded-md  py-2 bg-white text-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
 				on:click={() => showOptions.update((n) => !n)}
 			>
 				{#if $selectedBot && NameChatBot[$selectedBot]}
@@ -58,7 +57,6 @@
 					/>
 				</svg>
 			</button>
-		</div>
 
 		{#if $showOptions}
 			<div

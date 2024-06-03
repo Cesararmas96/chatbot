@@ -9,4 +9,6 @@
       <span class="ml-5 whitespace-nowrap text-xl font-semibold dark:text-white">{NameChatBot[bot]} ChatBot</span>
       <DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
     </nav>x
+
+    no
   </header>

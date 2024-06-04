@@ -20,13 +20,13 @@
 			>
 
 		</a>
-		<h2 class="text-xl font-semibold ml-2">Setting</h2>
+		<h2 class="text-xl font-semibold ml-2 dark:text-white">Setting</h2>
 	</div>
 
 	<form action="">
 		<div class="border-dashed border p-3 my-2 rounded-lg">
 			<div class="mb-5 text-lg">
-				<h3 class="font-semibold">Chatbot</h3>
+				<h3 class="font-semibold dark:text-white">Chatbot</h3>
 
 				<p class="text-xs text-gray-500">
 					Lorem ipsum dolor, sit amet consectetur adipisicing elit. A dolorem illo nisi nam vero
@@ -74,7 +74,7 @@
 
 		<div class="border-dashed border p-3 my-6 rounded-lg">
 			<div class="mb-5 text-lg">
-				<h3 class="font-semibold">Models</h3>
+				<h3 class="font-semibold dark:text-white">Models</h3>
 
 				<p class="text-xs text-gray-500">
 					Lorem ipsum dolor, sit amet consectetur adipisicing elit. A dolorem illo nisi nam vero
@@ -143,7 +143,7 @@
 
 		<div class="border-dashed border p-3 my-6 rounded-lg">
 			<div class="mb-5 text-lg">
-				<h3 class="font-semibold">LLM Config</h3>
+				<h3 class="font-semibold dark:text-white">LLM Config</h3>
 
 				<p class="text-xs text-gray-500">
 					Lorem ipsum dolor, sit amet consectetur adipisicing elit. A dolorem illo nisi nam vero
@@ -162,25 +162,25 @@
 				<div>
 					<Label class="text-sm mb-1">Max Token</Label>
 					<Range min="0" max="10" bind:value={minmaxValue} />
-					<p>Value: {minmaxValue}</p>
+					<p class="dark:text-gray-500 text-sm">Value: {minmaxValue}</p>
 				</div>
 				<div>
 					<Label class="text-sm mb-1">Top K</Label>
 					<Range min="0" max="10" bind:value={minmaxValue} />
-					<p>Value: {minmaxValue}</p>
+					<p class="dark:text-gray-500 text-sm">Value: {minmaxValue}</p>
 				</div>
 
 				<div>
 					<Label class="text-sm mb-1">Top P</Label>
 					<Range min="0" max="10" bind:value={minmaxValue} />
-					<p>Value: {minmaxValue}</p>
+					<p class="dark:text-gray-500 text-sm">Value: {minmaxValue}</p>
 				</div>
 			</div>
 		</div>
 
 		<div class="border-dashed border p-3 my-6 rounded-lg">
 			<div class="mb-5 text-lg">
-				<h3 class="font-semibold">Vector Database</h3>
+				<h3 class="font-semibold dark:text-white">Vector Database</h3>
 
 				<p class="text-xs text-gray-500">
 					Lorem ipsum dolor, sit amet consectetur adipisicing elit. A dolorem illo nisi nam vero
@@ -213,7 +213,7 @@
 
 		<div class="border-dashed border p-3 my-6 rounded-lg">
 			<div class="mb-5 text-lg">
-				<h3 class="font-semibold">Pre Instructionse</h3>
+				<h3 class="font-semibold dark:text-white">Pre Instructionse</h3>
 
 				<p class="text-xs text-gray-500">
 					Lorem ipsum dolor, sit amet consectetur adipisicing elit. A dolorem illo nisi nam vero
@@ -232,7 +232,7 @@
 
 		<div class="border-dashed border p-3 my-6 rounded-lg">
 			<div class="mb-5 text-lg">
-				<h3 class="font-semibold">Knowledge Base</h3>
+				<h3 class="font-semibold dark:text-white">Knowledge Base</h3>
 
 				<p class="text-xs text-gray-500">
 					Lorem ipsum dolor, sit amet consectetur adipisicing elit. A dolorem illo nisi nam vero

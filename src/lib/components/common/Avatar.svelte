@@ -1,8 +1,6 @@
 <script lang="ts">
   import { storeUser } from "$lib/stores";
   export let showFullName: boolean = false;
-
-  let user = { first_name: "", last_name: "" };
 </script>
 
 <div class="flex flex-row items-center rounded-xl p-2">
@@ -12,11 +10,15 @@
     {#if !$storeUser}
       GU
     {:else}
-      {$storeUser.first_name.charAt(0)}{$storeUser.last_name.charAt(0)}
+      {#if $storeUser.first_name && $storeUser.last_name}
+        {$storeUser.first_name.charAt(0)}{$storeUser.last_name.charAt(0)}
+      {:else}
+        GU
+      {/if}
     {/if}
   </div>
 
-  {#if showFullName}
+  {#if showFullName && $storeUser && $storeUser.first_name && $storeUser.last_name}
     <div class="ml-2 font-semibold dark:text-white">
       {$storeUser.first_name} {$storeUser.last_name}
     </div>

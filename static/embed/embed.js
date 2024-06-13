@@ -36,14 +36,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const chatBotFabIcon = document.createElement("img");
     chatBotFabIcon.src = ConfigBot.Logo;
-    
-    chatBotFabIcon.id = "chatbot-picture";
-    chatBotFab.appendChild(chatBotFabIcon);
 
-    chatBotFab.addEventListener("click", toggleChatbot);
-    document.body.appendChild(chatBotFab);
+    
+//     chatBotFabIcon.id = "chatbot-picture";
+//     chatBotFab.appendChild(chatBotFabIcon);
+
+//     chatBotFab.addEventListener("click", toggleChatbot);
+//     document.body.appendChild(chatBotFab);
+
 
     chatBotFab.classList.remove("button-hidden");
 
 
-});
+
+ });

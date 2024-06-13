@@ -1,5 +1,5 @@
 {
-	"name": "T-ROC Chatbot",
+	"name": "trocchatbot",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -12,7 +12,7 @@
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-netlify": "^4.2.0",
-		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/kit": "^2.5.10",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"autoprefixer": "^10.4.19",
 		"flowbite": "^2.3.0",
@@ -37,7 +37,6 @@
 		"snarkdown": "^2.0.0",
 		"svelte-markdown": "^0.4.1",
 		"svelte-preprocess": "^5.1.4",
-		"svelte-window": "^1.2.5",
 		"tailwind-merge": "^2.3.0"
 	}
 }

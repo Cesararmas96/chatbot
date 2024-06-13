@@ -1,4 +1,4 @@
-FROM node:18-alpine AS navigator-chatbots
+FROM node:22-alpine3.19 AS navigator-chatbots
 WORKDIR /app
 COPY . .
 RUN npm install -g pnpm && \

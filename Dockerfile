@@ -1,9 +1,16 @@
-FROM node:22-alpine3.19 AS navigator-chatbots
+# Usar una imagen base oficial de Node.js
+FROM node:20-alpine
+# Establecer el directorio de trabajo en el contenedor
 WORKDIR /app
+# Copiar los archivos de la aplicación al contenedor
+COPY package*.json ./
+# Instalar las dependencias de la aplicación
+RUN npm install
+# Copiar el resto de los archivos de la aplicación al contenedor
 COPY . .
-RUN npm install -g pnpm && \
-    pnpm install
-RUN pnpm run build
-RUN rm -f pnpm-lock.yaml && \
-    rm -rf src/ static/ docker-compose.yml
-CMD ["node", "--max-old-space-size=4096", "build/index.js"]
+# Construir la aplicación
+RUN npm run build
+# Exponer el puerto que usará la aplicación
+EXPOSE 3000
+# Comando para ejecutar la aplicación
+CMD ["npm", "run", "preview"]

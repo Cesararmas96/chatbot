@@ -12,6 +12,8 @@
 	// import SettingModal from "$lib/components/chat/SettingModal.svelte";
 	import { DarkMode } from 'flowbite-svelte'
 	import SelectBots from '$lib/components/chat/SelectBots.svelte'
+	import SidebarBot from "$lib/components/SidebarBot.svelte";
+	import Header from "$lib/components/chat/Header.svelte";
 
 	export let data
 	const { user } = data
@@ -66,13 +68,33 @@
 	}
 </script>
 
+
+<div class="sm:ml-64 ">
+	<Header />
+	 <div class="flex flex-row h-full w-full overflow-x-hidden">
+		{#if !shared}
+		  <SidebarBot />
+		{/if}
+		<div class="flex flex-col h-screen  flex-auto p-2 " >
+		 
+			<div class="flex justify-between px-2 py-2">
+				<SelectBots/>
+				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
+			</div>
+			<ContainerChatBox {isLoading} {messages} {handleRegenerate} />
+			<ChatInput {isLoading} bind:query on:submit={handleSubmit} />
+		</div>
+	  </div>
+  </div>
+  
+
 <!-- <FloatingActionButton on:click={toggleSettings} /> -->
-<div class="flex justify-between px-2 py-2">
+<!-- <div class="flex justify-between px-2 py-2">
 	<SelectBots/>
 	<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
 </div>
 <ContainerChatBox {isLoading} {messages} {handleRegenerate} />
-<ChatInput {isLoading} bind:query on:submit={handleSubmit} />
+<ChatInput {isLoading} bind:query on:submit={handleSubmit} /> -->
 <!-- {#if showSettings}
 <SettingModal on:close={toggleSettings} />
 {/if} -->

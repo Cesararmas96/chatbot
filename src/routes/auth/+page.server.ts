@@ -4,13 +4,18 @@ import type { Action, Actions, PageServerLoad } from "./$types";
 import { encrypt } from "$lib/helpers/auth";
 
 export const load: PageServerLoad = async ({ locals }) => {
+  console.log("PageServerLoad: Checking if user is logged in");
   if (locals.user) throw redirect(302, "/");
 };
 
 const login: Action = async ({ cookies, request }) => {
+  console.log("Login Action: Received login request");
+
   const data = await request.formData();
   const username = data.get("username");
   const password = data.get("password");
+
+  console.log("Login Action: Form Data", { username, password });
 
   if (
     typeof username !== "string" ||
@@ -18,10 +23,16 @@ const login: Action = async ({ cookies, request }) => {
     !username ||
     !password
   ) {
+    console.log("Login Action: Invalid form data");
     return fail(400, { invalid: true });
   }
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/login`, {
+  console.log("Login Action: Making API request with", { username, password });
+
+  const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/login`;
+  console.log("Login Action: API URL", apiUrl);
+
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
       "x-auth-method": "BasicAuth",
@@ -30,12 +41,18 @@ const login: Action = async ({ cookies, request }) => {
     body: JSON.stringify({ username, password }),
   });
 
+  console.log("Login Action: API Response Status", response.status);
+
   if (response.ok) {
     const data = await response.json();
+    console.log("Login Action: API Response Data", data);
+
     const length = Math.ceil(data.token.length / 3);
     const token1 = encrypt(data.token.substring(0, length));
     const token2 = encrypt(data.token.substring(length, 2 * length));
     const token3 = encrypt(data.token.substring(2 * length));
+
+    console.log("Login Action: Encrypted Tokens", { token1, token2, token3 });
 
     cookies.set("_session1", token1, {
       path: "/",
@@ -60,9 +77,13 @@ const login: Action = async ({ cookies, request }) => {
     });
     cookies.delete("_program", { path: "/" });
   } else {
-    return fail(400, { credentials: true, message: await response.json() });
+    const errorData = await response.json();
+    console.error("Login Action: API Error", errorData);
+    return fail(400, { credentials: true, message: errorData });
   }
+
   // redirect the user
+  console.log("Login Action: Redirecting to /home");
   throw redirect(302, "/home");
 };
 

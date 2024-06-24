@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { env } from '$env/dynamic/public'
   import { Button, Input, Label } from "flowbite-svelte";
   import ImgLogin from "../../assets/slider.png";
   import { enhance } from "$app/forms";
@@ -14,8 +15,9 @@
     }
   };
 </script>
-
-<main class="h-screen">
+{import.meta.env.VITE_API_URL}
+{ env.PUBLIC_API_KEY }
+<main class="h-screen" >
   <div class="dark:text-white-dark text-black">
     <div class="flex bg-white">
       <div

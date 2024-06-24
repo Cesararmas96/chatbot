@@ -32,13 +32,10 @@
 >
   <div class="flex flex-col h-full">
 
-    <div class="bg-red-500">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero, velit et, qui officiis numquam id sed quisquam ea vitae fugit commodi aperiam laboriosam eveniet quae soluta! Voluptates aspernatur laudantium numquam!
-    </div>
     {#if messages && messages.length > 0}
       <div class="grid grid-cols-12 gap-y-2 overflow-auto" bind:this={element}>
         {#each messages as message, index}
-          <QuestionMessage {message} />
+         <QuestionMessage {message} /> 
           <BotMessage
             {message}
             on:scrollToBottom={() => scrollToBottom(element)}
@@ -48,7 +45,7 @@
         {/each}
 
         {#if isLoading}
-          <LoadingMessage  />
+          <!-- <LoadingMessage  /> -->
           <LoadingMessageBot />
         {/if}
       </div>

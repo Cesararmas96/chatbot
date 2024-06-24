@@ -21,6 +21,7 @@
   let like = false;
   let clipboard = marked(message.text);
 
+
   clipboard = convert(clipboard, options);
 
   
@@ -71,7 +72,6 @@
       
         <!-- <div use:concurrent={{ interval: 30 }} data-static> -->
           {@html marked(message.text)}
-
         <!-- </div> -->
       
         
@@ -88,7 +88,6 @@
               /></svg
             >
           </button>
-
           {#if last === "true"}
             <button
               class="mr-4"

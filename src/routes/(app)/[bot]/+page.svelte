@@ -34,14 +34,14 @@
 		shared = $page.url.searchParams.get('shared') === 'true'
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
 		hidellm = $page.url.searchParams.get('hidellm') === 'true'
-		llm = $page.url.searchParams.get('llm') || 'vertex'
+		// llm = $page.url.searchParams.get('llm') || 'vertex'
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {
-			const { answer, question } = await fetchChatData(bot, llm, query || lastQuery)
-			messages = [...messages, { text: answer, query: question }]
+			const { response, question } = await fetchChatData(bot, query || lastQuery)
+			messages = [...messages, { text: response, query: query }]
 			query = ''
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)

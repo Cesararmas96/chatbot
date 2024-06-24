@@ -45,7 +45,7 @@
         {/each}
 
         {#if isLoading}
-          <LoadingMessage  />
+          <!-- <LoadingMessage  /> -->
           <LoadingMessageBot />
         {/if}
       </div>

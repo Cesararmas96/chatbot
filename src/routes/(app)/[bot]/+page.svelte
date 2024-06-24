@@ -33,15 +33,14 @@
 		bot = $page.params.bot.toString()
 		shared = $page.url.searchParams.get('shared') === 'true'
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
-		// hidellm = $page.url.searchParams.get('hidellm') === 'true'
+		hidellm = $page.url.searchParams.get('hidellm') === 'true'
 		// llm = $page.url.searchParams.get('llm') || 'vertex'
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {
-			// const { answer, question } = await fetchChatData(bot, llm, query || lastQuery)
-			const { response } = await fetchChatData(bot, query || lastQuery)
+			const { response, question } = await fetchChatData(bot, query || lastQuery)
 			messages = [...messages, { text: response, query: query }]
 			query = ''
 		} catch (error) {

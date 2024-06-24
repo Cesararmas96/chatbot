@@ -21,6 +21,7 @@
   let like = false;
   let clipboard = marked(message.text);
 
+
   clipboard = convert(clipboard, options);
 
   
@@ -69,10 +70,9 @@
       <div  class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl dark:bg-gray-600 dark:text-white">
         
       
-        <!-- <div use:concurrent={{ interval: 30 }} data-static> -->
+        <div use:concurrent={{ interval: 30 }} data-static>
           {@html marked(message.text)}
-
-        <!-- </div> -->
+        </div>
       
         
         <div class="flex justify-end mt-5 mb-2">

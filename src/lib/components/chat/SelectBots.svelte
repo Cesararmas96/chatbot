@@ -31,7 +31,7 @@
 	})
 </script>
 
-<div class="flex items-center">
+<div class="flex items-center z-10">
 	<div class="relative inline-block text-left custom-select">
 			<button
 				type="button"

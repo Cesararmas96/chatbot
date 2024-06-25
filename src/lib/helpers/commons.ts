@@ -5,7 +5,7 @@ export enum ApiChatBot {
   // oddie = "Oddie",
 
   // Dev
-  trocers = "TROCers",
+  trocers = "AskPage",
   bose = "BoseBot",
   askbrett = "AskBrett",
   oddie = "Oddie",

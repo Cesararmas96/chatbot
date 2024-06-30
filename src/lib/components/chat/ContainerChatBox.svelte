@@ -182,14 +182,7 @@
       console.log('Por favor, crea una conexión primero');
       return;
     }
-
     console.log('Enviando tarea... por favor espera');
-
-    if (text.trim() === '') {
-      alert('Por favor ingresa una tarea');
-      return;
-    }
-
     try {
       await repeat(sessionInfo.session_id, text);
       console.log('Tarea enviada exitosamente');

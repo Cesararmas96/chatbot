@@ -18,6 +18,10 @@ aside.oddie {
     background: linear-gradient(100deg, rgb(113, 75, 103) 1%, rgba(239, 80, 157, 1) 100%);
 }
 
+aside{
+  background-color: #1c64f2;
+}
+
 
   /* #selectbot {
     background: rgb(26, 211, 187);
@@ -29,6 +33,8 @@ aside.oddie {
     color: white;
     font-weight: bold;
   } */
+
+
 
   .namebot.trocers{
     color: #ef509d;

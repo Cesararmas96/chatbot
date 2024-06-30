@@ -60,7 +60,7 @@
 
   // Montar typewriter
   let phrase = marked(message.text);
-  console.log(phrase)
+  // console.log(phrase)
   let typedChars = ""
   let index = 0
 
@@ -86,10 +86,10 @@
         
       
         <!-- <div use:concurrent={{ interval: 30 }} data-static> -->
-          <!-- {@html marked(message.text)} -->
+          {@html marked(message.text)}
         <!-- </div> -->
       
-        {@html (typedChars)}
+        <!-- {@html (typedChars)} -->
         
         <div class="flex justify-end mt-5 mb-2">
           <button class="mr-4" on:click={copyToClipboard} title="Copy">

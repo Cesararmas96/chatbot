@@ -15,7 +15,7 @@
   const fetchData = async (lastquery = "") => {
     isLoading = true;
 
-    const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${botName}?use_llm=${llm}`;
+    const apiUrl = `https://ai-dev.trocdigital.net/api/v1/chat/${botName}`;
 
     try {
       const { answer, question } = await getApiData(

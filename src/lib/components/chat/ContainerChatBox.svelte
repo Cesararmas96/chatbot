@@ -22,7 +22,7 @@
 	const SERVER_URL = 'https://api.heygen.com'
 
 	async function createNewSession() {
-		console.log('Creando y iniciando sesión... por favor espera')
+		console.log('Creating and logging in... please wait')
 		const avatar = 'josh_lite3_20230714'
 		const voice = '077ab11b14f04ce0b49b5f6e5cc20979'
 
@@ -33,7 +33,7 @@
 			peerConnection = new RTCPeerConnection({ iceServers: iceServers })
 
 			peerConnection.ontrack = (event) => {
-				console.log('Recibido el flujo de audio/video')
+				console.log('Received audio/video stream')
 				if (event.track.kind === 'audio' || event.track.kind === 'video') {
 					mediaElement.srcObject = event.streams[0]
 				}
@@ -47,14 +47,14 @@
 			const remoteDescription = new RTCSessionDescription(serverSdp)
 			await peerConnection.setRemoteDescription(remoteDescription)
 
-			sendSuccessNotification('Creación de sesión completada')
-			sendSuccessNotification('Iniciando sesión... por favor espera')
+			sendSuccessNotification('Session creation completed')
+			sendSuccessNotification('Logging in... please wait')
 
 			const localDescription = await peerConnection.createAnswer()
 			await peerConnection.setLocalDescription(localDescription)
 
 			peerConnection.onicecandidate = ({ candidate }) => {
-				console.log('Recibido candidato ICE:', candidate)
+				console.log('ICE candidate received:', candidate)
 				if (candidate) {
 					handleICE(sessionInfo.session_id, candidate.toJSON())
 				}
@@ -62,7 +62,7 @@
 
 			peerConnection.oniceconnectionstatechange = (event) => {
 				sendSuccessNotification(
-					`Estado de conexión ICE cambiado a: ${peerConnection.iceConnectionState}`
+					`ICE connection status changed to: ${peerConnection.iceConnectionState}`
 				)
 			}
 
@@ -73,17 +73,17 @@
 				receiver.jitterBufferTarget = 500
 			})
 
-			sendSuccessNotification('Sesión iniciada exitosamente')
+			sendSuccessNotification('Session started successfully')
 			isLoadingAvatar = true
 		} catch (error) {
-			console.error('Error al crear o iniciar la sesión:', error)
-			sendErrorNotification('Error al crear o iniciar la sesión. Por favor, inténtalo de nuevo.')
+			console.error('Error creating or logging in:', error)
+			sendErrorNotification('Error creating or starting the session. Please try again.')
 		}
 	}
 
 	function onMessage(event) {
 		const message = event.data
-		console.log('Mensaje recibido:', message)
+		console.log('Message received:', message)
 		// Procesar el mensaje recibido pero no llamar a handleSend aquí
 	}
 
@@ -163,7 +163,7 @@
 
 	async function stopSession() {
 		if (!sessionInfo || !sessionInfo.session_id) {
-			console.log('No hay sesión activa para detener')
+			console.log('No active session to stop')
 			return
 		}
 
@@ -176,27 +176,27 @@
 				},
 				body: JSON.stringify({ session_id: sessionInfo.session_id })
 			})
-			console.log('Sesión detenida exitosamente')
+			console.log('Session stopped successfully')
 			sessionInfo = null
 		} catch (error) {
-			console.error('Error al detener la sesión:', error)
-			console.log('Error al detener la sesión. Por favor, inténtalo de nuevo.')
+			console.error('Error stopping session:', error)
+			console.log('Error stopping session. Please try again.')
 		}
 	}
 
 	// Manejar el envío de la tarea
 	async function handleSend(text) {
 		if (!sessionInfo || !sessionInfo.session_id) {
-			console.log('Por favor, crea una conexión primero')
+			console.log('Please create a connection first')
 			return
 		}
-		console.log('Enviando tarea... por favor espera')
+		console.log('Sending assignment... please wait')
 		try {
 			await repeat(sessionInfo.session_id, text)
-			console.log('Tarea enviada exitosamente')
+			console.log('Task submitted successfully')
 		} catch (error) {
-			console.error('Error al enviar la tarea:', error)
-			console.log('Error al enviar la tarea. Por favor, inténtalo de nuevo.')
+			console.error('Error submitting assignment:', error)
+			console.log('Error submitting assignment. Please try again.')
 		}
 	}
 

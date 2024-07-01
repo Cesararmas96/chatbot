@@ -57,6 +57,21 @@
       dispatch("scrollToBottom");
     }, 100);
   };
+
+  // Montar typewriter
+  let phrase = marked(message.text);
+  // console.log(phrase)
+  let typedChars = ""
+  let index = 0
+
+  const typeChar = () => {
+    typedChars += phrase[index]
+    index += 1;
+  }
+
+  const typing = () => setInterval(typeChar, 100)
+  typing()
+
 </script>
 
 <div class="col-start-1 col-end-8 p-3 rounded-lg">
@@ -74,6 +89,7 @@
           {@html marked(message.text)}
         <!-- </div> -->
       
+        <!-- {@html (typedChars)} -->
         
         <div class="flex justify-end mt-5 mb-2">
           <button class="mr-4" on:click={copyToClipboard} title="Copy">

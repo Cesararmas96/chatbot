@@ -16,7 +16,6 @@
   };
 </script>
 {import.meta.env.VITE_API_URL}
-{ env.PUBLIC_API_KEY }
 <main class="h-screen" >
   <div class="dark:text-white-dark text-black">
     <div class="flex bg-white">

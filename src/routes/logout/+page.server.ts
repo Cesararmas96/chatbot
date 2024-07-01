@@ -11,6 +11,6 @@ export const actions: Actions = {
     cookies.delete("_session2", { path: "/" });
     cookies.delete("_session3", { path: "/" });
 
-    throw redirect(302, "/auth");
+    throw redirect(302, "/login");
   },
 };

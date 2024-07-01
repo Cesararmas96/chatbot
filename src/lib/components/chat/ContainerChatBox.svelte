@@ -1,249 +1,349 @@
 <script lang="ts">
-  import BotMessage from "./BotMessage.svelte";
-  import LoadingMessageBot from "./LoadingMessageBot.svelte";
-  import LoadingMessage from "./LoadingMessage.svelte";
-  import QuestionMessage from "./QuestionMessage.svelte";
-  import WelcomeChat from "./WelcomeChat.svelte";
-  import { afterUpdate, onDestroy } from "svelte";
-  import VideoSection from "../video/VideoSection.svelte";
+	import BotMessage from './BotMessage.svelte'
+	import LoadingMessageBot from './LoadingMessageBot.svelte'
+	import LoadingMessage from './LoadingMessage.svelte'
+	import QuestionMessage from './QuestionMessage.svelte'
+	import WelcomeChat from './WelcomeChat.svelte'
+	import { afterUpdate, onDestroy } from 'svelte'
+	import VideoSection from '../video/VideoSection.svelte'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	export let handleRegenerate
+	export let messages
+	export let isLoading
 
-  export let handleRegenerate;
-  export let messages;
-  export let isLoading;
+	let isLoadingAvatar = false
+	let element: HTMLDivElement
+	let mediaElement: HTMLVideoElement
+	let statusMessages: string[] = []
+	let sessionInfo: any = null
+	let peerConnection: RTCPeerConnection | null = null
+	let avatarChat = false // Estado del interruptor
+	const apiKey = 'ZjcwYjJlMTI5Yjc5NDA4YWI1ZTUxZmY4MDMwZWU1ZTAtMTcxODEzMDkxMA=='
+	const SERVER_URL = 'https://api.heygen.com'
 
-  let element: HTMLDivElement;
-  let mediaElement: HTMLVideoElement;
-  let statusMessages: string[] = [];
-  let sessionInfo: any = null;
-  let peerConnection: RTCPeerConnection | null = null;
+	async function createNewSession() {
+		console.log('Creando y iniciando sesión... por favor espera')
+		const avatar = 'josh_lite3_20230714'
+		const voice = '077ab11b14f04ce0b49b5f6e5cc20979'
 
-  const apiKey = 'ZjcwYjJlMTI5Yjc5NDA4YWI1ZTUxZmY4MDMwZWU1ZTAtMTcxODEzMDkxMA==';
-  const SERVER_URL = 'https://api.heygen.com';
+		try {
+			sessionInfo = await newSession('low', avatar, voice)
+			const { sdp: serverSdp, ice_servers2: iceServers } = sessionInfo
 
-  async function createNewSession() {
-    console.log('Creando y iniciando sesión... por favor espera');
-    const avatar = 'josh_lite3_20230714';
-    const voice = '077ab11b14f04ce0b49b5f6e5cc20979';
+			peerConnection = new RTCPeerConnection({ iceServers: iceServers })
 
-    try {
-      sessionInfo = await newSession('low', avatar, voice);
-      const { sdp: serverSdp, ice_servers2: iceServers } = sessionInfo;
+			peerConnection.ontrack = (event) => {
+				console.log('Recibido el flujo de audio/video')
+				if (event.track.kind === 'audio' || event.track.kind === 'video') {
+					mediaElement.srcObject = event.streams[0]
+				}
+			}
 
-      peerConnection = new RTCPeerConnection({ iceServers: iceServers });
+			peerConnection.ondatachannel = (event) => {
+				const dataChannel = event.channel
+				dataChannel.onmessage = onMessage
+			}
 
-      peerConnection.ontrack = (event) => {
-        console.log('Recibido el flujo de audio/video');
-        if (event.track.kind === 'audio' || event.track.kind === 'video') {
-          mediaElement.srcObject = event.streams[0];
-        }
-      };
+			const remoteDescription = new RTCSessionDescription(serverSdp)
+			await peerConnection.setRemoteDescription(remoteDescription)
 
-      peerConnection.ondatachannel = (event) => {
-        const dataChannel = event.channel;
-        dataChannel.onmessage = onMessage;
-      };
+			sendSuccessNotification('Creación de sesión completada')
+			sendSuccessNotification('Iniciando sesión... por favor espera')
 
-      const remoteDescription = new RTCSessionDescription(serverSdp);
-      await peerConnection.setRemoteDescription(remoteDescription);
+			const localDescription = await peerConnection.createAnswer()
+			await peerConnection.setLocalDescription(localDescription)
 
-      console.log('Creación de sesión completada');
-      console.log('Iniciando sesión... por favor espera');
+			peerConnection.onicecandidate = ({ candidate }) => {
+				console.log('Recibido candidato ICE:', candidate)
+				if (candidate) {
+					handleICE(sessionInfo.session_id, candidate.toJSON())
+				}
+			}
 
-      const localDescription = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(localDescription);
+			peerConnection.oniceconnectionstatechange = (event) => {
+				sendSuccessNotification(
+					`Estado de conexión ICE cambiado a: ${peerConnection.iceConnectionState}`
+				)
+			}
 
-      peerConnection.onicecandidate = ({ candidate }) => {
-        console.log('Recibido candidato ICE:', candidate);
-        if (candidate) {
-          handleICE(sessionInfo.session_id, candidate.toJSON());
-        }
-      };
+			await startSession(sessionInfo.session_id, localDescription)
 
-      peerConnection.oniceconnectionstatechange = (event) => {
-        console.log(`Estado de conexión ICE cambiado a: ${peerConnection.iceConnectionState}`);
-      };
+			const receivers = peerConnection.getReceivers()
+			receivers.forEach((receiver) => {
+				receiver.jitterBufferTarget = 500
+			})
 
-      await startSession(sessionInfo.session_id, localDescription);
+			sendSuccessNotification('Sesión iniciada exitosamente')
+			isLoadingAvatar = true
+		} catch (error) {
+			console.error('Error al crear o iniciar la sesión:', error)
+			sendErrorNotification('Error al crear o iniciar la sesión. Por favor, inténtalo de nuevo.')
+		}
+	}
 
-      const receivers = peerConnection.getReceivers();
-      receivers.forEach((receiver) => {
-        receiver.jitterBufferTarget = 500;
-      });
+	function onMessage(event) {
+		const message = event.data
+		console.log('Mensaje recibido:', message)
+		// Procesar el mensaje recibido pero no llamar a handleSend aquí
+	}
 
-      console.log('Sesión iniciada exitosamente');
-    } catch (error) {
-      console.error('Error al crear o iniciar la sesión:', error);
-      console.log('Error al crear o iniciar la sesión. Por favor, inténtalo de nuevo.');
-    }
-  }
+	async function newSession(quality, avatar_name, voice_id) {
+		const response = await fetch(`${SERVER_URL}/v1/streaming.new`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Api-Key': apiKey
+			},
+			body: JSON.stringify({
+				quality,
+				avatar_name,
+				voice: {
+					voice_id: voice_id
+				}
+			})
+		})
+    isLoadingAvatar = true
 
-  function onMessage(event) {
-    const message = event.data;
-    console.log('Mensaje recibido:', message);
-    // Procesar el mensaje recibido pero no llamar a handleSend aquí
-  }
+		if (!response.ok) {
+			throw new Error('Error al iniciar una nueva sesión')
+		}
+		const data = await response.json()
+		return data.data
+	}
 
-  async function newSession(quality, avatar_name, voice_id) {
-    const response = await fetch(`${SERVER_URL}/v1/streaming.new`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': apiKey,
-      },
-      body: JSON.stringify({
-        quality,
-        avatar_name,
-        voice: {
-          voice_id: voice_id,
-        },
-      }),
-    });
-    if (!response.ok) {
-      throw new Error('Error al iniciar una nueva sesión');
-    }
-    const data = await response.json();
-    return data.data;
-  }
+	async function startSession(session_id, sdp) {
+		const response = await fetch(`${SERVER_URL}/v1/streaming.start`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Api-Key': apiKey
+			},
+			body: JSON.stringify({ session_id, sdp }),
+		})
+    isLoadingAvatar = true
 
-  async function startSession(session_id, sdp) {
-    const response = await fetch(`${SERVER_URL}/v1/streaming.start`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': apiKey,
-      },
-      body: JSON.stringify({ session_id, sdp }),
-    });
-    if (!response.ok) {
-      throw new Error('Error al iniciar la sesión');
-    }
-    const data = await response.json();
-    return data.data;
-  }
+		if (!response.ok) {
+			throw new Error('Error al iniciar la sesión')
+		}
+		const data = await response.json()
+		return data.data
+	}
 
-  async function handleICE(session_id, candidate) {
-    const response = await fetch(`${SERVER_URL}/v1/streaming.ice`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': apiKey,
-      },
-      body: JSON.stringify({ session_id, candidate }),
-    });
-    if (!response.ok) {
-      throw new Error('Error al manejar el ICE candidate');
-    }
-    const data = await response.json();
-    return data;
-  }
+	async function handleICE(session_id, candidate) {
+		const response = await fetch(`${SERVER_URL}/v1/streaming.ice`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Api-Key': apiKey
+			},
+			body: JSON.stringify({ session_id, candidate })
+		})
+		if (!response.ok) {
+			throw new Error('Error al manejar el ICE candidate')
+		}
+		const data = await response.json()
+		return data
+	}
 
-  async function repeat(session_id, text) {
-    const response = await fetch(`${SERVER_URL}/v1/streaming.task`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': apiKey,
-      },
-      body: JSON.stringify({ session_id, text }),
-    });
-    if (!response.ok) {
-      throw new Error('Error al enviar la tarea');
-    }
-    const data = await response.json();
-    return data.data;
-  }
+	async function repeat(session_id, text) {
+		const response = await fetch(`${SERVER_URL}/v1/streaming.task`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Api-Key': apiKey
+			},
+			body: JSON.stringify({ session_id, text })
+		})
+		if (!response.ok) {
+			throw new Error('Error al enviar la tarea')
+		}
+		const data = await response.json()
+		return data.data
+	}
 
-  async function stopSession() {
-    if (!sessionInfo || !sessionInfo.session_id) {
-      console.log('No hay sesión activa para detener');
-      return;
-    }
+	async function stopSession() {
+		if (!sessionInfo || !sessionInfo.session_id) {
+			console.log('No hay sesión activa para detener')
+			return
+		}
 
-    try {
-      await fetch(`${SERVER_URL}/v1/streaming.stop`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Api-Key': apiKey,
-        },
-        body: JSON.stringify({ session_id: sessionInfo.session_id }),
-      });
-      console.log('Sesión detenida exitosamente');
-      sessionInfo = null;
-    } catch (error) {
-      console.error('Error al detener la sesión:', error);
-      console.log('Error al detener la sesión. Por favor, inténtalo de nuevo.');
-    }
-  }
+		try {
+			await fetch(`${SERVER_URL}/v1/streaming.stop`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Api-Key': apiKey
+				},
+				body: JSON.stringify({ session_id: sessionInfo.session_id })
+			})
+			console.log('Sesión detenida exitosamente')
+			sessionInfo = null
+		} catch (error) {
+			console.error('Error al detener la sesión:', error)
+			console.log('Error al detener la sesión. Por favor, inténtalo de nuevo.')
+		}
+	}
 
-  // Manejar el envío de la tarea
-  async function handleSend(text) {
-    if (!sessionInfo || !sessionInfo.session_id) {
-      console.log('Por favor, crea una conexión primero');
-      return;
-    }
-    console.log('Enviando tarea... por favor espera');
-    try {
-      await repeat(sessionInfo.session_id, text);
-      console.log('Tarea enviada exitosamente');
-    } catch (error) {
-      console.error('Error al enviar la tarea:', error);
-      console.log('Error al enviar la tarea. Por favor, inténtalo de nuevo.');
-    }
-  }
+	// Manejar el envío de la tarea
+	async function handleSend(text) {
+		if (!sessionInfo || !sessionInfo.session_id) {
+			console.log('Por favor, crea una conexión primero')
+			return
+		}
+		console.log('Enviando tarea... por favor espera')
+		try {
+			await repeat(sessionInfo.session_id, text)
+			console.log('Tarea enviada exitosamente')
+		} catch (error) {
+			console.error('Error al enviar la tarea:', error)
+			console.log('Error al enviar la tarea. Por favor, inténtalo de nuevo.')
+		}
+	}
 
-  // Scroll al fondo después de cada actualización
-  afterUpdate(() => {
-    if (element) {
-      scrollToBottom(element);
-    }
-  });
+	// Scroll al fondo después de cada actualización
+	afterUpdate(() => {
+		if (element) {
+			scrollToBottom(element)
+		}
+	})
 
-  function scrollToBottom(node: HTMLDivElement) {
-    node.scroll({ top: node.scrollHeight, behavior: "smooth" });
-  }
+	function scrollToBottom(node: HTMLDivElement) {
+		node.scroll({ top: node.scrollHeight, behavior: 'smooth' })
+	}
 
-  onDestroy(() => {
-    stopSession();
-  });
+	// onDestroy(() => {
+	//   stopSession();
+	// });
 </script>
 
-<div class="flex flex-auto overflow-x-auto rounded-2xl bg-gray-100 chatbox dark:bg-gray-800 ml-2 mr-2">
-  {#if messages && messages.length > 0}
-    <div id="avatar" class="w-1/2 mt-2">
-      <button class="bg-blue-500 ml-2 text-white py-2 px-4 rounded" on:click={createNewSession}>Start</button>
-      <button class="bg-blue-500 text-white py-2 px-4 rounded" on:click={stopSession}>End</button>
-
-      <div class="videoSectionWrap m-2">
-        <VideoSection bind:mediaElement={mediaElement} />
-      </div>
-    </div>
-
-    <div id="chat" class="w-1/2 flex flex-col h-full">
-      <div class="grid grid-cols-12 gap-y-2 overflow-auto" bind:this={element}>
-        {#each messages as message, index}
-          <QuestionMessage {message} />
-          <BotMessage
-            {message}
-            on:scrollToBottom={() => scrollToBottom(element)}
-            {handleRegenerate}
-            last={index === messages.length - 1 ? 'true' : 'false'}
-          />
-          <!-- Llamar a handleSend solo para el último mensaje -->
-          {#if index === messages.length - 1}
-            {#await handleSend(message.text)}
-              <!-- Mostrar mensaje de carga -->
-              <!-- <LoadingMessage /> -->
-            {/await}
-          {/if}
-        {/each}
-
-        <!-- Mostrar mensajes de carga adicionales si isLoading es true -->
-        {#if isLoading}
-          <LoadingMessage />
-          <LoadingMessageBot />
-        {/if}
-      </div>
-    </div>
-  {/if}
+<!-- Botón Switch para alternar avatarChat -->
+<div class="flex justify-center mb-5">
+	<span class="mr-2 {!avatarChat ? 'font-medium text-blue-700' : 'text-gray-300'}">Chat</span>
+	<label class="switch">
+		<input
+			type="checkbox"
+			bind:checked={avatarChat}
+			on:change={avatarChat ? createNewSession : stopSession}
+		/>
+		<span class="slider round"></span>
+	</label>
+	<span class="ml-2 {avatarChat ? 'font-medium text-blue-700' : 'text-gray-300'} "
+		>Video Avatar</span
+	>
 </div>
+
+<div
+	class="flex flex-auto overflow-x-auto rounded-2xl bg-gray-100 chatbox dark:bg-gray-800 ml-2 mr-2"
+>
+	{#if messages && messages.length > 0}
+		{#if avatarChat}
+		
+				<div id="avatar" class="w-full mt-2 h-auto text-center">
+					<div class="">
+						<VideoSection bind:mediaElement {isLoadingAvatar}/>
+					</div>
+					<div class="mt-5">
+						<button
+							class="bg-yellow-500 ml-2 text-white py-2 px-4 rounded"
+							on:click={createNewSession}
+							><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+								><path
+									fill="currentColor"
+									d="M12 5V1L7 6l5 5V7a6 6 0 0 1 6 6a6 6 0 0 1-6 6a6 6 0 0 1-6-6H4a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8"
+								/></svg
+							></button
+						>
+						<button class="bg-red-500 text-white py-2 px-4 rounded" on:click={stopSession}
+							><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+								><path fill="currentColor" d="M3 5v14l8-7m2 7h3V5h-3m5 0v14h3V5" /></svg
+							></button
+						>
+					</div>
+				</div>
+
+			{#each messages as message, index}
+				{#if index === messages.length - 1}
+					{#await handleSend(message.text)}
+						<!-- Mostrar mensaje de carga -->
+						<!-- <LoadingMessage /> -->
+					{/await}
+				{/if}
+			{/each}
+		{:else}
+			<div id="chat" class="w-full flex flex-col h-full">
+				<div class="grid grid-cols-12 gap-y-2 overflow-auto" bind:this={element}>
+					{#each messages as message, index}
+						<QuestionMessage {message} />
+						<BotMessage
+							{message}
+							on:scrollToBottom={() => scrollToBottom(element)}
+							{handleRegenerate}
+							last={index === messages.length - 1 ? 'true' : 'false'}
+						/>
+					{/each}
+
+					{#if isLoading}
+						<LoadingMessage />
+						<LoadingMessageBot />
+					{/if}
+				</div>
+			</div>
+		{/if}
+	{:else}
+  
+		<WelcomeChat />
+	{/if}
+</div>
+
+<style>
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 34px;
+		height: 20px;
+	}
+
+	.switch input {
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #4451c2;
+		transition: 0.4s;
+	}
+
+	.slider:before {
+		position: absolute;
+		content: '';
+		height: 14px;
+		width: 14px;
+		left: 3px;
+		bottom: 3px;
+		background-color: white;
+		transition: 0.4s;
+	}
+	/* 
+  input:checked + .slider {
+    background-color: #2196F3;
+  } */
+
+	input:checked + .slider:before {
+		transform: translateX(14px);
+	}
+
+	.slider.round {
+		border-radius: 34px;
+	}
+
+	.slider.round:before {
+		border-radius: 50%;
+	}
+</style>

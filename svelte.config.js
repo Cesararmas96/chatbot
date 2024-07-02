@@ -1,5 +1,4 @@
 // import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite'
 // import adapter from '@sveltejs/adapter-netlify';
 import preprocess from 'svelte-preprocess';
 import { mdsvex } from 'mdsvex';
@@ -17,7 +16,6 @@ const config = {
 		adapter: adapter()
 	},
 	preprocess: [
-		vitePreprocess({}),
 		preprocess({
 			postcss: true
 		}),

@@ -39,6 +39,7 @@
 		"snarkdown": "^2.0.0",
 		"svelte-markdown": "^0.4.1",
 		"svelte-preprocess": "^5.1.4",
-		"tailwind-merge": "^2.3.0"
+		"tailwind-merge": "^2.3.0",
+		"vite-plugin-iso-import": "^1.1.0"
 	}
 }

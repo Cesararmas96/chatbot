@@ -69,14 +69,8 @@ jobs:
           name: Create .env file
           command: |
             echo "VITE_API_URL=${VITE_API_URL_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
-            echo "VITE_DATE_URL=${VITE_DATE_URL_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
-            echo "VITE_BASE_URL=${VITE_BASE_URL_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
-            echo "VITE_API_URL_IMAGES=${VITE_API_URL_IMAGES_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
-            echo "VITE_ENV=<<parameters.env-tag>>" >> .env.<<parameters.env-tag>>
+            echo "VITE_API_AI_URL=${VITE_API_AI_URL_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
             echo "VITE_SESSION_SECRET_KEY=${VITE_SESSION_SECRET_KEY}" >> .env.<<parameters.env-tag>>
-            echo "VITE_GOOGLE_MAPS_KEY=${VITE_GOOGLE_MAPS_KEY}" >> .env.<<parameters.env-tag>>
-            echo "VITE_GOOGLE_RECAPTCHA_SITE_KEY=${VITE_GOOGLE_RECAPTCHA_SITE_KEY}" >> .env.<<parameters.env-tag>>
-            echo "VITE_GOOGLE_RECAPTCHA_SECRET_KEY=${VITE_GOOGLE_RECAPTCHA_SECRET_KEY}" >> .env.<<parameters.env-tag>>
 
       - run:
           name: Build and tag Docker image

@@ -9,6 +9,11 @@
     sendSuccessNotification,
   } from "$lib/stores/toast";
   import Typewriter, { cascade,concurrent  } from "svelte-typewriter";
+	import { page } from '$app/stores'
+	let bot = $page.params.bot
+	let botName = $page.url.searchParams.get('botName')
+
+
 
   const dispatch = createEventDispatcher();
 
@@ -79,7 +84,7 @@
     <div
       class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0"
     >
-      <img src="/troc.png" alt="logo" />
+      <img src="/images/bots/{bot}.png" alt="logo" />
     </div>
     <div class="flex flex-col">
       <div  class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl dark:bg-gray-600 dark:text-white">

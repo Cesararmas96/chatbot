@@ -61,45 +61,41 @@ jobs:
             sudo su root -c "ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts"
 
       - run:
-          name: Build and tag Docker image
-          command: |
-            docker build -t image:latest .
-            docker tag image:latest <<pipeline.parameters.ecr>>:<< pipeline.number >>
-            docker tag image:latest <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
-      - run:
           name: Login to Amazon ECR
           command: |
             aws ecr get-login-password --region <<pipeline.parameters.region>> | docker login --username AWS --password-stdin <<pipeline.parameters.ecr>>
+
+      - run:
+          name: Create .env file
+          command: |
+            echo "VITE_API_URL=${VITE_API_URL_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
+            echo "VITE_DATE_URL=${VITE_DATE_URL_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
+            echo "VITE_BASE_URL=${VITE_BASE_URL_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
+            echo "VITE_API_URL_IMAGES=${VITE_API_URL_IMAGES_<<parameters.env-tag>>}" >> .env.<<parameters.env-tag>>
+            echo "VITE_ENV=<<parameters.env-tag>>" >> .env.<<parameters.env-tag>>
+            echo "VITE_SESSION_SECRET_KEY=${VITE_SESSION_SECRET_KEY}" >> .env.<<parameters.env-tag>>
+            echo "VITE_GOOGLE_MAPS_KEY=${VITE_GOOGLE_MAPS_KEY}" >> .env.<<parameters.env-tag>>
+            echo "VITE_GOOGLE_RECAPTCHA_SITE_KEY=${VITE_GOOGLE_RECAPTCHA_SITE_KEY}" >> .env.<<parameters.env-tag>>
+            echo "VITE_GOOGLE_RECAPTCHA_SECRET_KEY=${VITE_GOOGLE_RECAPTCHA_SECRET_KEY}" >> .env.<<parameters.env-tag>>
+
+      - run:
+          name: Build and tag Docker image
+          command: |
+            docker build -f Dockerfile-<<parameters.env-tag>> -t image:latest .
+            docker tag image:latest <<pipeline.parameters.ecr>>:<< pipeline.number >>
+            docker tag image:latest <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
+
       - run:
           name: Push Docker image to Amazon ECR
           command: |
             docker push <<pipeline.parameters.ecr>>:<< pipeline.number >>
             docker push <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
+
       - ms-teams-notify/status:
           fail_only: false
           success_message: ✅ Build Complete. The Docker image has been successfully built - $CIRCLE_JOB
           failure_message: 🔴 Build job has failed! -  $CIRCLE_JOB
           webhook: https://symbits.webhook.office.com/webhookb2/7a795c62-c523-4b6c-aafe-fe7cb7b03d7f@af176793-abc4-423e-8fab-dfc4e2bf8b9d/IncomingWebhook/9d2ada09b468429ca3e4add37ef005d2/4e2aa0ea-56b8-49fe-85cf-05e97d479ba6
-
-  build-qa-docker-image:
-    machine:
-      image: default
-    parameters:
-      env-tag:
-        type: string
-        default: 'qa'
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            # Install dependencies and config env.
-      - run:
-          name: Build and tag Docker image for QA
-          command: |
-            docker build -f Dockerfile-qa -t image:<< parameters.env-tag >> .
-            docker tag image:<< parameters.env-tag >> << pipeline.parameters.ecr >>:<< pipeline.number >>
-            docker tag image:<< parameters.env-tag >> << pipeline.parameters.ecr >>:<< parameters.env-tag >>
 
   deploy-kube-service:
     machine:
@@ -150,18 +146,6 @@ jobs:
           failure_message: 🔴 Deployment job has failed! - $CIRCLE_JOB
           webhook: https://symbits.webhook.office.com/webhookb2/7a795c62-c523-4b6c-aafe-fe7cb7b03d7f@af176793-abc4-423e-8fab-dfc4e2bf8b9d/IncomingWebhook/9d2ada09b468429ca3e4add37ef005d2/4e2aa0ea-56b8-49fe-85cf-05e97d479ba6
 
-  tag-image:
-    machine:
-      image: default
-    parameters:
-      env-tag:
-        type: string
-    steps:
-      - aws-ecr/tag-image:
-          repo: 'navigator-chatbots-tf'
-          source-tag: '"<< pipeline.number >>"'
-          target-tag: <<parameters.env-tag>>
-
 workflows:
   build-and-deploy-navigator-chatbots:
     jobs:
@@ -187,9 +171,9 @@ workflows:
           type: approval
           requires:
             - deploy-navigator-chatbots-dev
-      - tag-image:
+      - build-docker-image:
           <<: *branch_filters
-          name: 'tag-image-with-qa'
+          name: 'build-chatbots-qa'
           env-tag: 'qa'
           context:
             - navigator-dev
@@ -204,16 +188,16 @@ workflows:
           context:
             - navigator-dev
           requires:
-            - tag-image-with-qa
+            - build-chatbots-qa
       - approve-staging:
           <<: *branch_filters
           name: 'approve-navigator-chatbots-staging'
           type: approval
           requires:
             - deploy-navigator-chatbots-qa
-      - tag-image:
+      - build-docker-image:
           <<: *branch_filters
-          name: 'tag-image-with-staging'
+          name: 'build-chatbots-staging'
           env-tag: 'staging'
           context:
             - navigator-dev
@@ -227,16 +211,16 @@ workflows:
           context:
             - navigator-dev
           requires:
-            - tag-image-with-staging
+            - build-chatbots-staging
       - approve-production:
           <<: *branch_filters
           name: 'approve-navigator-chatbots-production'
           type: approval
           requires:
             - deploy-navigator-chatbots-staging
-      - tag-image:
+      - build-docker-image:
           <<: *branch_filters
-          name: 'tag-image-with-production'
+          name: 'build-chatbots-production'
           env-tag: 'production'
           context:
             - navigator-dev
@@ -251,4 +235,4 @@ workflows:
           context:
             - navigator-production
           requires:
-            - tag-image-with-production
+            - build-chatbots-production

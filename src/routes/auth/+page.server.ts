@@ -3,10 +3,40 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { Action, Actions, PageServerLoad } from "./$types";
 import { encrypt } from "$lib/helpers/auth";
 
-export const load: PageServerLoad = async ({ locals }) => {
-  console.log("PageServerLoad: Checking if user is logged in");
+export const load: PageServerLoad = async ({ locals, url, fetch }) => {
   if (locals.user) throw redirect(302, "/");
+
+	const apiUrl = import.meta.env.VITE_API_URL
+	const tenant = url.hostname.split('.')[0]
+
+  const resp = await fetch(`${apiUrl}/api/v1/clients?subdomain_prefix=${tenant}`, {method: "GET"});
+  if (resp?.ok) {
+    const response = await resp.json()
+
+    const data = response[0]
+    locals.client = data
+
+    // const images = buildImageUrls(data, rootLink)
+    const { auth_backends } = data
+
+    let filteredObject: Record<string, any> = {}
+
+    const totalAuthMethods = await fetch(`${apiUrl}/api/v1/auth/methods`, {method: "GET"}).then(res => res.json())
+    filteredObject = filterAuthMethods(totalAuthMethods, auth_backends)
+    delete filteredObject.BasicAuth
+
+    return {
+      filteredObject,
+      authMethods: totalAuthMethods
+    }
+  }
 };
+
+ const filterAuthMethods = (totalAuthMethods: any, authMethods: any) => {
+	return Object.fromEntries(
+		Object.entries(totalAuthMethods).filter(([key]) => authMethods.includes(key))
+	)
+}
 
 const login: Action = async ({ cookies, request }) => {
   console.log("Login Action: Received login request");

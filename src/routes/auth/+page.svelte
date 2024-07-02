@@ -8,7 +8,7 @@
 	const { filteredObject } = data
 
 	const apiUrl = import.meta.env.VITE_API_URL
-	const redirecURI = `${$page.url.origin}/login/callback`
+	const redirecURI = `${$page.url.origin}/auth/callback`
 
 	let errorMessage = ''
 	let username = ''

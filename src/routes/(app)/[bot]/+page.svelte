@@ -40,8 +40,8 @@
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {
-			const { response, question } = await fetchChatData(bot, query || lastQuery)
-			messages = [...messages, { text: response, query: query }]
+			const { response, question, answer } = await fetchChatData(bot, query || lastQuery)
+			messages = [...messages, { text: response, query: query, answer: answer}]
 			query = ''
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)

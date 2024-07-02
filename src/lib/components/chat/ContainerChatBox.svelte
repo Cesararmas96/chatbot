@@ -263,7 +263,7 @@
 
 			{#each messages as message, index}
 				{#if index === messages.length - 1}
-					{#await handleSend(message.text)}
+					{#await handleSend(message.answer)}
 						<!-- Mostrar mensaje de carga -->
 						<!-- <LoadingMessage /> -->
 					{/await}

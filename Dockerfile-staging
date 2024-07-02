@@ -1,0 +1,6 @@
+FROM 553449903150.dkr.ecr.us-east-2.amazonaws.com/navigator-chatbots-tf:dev
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build:staging
+CMD ["node", "--max-old-space-size=4096", "build/index.js"]

@@ -1,13 +1,15 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { sveltekit } from '@sveltejs/kit/vite'
+import { defineConfig } from 'vite'
+import { isoImport } from 'vite-plugin-iso-import'
 
 export default defineConfig({
-	plugins: [sveltekit()],
-	server: {
-		fs: {
-		  // Allow serving files from one level up to the project root
-		  allow: ['..'],
-		},
-	  },
+	plugins: [sveltekit(), isoImport()],
 
-});
+	css: {
+		preprocessorOptions: {
+			scss: {
+				additionalData: '@use "src/variables.scss" as *; @use "src/navigator.scss" as *;'
+			}
+		}
+	}
+})

@@ -30,6 +30,7 @@
 	"dependencies": {
 		"@popperjs/core": "^2.11.8",
 		"@sveltejs/adapter-node": "^5.2.0",
+		"@sveltejs/adapter-static": "^3.0.2",
 		"amplify-adapter": "^0.1.2",
 		"classnames": "^2.5.1",
 		"flowbite-svelte-icons": "^1.5.0",

@@ -27,7 +27,7 @@ import { Input } from 'flowbite-svelte'
  
       {#each Object.keys(NameChatBot) as key}
     
-        <Card namebot={NameChatBot[key]} link={key} />
+        <Card namebot={NameChatBot[key]} name={key} />
       {/each}
     </ul>
 

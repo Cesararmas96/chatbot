@@ -2,7 +2,7 @@ FROM node:18-alpine AS navigator-svelte
 WORKDIR /app
 COPY . .
 RUN npm install
-RUN npm run build
+RUN npm run build:dev
     
 CMD ["node", "--max-old-space-size=4096", "build/index.js"]
 

@@ -18,5 +18,5 @@ export const actions: Actions = {
 
   </script>
   
-  <p>Logging out...</p>
+  <p>Logging out</p>
   

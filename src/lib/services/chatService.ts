@@ -4,7 +4,7 @@ import { ApiChatBot } from "$lib/helpers/commons";
 // export const fetchChatData = async (bot: string, llm: string, query: string) => {
   export const fetchChatData = async (bot: string, query: string) => {
   // const apiUrl = `${import.meta.env.VITE_API_AI_URL}/${ApiChatBot[bot]}?use_llm=${llm}`;
-  const apiUrl = `${import.meta.env.VITE_API_AI_URL}/${ApiChatBot[bot]}`;
+  const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/chat/${ApiChatBot[bot]}`;
   try {
     return await getApiData(
       apiUrl,

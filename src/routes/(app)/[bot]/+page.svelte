@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte'
 	import { page } from '$app/stores'
 	import { storeUser } from '$lib/stores/session.js'
+	import { storeBots } from '$lib/stores/bots'
+
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import ContainerChatBox from '$lib/components/chat/ContainerChatBox.svelte'
@@ -16,8 +18,10 @@
 	import Header from "$lib/components/chat/Header.svelte";
 
 	export let data
-	const { user } = data
+
+	const { user, bots } = data
 	storeUser.set(user)
+	storeBots.set(bots)
 
 	let isLoading = false
 	let messages: any[] = []
@@ -78,7 +82,7 @@
 		<div class="flex flex-col h-screen  flex-auto p-2 " >
 		 
 			<div class="flex justify-between px-2 py-2">
-				<SelectBots/>
+				<SelectBots {bots}/>
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
 			</div>
 			<ContainerChatBox {isLoading} {messages} {handleRegenerate} />

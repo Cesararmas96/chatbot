@@ -3,7 +3,8 @@
 	import { onMount, onDestroy } from 'svelte'
 	import { NameChatBot } from '../../helpers/commons'
 	import { page } from '$app/stores'
-
+	export let bots;
+	
 	let bot = $page.params.bot
 	let botName = $page.url.searchParams.get('botName')
 
@@ -33,43 +34,43 @@
 
 <div class="flex items-center z-10">
 	<div class="relative inline-block text-left custom-select">
-			<button
-				type="button"
-				class="inline-flex  ml-0 justify-center w-full rounded-md  py-2 bg-white text-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
-				on:click={() => showOptions.update((n) => !n)}
+		<button
+			type="button"
+			class="inline-flex ml-0 justify-center w-full rounded-md py-2 bg-white text-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
+			on:click={() => showOptions.update((n) => !n)}
+		>
+			{#if $selectedBot && NameChatBot[$selectedBot]}
+				{NameChatBot[$selectedBot]} Chatbot 
+			{:else}
+				Select a Chatbot
+			{/if}
+			<svg
+				class="-mr- ml-2 h-5 w-5 mt-1"
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 20 20"
+				fill="currentColor"
+				aria-hidden="true"
 			>
-				{#if $selectedBot && NameChatBot[$selectedBot]}
-					{NameChatBot[$selectedBot]} Chatbot
-				{:else}
-					Select a Chatbot
-				{/if}
-				<svg
-					class="-mr- ml-2 h-5 w-5 mt-1"
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 20 20"
-					fill="currentColor"
-					aria-hidden="true"
-				>
-					<path
-						fill-rule="evenodd"
-						d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-						clip-rule="evenodd"
-					/>
-				</svg>
-			</button>
+				<path
+					fill-rule="evenodd"
+					d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+					clip-rule="evenodd"
+				/>
+			</svg>
+		</button>
 
 		{#if $showOptions}
 			<div
-				class="absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 dark:bg-gray-600 "
+				class="absolute mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 dark:bg-gray-600"
 			>
 				<div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-					{#each Object.keys(NameChatBot) as key}
+					{#each bots as bot}
 						<button
 							class="block px-4 py-2 text-sm text-gray-700 dark:text-white black:hover:bg-gray-500 w-full text-left hover:bg-slate-400 hover:text-white"
 							role="menuitem"
-							on:click={() => handleSelect(key)}
+							on:click={() => handleSelect((bot.name).toLowerCase())}
 						>
-							{NameChatBot[key]} Chatbot
+							{bot.name} Chatbot
 						</button>
 					{/each}
 				</div>

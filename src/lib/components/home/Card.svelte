@@ -1,18 +1,15 @@
 <script lang="ts">
   export let namebot;
   export let name;
-	import { page } from '$app/stores'
-  let bot = $page.params.bot
-	let botName = $page.url.searchParams.get('botName')
-
+  let imgName = name.toLowerCase()
 </script>
 
 <div
-  class="flex animate__animated animate__zoomIn card cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg"
+  class="flex animate__animated animate__zoomIn card w-full cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg"
 >
-  <a href={name}>
+  <a href={imgName}>
     <img
-      src="/images/bots/{name}.png"
+      src="/images/bots/{imgName}.png"
       alt="img-{name}-logo"
       class="h-auto w-full rounded-md object-cover object-center img-logo"
     />

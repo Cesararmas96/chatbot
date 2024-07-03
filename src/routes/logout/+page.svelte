@@ -24,5 +24,5 @@
     
       </script>
       
-      <p>Logging out</p>
+      <p>Logging out.</p>
       

@@ -5,7 +5,6 @@
 
 	export let data
 	$storeBots = data.bots
-  console.log($storeBots)
 </script>
 
 <div

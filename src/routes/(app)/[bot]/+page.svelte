@@ -39,8 +39,10 @@
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
 		hidellm = $page.url.searchParams.get('hidellm') === 'true'
 		// llm = $page.url.searchParams.get('llm') || 'vertex'
-
-		messages = getChatHistory()
+		const lastChatHistory = getChatHistory();
+        if (lastChatHistory) {
+            messages = [{ chat_history: lastChatHistory }];
+        }
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
@@ -54,7 +56,8 @@
 				...messages,
 				{ text: response, query: query, answer: answer, chat_history: chat_history }
 			]
-			saveChatHistory(messages.map(message => message.chat_history))
+			// saveChatHistory(messages.map(message => message.chat_history))
+			saveChatHistory(chat_history);
 			query = ''
 			console.log(messages)
 		} catch (error) {
@@ -81,14 +84,14 @@
 		await handleFetchData(lastquery)
 	}
 
-	const saveChatHistory = (chatHistory: any[]) => {
-		localStorage.setItem('chatHistory', JSON.stringify(chatHistory))
-	}
+	const saveChatHistory = (chatHistory: any) => {
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    }
 
-	const getChatHistory = (): any[] => {
-		const history = localStorage.getItem('chatHistory')
-		return history ? JSON.parse(history) : []
-	}
+    const getChatHistory = (): any => {
+        const history = localStorage.getItem('chatHistory');
+        return history ? JSON.parse(history) : null;
+    }
 </script>
 
 <div class="sm:ml-64">

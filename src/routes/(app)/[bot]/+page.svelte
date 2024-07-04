@@ -14,8 +14,8 @@
 	// import SettingModal from "$lib/components/chat/SettingModal.svelte";
 	import { DarkMode } from 'flowbite-svelte'
 	import SelectBots from '$lib/components/chat/SelectBots.svelte'
-	import SidebarBot from "$lib/components/SidebarBot.svelte";
-	import Header from "$lib/components/chat/Header.svelte";
+	import SidebarBot from '$lib/components/SidebarBot.svelte'
+	import Header from '$lib/components/chat/Header.svelte'
 
 	export let data
 
@@ -39,14 +39,24 @@
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
 		hidellm = $page.url.searchParams.get('hidellm') === 'true'
 		// llm = $page.url.searchParams.get('llm') || 'vertex'
+
+		messages = getChatHistory()
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {
-			const { response, question, answer } = await fetchChatData(bot, query || lastQuery)
-			messages = [...messages, { text: response, query: query, answer: answer}]
+			const { response, question, answer, chat_history } = await fetchChatData(
+				bot,
+				query || lastQuery
+			)
+			messages = [
+				...messages,
+				{ text: response, query: query, answer: answer, chat_history: chat_history }
+			]
+			saveChatHistory(messages.map(message => message.chat_history))
 			query = ''
+			console.log(messages)
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {
@@ -70,27 +80,33 @@
 	const handleRegenerate = async (lastquery: string) => {
 		await handleFetchData(lastquery)
 	}
+
+	const saveChatHistory = (chatHistory: any[]) => {
+		localStorage.setItem('chatHistory', JSON.stringify(chatHistory))
+	}
+
+	const getChatHistory = (): any[] => {
+		const history = localStorage.getItem('chatHistory')
+		return history ? JSON.parse(history) : []
+	}
 </script>
 
-
-<div class="sm:ml-64 ">
+<div class="sm:ml-64">
 	<Header />
-	 <div class="flex flex-row h-full w-full overflow-x-hidden">
+	<div class="flex flex-row h-full w-full overflow-x-hidden">
 		{#if !shared}
-		  <SidebarBot />
+			<SidebarBot />
 		{/if}
-		<div class="flex flex-col h-screen  flex-auto p-2 " >
-		 
+		<div class="flex flex-col h-screen flex-auto p-2">
 			<div class="flex justify-between px-2 py-2">
-				<SelectBots {bots}/>
+				<SelectBots {bots} />
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
 			</div>
 			<ContainerChatBox {isLoading} {messages} {handleRegenerate} />
 			<ChatInput {isLoading} bind:query on:submit={handleSubmit} />
 		</div>
-	  </div>
-  </div>
-  
+	</div>
+</div>
 
 <!-- <FloatingActionButton on:click={toggleSettings} /> -->
 <!-- <div class="flex justify-between px-2 py-2">

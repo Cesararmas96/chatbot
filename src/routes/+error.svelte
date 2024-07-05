@@ -5,7 +5,7 @@
 <div class="flex h-screen overflow-y-auto p-5">
 	<div class="card m-auto w-full max-w-xl p-8 text-center">
 		<div class="mb-5 text-left">
-			<h1 class="mb-5 text-center text-lg">Oops, something went wrong...</h1>
+			<h1 class="mb-5 text-center text-lg">Oops, something went wrong.</h1>
 			<p>
 				It seems we've encountered an unexpected error on our website. Our team has already been
 				notified, and we are working to resolve it.

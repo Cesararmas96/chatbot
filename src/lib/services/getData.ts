@@ -66,6 +66,7 @@ export async function getData(
     const response = myFetch
       ? await myFetch(urlWithParams, configRequest)
       : await fetch(urlWithParams, configRequest);
+
     // const validResponseStatus = [200, 202]
     // if (validResponseStatus.includes(response?.status)) {
 
@@ -96,16 +97,16 @@ export async function getData(
         statusText = response.statusText.includes("reason")
           ? JSON.parse(response.statusText).reason
           : statusText;
-      }
-
-      if (showErrorNotification)
+        }
+      // if (showErrorNotification)
         // sendErrorNotification(`Request error: ${response.status}:<br>${statusText}`)
-        throw error(
+      throw error(
           response.status,
           `Request error: ${response.status}:<br>${statusText}<div class="api-error hidden mt-2">API URL:<br>${url}</div>`
         );
-    }
+    } 
     return await response.json();
+    
   } catch (error) {
     // if (showErrorNotification) sendErrorNotification(error)
     throw error;

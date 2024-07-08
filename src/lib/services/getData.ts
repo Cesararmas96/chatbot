@@ -141,7 +141,7 @@ export async function getApiData(
     options = { ...options, headers };
   }
   const response = await getData(
-    getQuerySlug(url),
+    url,
     method,
     payload,
     queryParams,
@@ -161,7 +161,7 @@ export async function patchData(
   const options = { headers };
 
   const response = await getData(
-    getQuerySlug(url),
+    url,
     "PATCH",
     payload,
     {},
@@ -187,7 +187,7 @@ export async function postData(
   const options = { headers };
 
   const response = await getData(
-    getQuerySlug(url),
+    url,
     "POST",
     payload,
     {},
@@ -207,7 +207,7 @@ export async function putData(
   const options = { headers };
 
   const response = await getData(
-    getQuerySlug(url),
+    url,
     "PUT",
     payload,
     {},
@@ -227,7 +227,7 @@ export async function deleteData(
   const options = { headers };
 
   const response = await getData(
-    getQuerySlug(url),
+    url,
     "DELETE",
     payload,
     {},
@@ -238,30 +238,3 @@ export async function deleteData(
   return { ...response };
 }
 
-const getQuerySlug = (widgetSlug: any) => {
-  let slugQuery = widgetSlug;
-
-  if (Array.isArray(slugQuery)) {
-    slugQuery = Object.values(slugQuery[0])[0];
-    slugQuery = slugQuery.slug || slugQuery;
-  }
-
-  let slugNew = "";
-  if (slugQuery && slugQuery.includes("{BASE_URL_API}")) {
-    slugNew = slugQuery.replace("{BASE_URL_API}", import.meta.env.VITE_API_URL);
-  } else if (slugQuery && slugQuery.includes("{BASE_URL_DATA}")) {
-    slugNew = slugQuery.replace(
-      "{BASE_URL_DATA}",
-      import.meta.env.VITE_DATA_URL
-    );
-  } else {
-    slugNew =
-      slugQuery && slugQuery.includes("http")
-        ? slugQuery
-        : `${
-            import.meta.env.VITE_API_URL
-          }/api/v2/services/queries/${slugQuery}`;
-  }
-
-  return slugNew;
-};

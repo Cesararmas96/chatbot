@@ -6,10 +6,10 @@ import { encrypt } from "$lib/helpers/auth";
 export const load: PageServerLoad = async ({ locals, url, fetch }) => {
   if (locals.user) throw redirect(302, "/");
 
-	const apiUrl = import.meta.env.VITE_API_URL
+	const apiUrl = import.meta.env.VITE_API_AI_URL
 	const tenant = url.hostname.split('.')[0]
 
-  const resp = await fetch(`${apiUrl}/api/v1/clients?subdomain_prefix=${tenant}`, {method: "GET"});
+  const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/clients?subdomain_prefix=${tenant}`, {method: "GET"});
   if (resp?.ok) {
     const response = await resp.json()
 
@@ -59,7 +59,7 @@ const login: Action = async ({ cookies, request }) => {
 
   console.log("Login Action: Making API request with", { username, password });
 
-  const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/login`;
+  const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/login`;
   console.log("Login Action: API URL", apiUrl);
 
   const response = await fetch(apiUrl, {
@@ -70,7 +70,7 @@ const login: Action = async ({ cookies, request }) => {
     },
     body: JSON.stringify({ username, password }),
   });
-
+console.log("Login Action: API Response", response);
   console.log("Login Action: API Response Status", response.status);
 
   if (response.ok) {

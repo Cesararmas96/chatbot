@@ -18,32 +18,32 @@
   let catalog: any;
   let feedbackReasons: string[] = [];
 
-  // onMount(async () => {
-  //   const fetchData = async () => {
-  //     const apiGoodFeedback = `${import.meta.env.VITE_API_AI_URL}/api/v1/feedback_types/Good`;
-  //     try {
-  //       const response = await getApiData(
-  //         apiGoodFeedback,
-  //         'GET',
-  //         {},
-  //         {},
-  //         {headers: {
-  //           "Content-Type" : "application/json",
-  //           },
-  //         },
-  //         null,
-  //         true
-  //       );
-  //       const feedbackData = await response.json();
-  //       feedbackReasons = feedbackData.feedback;
-  //       console.log(feedbackReasons);
-  //     } catch (error) {
-  //       throw new Error("Fetch operation failed: " + error.message);
-  //     }
-  //   };
+  onMount(async () => {
+    const fetchData = async () => {
+      const apiGoodFeedback = `${import.meta.env.VITE_API_AI_URL}/api/v1/feedback_types/Good`;
+      try {
+        const response = await getApiData(
+          apiGoodFeedback,
+          'GET',
+          {},
+          {},
+          {headers: {
+            "Content-Type" : "application/json",
+            },
+          },
+          null,
+          true
+        );
+        const feedbackData = await response.json();
+        feedbackReasons = feedbackData.feedback;
+        console.log(feedbackReasons);
+      } catch (error) {
+        throw new Error("Fetch operation failed: " + error.message);
+      }
+    };
 
-  //   fetchData();
-  // });
+    fetchData();
+  });
 
   const handleCatalog = async (cat: string) => {
     catalog = cat;

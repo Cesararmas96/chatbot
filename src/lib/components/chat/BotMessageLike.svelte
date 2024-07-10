@@ -49,7 +49,7 @@
     catalog = cat;
   };
 
-  let token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjA1NTg2OTAuNDQ3NDgyLCJpYXQiOjE3MjAxOTg2OTAsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjoxNTc3OSwidXNlcm5hbWUiOiJqbWVuZG96YTFAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjoxNTc3OSwiaWQiOiJqbWVuZG96YTFAdHJvY2dsb2JhbC5jb20ifQ.VInFNitjqsjEhSbldbjJ1YEDrVoG9Y41tRWWBsS2NxM"
+  let token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjA5NzQ5ODIuNDk4NzYxLCJpYXQiOjE3MjA2MTQ5ODIsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjoxNTc3OSwidXNlcm5hbWUiOiJqbWVuZG96YTFAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjoxNTc3OSwiaWQiOiJqbWVuZG96YTFAdHJvY2dsb2JhbC5jb20ifQ.qbyTKhY5wOflzyZ503fHLXZ0vRHZiH20STVV5NALwAQ"
   
   const reasons = [
     {
@@ -67,36 +67,34 @@
   ];
 
   const handleLikeSubmit = async (event: any) => {
-    const payload = {
-      chatbot_id: "a6fcfaef-fe01-4040-94f3-bb418054ab5b",
-      sid: "24292fac-b46d-447e-a4f7-f88d68e9c998",
-      feedback_type: "Correct",  
-      feedback: "Good Enough",
-      like: true,
-      rating: '5'
-    };
-
-    try {
-      let url = "https://ai-dev.trocdigital.net/api/v1/bot_feedback"
-    
-      const setFeedback = await postData(
-        url,
-        {...payload}
-      )
-      if (setFeedback) {
-				sendSuccessNotification(setFeedback.message)
-			
-			} else {
-				sendErrorNotification('Failed')
-			}
-    
-    } catch (error) {
-      sendErrorNotification(error);
-      console.error("There was a problem with the fetch operation:", error);
-    }
-
-    dispatch("close");
+  const payload = {
+    chatbot_id: "a6fcfaef-fe01-4040-94f3-bb418054ab5b",
+    sid: "24292fac-b46d-447e-a4f7-f88d68e9c998",
+    feedback_type: "Correct",  
+    feedback: "Good Enough",
+    like: true,
+    rating: '5'
   };
+
+  try {
+    const url = "https://ai-dev.trocdigital.net/api/v1/bot_feedback";
+    
+    const setFeedback = await postData(url, payload);
+    
+    if (setFeedback && setFeedback.message) {
+      sendSuccessNotification(setFeedback.message);
+    } else {
+      sendErrorNotification('Failed');
+    }
+    
+  } catch (error) {
+    sendErrorNotification( 'An unexpected error occurred');
+    console.error("There was a problem with the fetch operation:", error);
+  }
+
+  dispatch("close");
+};
+
 // import axios from 'axios';
 // const handleLikeSubmit = async (event: any) => {
 //   const payload = {

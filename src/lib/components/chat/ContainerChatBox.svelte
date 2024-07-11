@@ -7,6 +7,10 @@
 	import { afterUpdate, onDestroy } from 'svelte'
 	import VideoSection from '../video/VideoSection.svelte'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { createEventDispatcher } from 'svelte'
+
+	const dispatch = createEventDispatcher()
+
 	export let handleRegenerate
 	export let messages
 	export let isLoading
@@ -102,7 +106,7 @@
 				}
 			})
 		})
-    isLoadingAvatar = true
+		isLoadingAvatar = true
 
 		if (!response.ok) {
 			throw new Error('Error al iniciar una nueva sesión')
@@ -118,9 +122,9 @@
 				'Content-Type': 'application/json',
 				'X-Api-Key': apiKey
 			},
-			body: JSON.stringify({ session_id, sdp }),
+			body: JSON.stringify({ session_id, sdp })
 		})
-    isLoadingAvatar = true
+		isLoadingAvatar = true
 
 		if (!response.ok) {
 			throw new Error('Error al iniciar la sesión')
@@ -214,6 +218,10 @@
 	// onDestroy(() => {
 	//   stopSession();
 	// });
+
+	function handleSelectQuery(event) {
+		dispatch('selectQuery', { query: event.detail.query })
+	}
 </script>
 
 <!-- Botón Switch para alternar avatarChat -->
@@ -237,29 +245,28 @@
 >
 	{#if messages && messages.length > 0}
 		{#if avatarChat}
-		
-				<div id="avatar" class="w-full mt-2 h-auto text-center">
-					<div class="">
-						<VideoSection bind:mediaElement {isLoadingAvatar}/>
-					</div>
-					<div class="mt-5">
-						<button
-							class="bg-yellow-500 ml-2 text-white py-2 px-4 rounded"
-							on:click={createNewSession}
-							><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-								><path
-									fill="currentColor"
-									d="M12 5V1L7 6l5 5V7a6 6 0 0 1 6 6a6 6 0 0 1-6 6a6 6 0 0 1-6-6H4a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8"
-								/></svg
-							></button
-						>
-						<button class="bg-red-500 text-white py-2 px-4 rounded" on:click={stopSession}
-							><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-								><path fill="currentColor" d="M3 5v14l8-7m2 7h3V5h-3m5 0v14h3V5" /></svg
-							></button
-						>
-					</div>
+			<div id="avatar" class="w-full mt-2 h-auto text-center">
+				<div class="">
+					<VideoSection bind:mediaElement {isLoadingAvatar} />
 				</div>
+				<div class="mt-5">
+					<button
+						class="bg-yellow-500 ml-2 text-white py-2 px-4 rounded"
+						on:click={createNewSession}
+						><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+							><path
+								fill="currentColor"
+								d="M12 5V1L7 6l5 5V7a6 6 0 0 1 6 6a6 6 0 0 1-6 6a6 6 0 0 1-6-6H4a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8"
+							/></svg
+						></button
+					>
+					<button class="bg-red-500 text-white py-2 px-4 rounded" on:click={stopSession}
+						><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+							><path fill="currentColor" d="M3 5v14l8-7m2 7h3V5h-3m5 0v14h3V5" /></svg
+						></button
+					>
+				</div>
+			</div>
 
 			{#each messages as message, index}
 				{#if index === messages.length - 1}
@@ -290,8 +297,7 @@
 			</div>
 		{/if}
 	{:else}
-  
-		<WelcomeChat />
+		<WelcomeChat on:selectQuery={handleSelectQuery} />
 	{/if}
 </div>
 

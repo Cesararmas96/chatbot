@@ -32,6 +32,7 @@
 	let hidellm = false
 	let llm = ''
 	let showSettings = false
+	let chatInputRef: any
 
 	onMount(() => {
 		bot = $page.params.bot.toString()
@@ -39,10 +40,10 @@
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
 		hidellm = $page.url.searchParams.get('hidellm') === 'true'
 		// llm = $page.url.searchParams.get('llm') || 'vertex'
-		const lastChatHistory = getChatHistory();
-        if (lastChatHistory) {
-            messages = [{ chat_history: lastChatHistory }];
-        }
+		const lastChatHistory = getChatHistory()
+		if (lastChatHistory) {
+			messages = [{ chat_history: lastChatHistory }]
+		}
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
@@ -57,7 +58,7 @@
 				{ text: response, query: query, answer: answer, chat_history: chat_history }
 			]
 			// saveChatHistory(messages.map(message => message.chat_history))
-			saveChatHistory(chat_history);
+			saveChatHistory(chat_history)
 			query = ''
 			console.log(messages)
 		} catch (error) {
@@ -85,13 +86,18 @@
 	}
 
 	const saveChatHistory = (chatHistory: any) => {
-        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-    }
+		localStorage.setItem('chatHistory', JSON.stringify(chatHistory))
+	}
 
-    const getChatHistory = (): any => {
-        const history = localStorage.getItem('chatHistory');
-        return history ? JSON.parse(history) : null;
-    }
+	const getChatHistory = (): any => {
+		const history = localStorage.getItem('chatHistory')
+		return history ? JSON.parse(history) : null
+	}
+
+	function handleSelectQuery(event) {
+		query = event.detail.query
+		console.log('Selected Query:', query), chatInputRef.submitForm()
+	}
 </script>
 
 <div class="sm:ml-64">
@@ -105,8 +111,13 @@
 				<SelectBots {bots} />
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
 			</div>
-			<ContainerChatBox {isLoading} {messages} {handleRegenerate} />
-			<ChatInput {isLoading} bind:query on:submit={handleSubmit} />
+			<ContainerChatBox
+				{isLoading}
+				{messages}
+				{handleRegenerate}
+				on:selectQuery={handleSelectQuery}
+			/>
+			<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
 		</div>
 	</div>
 </div>

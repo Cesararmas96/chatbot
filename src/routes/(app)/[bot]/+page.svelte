@@ -5,6 +5,7 @@
 	import { storeBots } from '$lib/stores/bots'
 	import { storePromptLibrary } from '$lib/stores/promptlibrary'
 	import { storeGood } from '$lib/stores/good.js'
+	import { storeBad } from '$lib/stores/bad.js'
 
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
@@ -21,17 +22,12 @@
 
 	export let data
 
-	const { user, bots, promptLibrary, good } = data
+	const { user, bots, promptLibrary, good, bad } = data
 	storeUser.set(user)
 	storeBots.set(bots)
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
-
-	// let botss = bots.chatbot_id
-	// console.log(botss)
-
-	// console.log(promptLibrary)
-	// console.log(good)
+	storeBad.set(bad)
 
 	let isLoading = false
 	let messages: any[] = []
@@ -67,8 +63,6 @@
 		} else {
 			console.error('Bot not found')
 		}
-
-		console.log(chatbotId)
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
@@ -141,6 +135,8 @@
 				{messages}
 				{promptLibrary}
 				{chatbotId}
+				{good}
+				{bad}
 				{handleRegenerate}
 				on:selectQuery={handleSelectQuery}
 			/>

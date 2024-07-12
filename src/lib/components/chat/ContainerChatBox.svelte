@@ -16,6 +16,8 @@
 	export let isLoading
 	export let promptLibrary: any
 	export let chatbotId
+	export let good
+	export let bad
 
 	let isLoadingAvatar = false
 	let element: HTMLDivElement
@@ -285,6 +287,8 @@
 						<QuestionMessage {message} />
 						<BotMessage
 							{message}
+							{good}
+							{bad}
 							on:scrollToBottom={() => scrollToBottom(element)}
 							{handleRegenerate}
 							last={index === messages.length - 1 ? 'true' : 'false'}

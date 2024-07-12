@@ -40,12 +40,23 @@ const bots = await getApiData(
     fetch,
     false
   )
+
+  const bad = await getApiData(
+    `${import.meta.env.VITE_API_AI_URL}/api/v1/feedback_types/Bad`,
+    'GET',
+    {},
+    {},
+    {headers},
+    fetch,
+    false
+  )
   
 
   return {
     user: locals.user,
     bots,
     promptLibrary,
-    good
+    good,
+    bad
   };
 };

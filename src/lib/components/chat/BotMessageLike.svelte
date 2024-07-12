@@ -13,34 +13,7 @@
 	let reason: string = ''
 	let catalog: any
 	let feedbackReasons: string[] = []
-
-	onMount(async () => {
-		const fetchData = async () => {
-			const apiGoodFeedback = `${import.meta.env.VITE_API_AI_URL}/api/v1/feedback_types/Good`
-			try {
-				const response = await getApiData(
-					apiGoodFeedback,
-					'GET',
-					{},
-					{},
-					{
-						headers: {
-							'Content-Type': 'application/json'
-						}
-					},
-					null,
-					true
-				)
-				const feedbackData = await response.json()
-				feedbackReasons = feedbackData.feedback
-				console.log(feedbackReasons)
-			} catch (error) {
-				throw new Error('Fetch operation failed: ' + error.message)
-			}
-		}
-
-		fetchData()
-	})
+	export let good
 
 	const handleCatalog = async (cat: string) => {
 		catalog = cat
@@ -48,21 +21,6 @@
 
 	let token =
 		'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjA5NzQ5ODIuNDk4NzYxLCJpYXQiOjE3MjA2MTQ5ODIsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjoxNTc3OSwidXNlcm5hbWUiOiJqbWVuZG96YTFAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjoxNTc3OSwiaWQiOiJqbWVuZG96YTFAdHJvY2dsb2JhbC5jb20ifQ.qbyTKhY5wOflzyZ503fHLXZ0vRHZiH20STVV5NALwAQ'
-
-	const reasons = [
-		{
-			name: 'Awesome',
-			value: 'Navigator::Chatbots::Awesome'
-		},
-		{
-			name: 'Usefull',
-			value: 'Navigator::Chatbots::Usefull'
-		},
-		{
-			name: 'Other',
-			value: 'Navigator::Chatbots::Other'
-		}
-	]
 
 	// const handleLikeSubmit = async (event: any) => {
 	// 	const payload = {
@@ -221,18 +179,11 @@
 		</div>
 	</div>
 	<div class="flex flex-row gap-2">
-		<!-- {#each feedbackReasons as reason}
-      <Button
-        color="light"
-        class="px-3 py-0 {reason === catalog ? 'border-2 border-green-500' : ''}"
-        on:click={() => handleCatalog(reason)}>{reason}</Button>
-    {/each} -->
-
-		{#each reasons as item}
+		{#each good.feedback as item}
 			<Button
 				color="light"
-				class="px-3 py-0 {item.name === catalog?.name ? 'border-2 border-green-500' : ''}"
-				on:click={() => handleCatalog(item)}>{item.name}</Button
+				class="px-3 py-1 text-xs {item === catalog ? 'border-2 border-green-500' : ''}"
+				on:click={() => handleCatalog(item)}>{item}</Button
 			>
 		{/each}
 	</div>

@@ -63,9 +63,11 @@ export async function getData(
     };
     if (method === "GET") delete configRequest.body;
 
+  
     const response = myFetch
       ? await myFetch(urlWithParams, configRequest)
       : await fetch(urlWithParams, configRequest);
+    console.log(response)
 
     // const validResponseStatus = [200, 202]
     // if (validResponseStatus.includes(response?.status)) {

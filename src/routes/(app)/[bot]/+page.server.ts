@@ -4,7 +4,7 @@ import { getApiData, postData } from "$lib/services/getData";
 import type { PageServerLoad } from "./$types";
 
 
-export const load: PageServerLoad = async ({ locals, fetch }) => {
+export const load: PageServerLoad = async ({ locals, fetch, params }) => {
   if (!locals.user || !locals.user.token) throw redirect(302, "/auth");
 
   const headers = !locals.user?.apikey
@@ -21,9 +21,9 @@ const bots = await getApiData(
   false
   )
 
-  
+  const chat = bots.find((bot: any) => bot.name.toLowerCase() === params.bot);
   const promptLibrary = await getApiData(
-    `${import.meta.env.VITE_API_AI_URL}/api/v1/prompt_library`,
+    `${import.meta.env.VITE_API_AI_URL}/api/v1/prompt_library?chatbot_id=${chat.chatbot_id}`,
     'GET',
     {},
     {},

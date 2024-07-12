@@ -25,6 +25,7 @@
 	const { user, bots, promptLibrary, good, bad } = data
 	storeUser.set(user)
 	storeBots.set(bots)
+	console.log(bots)
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
 	storeBad.set(bad)

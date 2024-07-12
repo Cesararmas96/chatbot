@@ -18,10 +18,34 @@ const bots = await getApiData(
   {headers},
   fetch,
   false
-)
+  )
+
+  
+  const promptLibrary = await getApiData(
+    `${import.meta.env.VITE_API_AI_URL}/api/v1/prompt_library`,
+    'GET',
+    {},
+    {},
+    {headers},
+    fetch,
+    false
+  )
+
+  const good = await getApiData(
+    `${import.meta.env.VITE_API_AI_URL}/api/v1/feedback_types/Good`,
+    'GET',
+    {},
+    {},
+    {headers},
+    fetch,
+    false
+  )
+  
 
   return {
     user: locals.user,
-    bots
+    bots,
+    promptLibrary,
+    good
   };
 };

@@ -3,6 +3,8 @@
 	import { page } from '$app/stores'
 	import { storeUser } from '$lib/stores/session.js'
 	import { storeBots } from '$lib/stores/bots'
+	import { storePromptLibrary } from '$lib/stores/promptlibrary'
+	import { storeGood } from '$lib/stores/good.js'
 
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
@@ -19,9 +21,17 @@
 
 	export let data
 
-	const { user, bots } = data
+	const { user, bots, promptLibrary, good } = data
 	storeUser.set(user)
 	storeBots.set(bots)
+	storePromptLibrary.set(promptLibrary)
+	storeGood.set(good)
+
+	// let botss = bots.chatbot_id
+	// console.log(botss)
+
+	// console.log(promptLibrary)
+	// console.log(good)
 
 	let isLoading = false
 	let messages: any[] = []
@@ -33,17 +43,32 @@
 	let llm = ''
 	let showSettings = false
 	let chatInputRef: any
+	let chatbotId = ''
 
 	onMount(() => {
-		bot = $page.params.bot.toString()
+		bot = $page.params.bot
 		shared = $page.url.searchParams.get('shared') === 'true'
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
 		hidellm = $page.url.searchParams.get('hidellm') === 'true'
-		// llm = $page.url.searchParams.get('llm') || 'vertex'
 		const lastChatHistory = getChatHistory()
 		if (lastChatHistory) {
 			messages = [{ chat_history: lastChatHistory }]
 		}
+
+		// bots.forEach(({ chatbot_id, name }) => {
+		// 	console.log('Chatbot ID:', chatbot_id, 'Name:', name)
+		// })
+
+		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
+
+		if (currentBot) {
+			chatbotId = currentBot.chatbot_id
+			// console.log('Current chatbot_id:', chatbotId)
+		} else {
+			console.error('Bot not found')
+		}
+
+		console.log(chatbotId)
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
@@ -114,6 +139,8 @@
 			<ContainerChatBox
 				{isLoading}
 				{messages}
+				{promptLibrary}
+				{chatbotId}
 				{handleRegenerate}
 				on:selectQuery={handleSelectQuery}
 			/>

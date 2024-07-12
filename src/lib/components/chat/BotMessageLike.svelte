@@ -9,7 +9,7 @@
 	const dispatch = createEventDispatcher()
 	let inputDisabled = true
 
-	const bot = $page.params.bot.toString()
+	const bot = $page.params.bot
 	let reason: string = ''
 	let catalog: any
 	let feedbackReasons: string[] = []
@@ -64,7 +64,118 @@
 		}
 	]
 
+	// const handleLikeSubmit = async (event: any) => {
+	// 	const payload = {
+	// 		chatbot_id: 'a6fcfaef-fe01-4040-94f3-bb418054ab5b',
+	// 		sid: '24292fac-b46d-447e-a4f7-f88d68e9c998',
+	// 		feedback_type: 'Correct',
+	// 		feedback: 'Good Enough',
+	// 		_like: true,
+	// 		rating: '5'
+	// 	}
+
+	// 	try {
+	// 		const url = 'https://ai-dev.trocdigital.net/api/v1/bot_feedback'
+
+	// 		const setFeedback = await postData(url, payload)
+
+	// 		if (setFeedback && setFeedback.message) {
+	// 			sendSuccessNotification(setFeedback.message)
+	// 		} else {
+	// 			sendErrorNotification('Failed')
+	// 		}
+	// 	} catch (error) {
+	// 		sendErrorNotification('An unexpected error occurred')
+	// 		console.error('There was a problem with the fetch operation:', error)
+	// 	}
+
+	// 	dispatch('close')
+	// }
+
+	// const handleLikeSubmit = async (event: any) => {
+	// 	event.preventDefault() // Prevenir el comportamiento por defecto del evento
+	// 	const payload = {
+	// 		chatbot_id: 'a6fcfaef-fe01-4040-94f3-bb418054ab5b',
+	// 		sid: '24292fac-b46d-447e-a4f7-f88d68e9c998',
+	// 		feedback_type: 'Correct',
+	// 		feedback: 'Good Enough',
+	// 		_like: true,
+	// 		rating: '5'
+	// 	}
+
+	// 	try {
+	// 		const url = 'https://ai-dev.trocdigital.net/api/v1/bot_feedback'
+
+	// 		const response = await fetch(url, {
+	// 			method: 'POST',
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 				Origin: 'https://navai.dev.trocdigital.io'
+	// 			},
+	// 			body: JSON.stringify(payload)
+	// 		})
+
+	// 		if (!response.ok) {
+	// 			throw new Error('Network response was not ok ' + response.statusText)
+	// 		}
+
+	// 		const setFeedback = await response.json()
+
+	// 		if (setFeedback && setFeedback.message) {
+	// 			sendSuccessNotification(setFeedback.message)
+	// 		} else {
+	// 			sendErrorNotification('Failed')
+	// 		}
+	// 	} catch (error) {
+	// 		sendErrorNotification(error.message || 'An unexpected error occurred')
+	// 		console.error('There was a problem with the fetch operation:', error)
+	// 	}
+
+	// 	dispatch('close')
+	// }
+
+	import axios from 'axios'
+
+	// const handleLikeSubmit = async (event: any) => {
+	// 	event.preventDefault() // Prevenir el comportamiento por defecto del evento
+
+	// 	const payload = {
+	// 		chatbot_id: 'a6fcfaef-fe01-4040-94f3-bb418054ab5b',
+	// 		sid: '24292fac-b46d-447e-a4f7-f88d68e9c998',
+	// 		feedback_type: 'Correct',
+	// 		feedback: 'Good Enough',
+	// 		_like: true,
+	// 		rating: '5'
+	// 	}
+
+	// 	try {
+	// 		const url = 'https://ai-dev.trocdigital.net/api/v1/bot_feedback'
+
+	// 		const response = await axios.post(url, payload, {
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 				Origin: 'https://navai.dev.trocdigital.io'
+	// 			}
+	// 		})
+
+	// 		const setFeedback = response.data
+
+	// 		if (setFeedback && setFeedback.message) {
+	// 			sendSuccessNotification(setFeedback.message)
+	// 		} else {
+	// 			sendErrorNotification('Failed')
+	// 		}
+	// 	} catch (error) {
+	// 		sendErrorNotification(error.message || 'An unexpected error occurred')
+	// 		console.error('There was a problem with the axios operation:', error)
+	// 	}
+
+	// 	dispatch('close')
+	// }
+
 	const handleLikeSubmit = async (event: any) => {
+		event.preventDefault() // Prevenir el comportamiento por defecto del evento
+
 		const payload = {
 			chatbot_id: 'a6fcfaef-fe01-4040-94f3-bb418054ab5b',
 			sid: '24292fac-b46d-447e-a4f7-f88d68e9c998',
@@ -77,7 +188,16 @@
 		try {
 			const url = 'https://ai-dev.trocdigital.net/api/v1/bot_feedback'
 
-			const setFeedback = await postData(url, payload)
+			const response = await axios.post(url, payload, {
+				headers: {
+					'Content-Type': 'application/json',
+					Origin: 'https://navai.dev.trocdigital.io',
+					Accept: 'application/json',
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})
+
+			const setFeedback = response.data
 
 			if (setFeedback && setFeedback.message) {
 				sendSuccessNotification(setFeedback.message)
@@ -85,49 +205,12 @@
 				sendErrorNotification('Failed')
 			}
 		} catch (error) {
-			sendErrorNotification('An unexpected error occurred')
-			console.error('There was a problem with the fetch operation:', error)
+			sendErrorNotification(error.message || 'An unexpected error occurred')
+			console.error('There was a problem with the axios operation:', error)
 		}
 
 		dispatch('close')
 	}
-
-	// import axios from 'axios';
-	// const handleLikeSubmit = async (event: any) => {
-	//   const payload = {
-	//     chatbot_id: "a6fcfaef-fe01-4040-94f3-bb418054ab5b",
-	//     sid: "24292fac-b46d-447e-a4f7-f88d68e9c998",
-	//     feedback_type: "Correct",
-	//     feedback: "Good Enough",
-	//     like: true,
-	//     rating: '5'
-	//   };
-
-	//   try {
-	//     const url = "https://ai-dev.trocdigital.net/api/v1/bot_feedback";
-	//     console.log("Payload:", payload);
-	//     console.log("Token:", token);
-
-	//     const response = await axios.post(url, payload, {
-	//       headers: {
-	//         Authorization: `Bearer ${token}`,
-	//         "Content-Type": "application/json",
-	//       }
-	//     });
-
-	//     if (response && response.data) {
-	//       sendSuccessNotification(response.data.message);
-	//     } else {
-	//       sendErrorNotification('Failed');
-	//     }
-
-	//   } catch (error) {
-	//     sendErrorNotification(error);
-	//     console.error("There was a problem with the fetch operation:", error);
-	//   }
-
-	//   dispatch("close");
-	// };
 </script>
 
 <div class="relative mt-2 ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl flex flex-col gap-3">

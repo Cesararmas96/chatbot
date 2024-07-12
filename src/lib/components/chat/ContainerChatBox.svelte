@@ -14,6 +14,8 @@
 	export let handleRegenerate
 	export let messages
 	export let isLoading
+	export let promptLibrary: any
+	export let chatbotId
 
 	let isLoadingAvatar = false
 	let element: HTMLDivElement
@@ -297,7 +299,7 @@
 			</div>
 		{/if}
 	{:else}
-		<WelcomeChat on:selectQuery={handleSelectQuery} />
+		<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} {chatbotId} />
 	{/if}
 </div>
 

@@ -4,7 +4,7 @@
 	import Avatar from './common/Avatar.svelte'
 	import { onMount } from 'svelte'
 	let botName = $page.params.bot
-	const bot = $page.params.bot.toString()
+	const bot = $page.params.bot
 	let hidden2 = false
 
 	const toggleDrawer = () => {

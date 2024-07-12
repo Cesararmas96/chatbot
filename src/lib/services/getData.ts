@@ -67,7 +67,6 @@ export async function getData(
     const response = myFetch
       ? await myFetch(urlWithParams, configRequest)
       : await fetch(urlWithParams, configRequest);
-    console.log(response)
 
     // const validResponseStatus = [200, 202]
     // if (validResponseStatus.includes(response?.status)) {

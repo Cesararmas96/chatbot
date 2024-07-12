@@ -28,7 +28,7 @@
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
 	storeBad.set(bad)
-
+	console.log(bots)
 	let isLoading = false
 	let messages: any[] = []
 	let query = ''
@@ -43,6 +43,7 @@
 
 	onMount(() => {
 		bot = $page.params.bot
+		console.log(bot)
 		shared = $page.url.searchParams.get('shared') === 'true'
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
 		hidellm = $page.url.searchParams.get('hidellm') === 'true'
@@ -65,6 +66,7 @@
 		}
 	})
 
+	console.log(bot)
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {

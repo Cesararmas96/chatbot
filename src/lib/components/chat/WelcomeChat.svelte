@@ -16,6 +16,8 @@
 	function handleItemClick(query) {
 		dispatch('selectQuery', { query })
 	}
+
+	console.log(promptLibrary)
 </script>
 
 <div class="flex flex-col justify-center items-center w-full h-full">
@@ -31,15 +33,15 @@
 		{#each promptLibrary as item}
 			{#if item.chatbot_id === chatbotId}
 				<div
-					class="card m-2 col-span-2 flex cursor-pointer overflow-hidden rounded-lg hover:-translate-y-1 hover:scale-100 hover:shadow-lg md:col-span-3 lg:col-span-4"
+					class="card promptlibrary {getNameChatBot(bot, NameChatBot).toLocaleLowerCase() !== ''
+						? getNameChatBot(bot, NameChatBot).toLocaleLowerCase()
+						: botName}  m-2 col-span-2 flex cursor-pointer overflow-hidden rounded-lg hover:-translate-y-1 hover:scale-100 hover:shadow-lg md:col-span-3 lg:col-span-4"
 					on:click={() => handleItemClick(item.query)}
 				>
-					<div
-						class="relative flex h-full w-48 flex-col p-3 hover:opacity-90 bg-blue-400 border-blue-800"
-					>
+					<div class="relative flex h-full w-48 flex-col p-3 hover:opacity-90">
 						<div class="relative z-10 mb-3 self-start">
 							<span
-								class="flex h-7 w-7 items-center justify-center rounded-full border bg-blue-500 border-white"
+								class="flex h-7 w-7 items-center justify-center rounded-full border border-white"
 							>
 								<span class="align-center flex justify-center text-white">
 									<!-- <Icon icon={module?.attributes?.icon} size="15" /> -->

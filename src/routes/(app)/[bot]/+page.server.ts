@@ -1,7 +1,8 @@
 import { redirect } from "@sveltejs/kit";
-import { getApiData } from "$lib/services/getData";
+import { getApiData, postData } from "$lib/services/getData";
 
 import type { PageServerLoad } from "./$types";
+
 
 export const load: PageServerLoad = async ({ locals, fetch }) => {
   if (!locals.user || !locals.user.token) throw redirect(302, "/auth");

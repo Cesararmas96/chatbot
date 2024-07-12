@@ -6,7 +6,7 @@ export enum ApiChatBot {
 
   // Dev
   askpage = "AskPage",
-  bose = "BoseBot",
+  bosebot = "BoseBot",
   askbrett = "AskBrett",
   oddie = "Oddie",
   cody = "Cody",
@@ -15,7 +15,7 @@ export enum ApiChatBot {
 
 export enum NameChatBot {
   askpage = "AskPage",
-  bose = "Bose",
+  bosebot = "BoseBot",
   askbrett = "AskBrett",
   oddie = "Oddie",
   cody = "Cody",

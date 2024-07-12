@@ -1,29 +1,29 @@
 aside.trocers {
-    background: linear-gradient(180deg,
-            rgba(244, 124, 32, 1) 1%,
-            rgb(239, 80, 157) 50%,
-            rgba(0, 174, 229, 1) 100%);
+  background: linear-gradient(180deg,
+      rgba(244, 124, 32, 1) 1%,
+      rgb(239, 80, 157) 50%,
+      rgba(0, 174, 229, 1) 100%);
 }
 
 aside.askbrett {
-    background: linear-gradient(180deg, rgb(28, 100, 242) 1%, rgba(130, 180, 216, 1) 100%);
+  background: linear-gradient(180deg, rgb(28, 100, 242) 1%, rgba(130, 180, 216, 1) 100%);
 }
 
-aside.bose {
-    background: linear-gradient(186deg, rgba(26, 26, 26, 1) 1%, hsl(0, 0%, 45%) 50%, rgba(204, 204, 204, 1) 100%);
+aside.bosebot {
+  background: linear-gradient(186deg, rgba(26, 26, 26, 1) 1%, hsl(0, 0%, 45%) 50%, rgba(204, 204, 204, 1) 100%);
 
 }
 
 aside.oddie {
-    background: linear-gradient(100deg, rgb(113, 75, 103) 1%, rgba(239, 80, 157, 1) 100%);
+  background: linear-gradient(100deg, rgb(113, 75, 103) 1%, rgba(239, 80, 157, 1) 100%);
 }
 
-aside{
+aside {
   background-color: #1c64f2;
 }
 
 
-  /* #selectbot {
+/* #selectbot {
     background: rgb(26, 211, 187);
     background: linear-gradient(
       90deg,
@@ -36,36 +36,71 @@ aside{
 
 
 
-  .namebot.trocers{
-    color: #ef509d;
+.namebot.trocers {
+  color: #ef509d;
+}
+
+.namebot.askbrett {
+  color: #1c64f2;
+}
+
+.namebot.bosebot {
+  color: #737373;
+}
+
+.namebot.oddie {
+  color: #714b67;
+}
+
+
+
+.promptlibrary.trocers {
+  background: linear-gradient(180deg,
+      rgba(244, 124, 32, 1) 1%,
+      rgb(239, 80, 157) 50%,
+      rgba(0, 174, 229, 1) 100%);
+}
+
+.promptlibrary.askbrett {
+  background: linear-gradient(180deg, rgb(28, 100, 242) 1%, rgba(130, 180, 216, 1) 100%);
+  color: white;
+}
+
+.promptlibrary.bosebot {
+  background: #737373;
+  color: white;
+
+}
+
+.promptlibrary.oddie {
+  background: linear-gradient(0deg, rgb(113, 75, 103) 1%, rgba(239, 80, 157, 1) 100%);
+  color: white;
+}
+
+.promptlibrary.askpage {
+  background-color: #296df7;
+  color: white
+}
+
+
+
+
+body {
+  background-color: #f7fafe;
+
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
 
-  .namebot.askbrett{
-    color: #1c64f2;
+  100% {
+    transform: rotate(360deg);
   }
+}
 
-  .namebot.bose{
-    color: #737373;
-  }
-
-  .namebot.oddie{
-    color: #714b67;
-  }
-
-  body{
-    background-color: #f7fafe;
-
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .animate-spin {
-    animation: spin 1s linear infinite; /* cambia la duración según desees */
-  }
+.animate-spin {
+  animation: spin 1s linear infinite;
+  /* cambia la duración según desees */
+}

@@ -289,6 +289,7 @@
 							{message}
 							{good}
 							{bad}
+							{chatbotId}
 							on:scrollToBottom={() => scrollToBottom(element)}
 							{handleRegenerate}
 							last={index === messages.length - 1 ? 'true' : 'false'}

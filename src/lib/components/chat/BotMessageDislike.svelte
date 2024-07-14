@@ -2,11 +2,12 @@
 	import { Button, Input } from 'flowbite-svelte'
 	import { createEventDispatcher } from 'svelte'
 	import { page } from '$app/stores'
-	import { putData } from '$lib/services/getData'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { enhance } from '$app/forms'
 
 	export let bad
 	export let message
+	export let chatbotId
 	const dispatch = createEventDispatcher()
 	let inputDisabled = true
 
@@ -14,95 +15,56 @@
 	let reason: string = ''
 	let catalog: any
 
-	const reasons = [
-		{
-			name: 'Offensive/Unsafe',
-			value: 'Navigator::Chatbots::Offensive/Unsafe'
-		},
-		{
-			name: 'Not factually correct',
-			value: 'Navigator::Chatbots::Not factually correct'
-		},
-		{
-			name: 'Other',
-			value: 'Navigator::Chatbots::Other'
-		}
-	]
-
 	const handleCatalog = async (cat: any) => {
 		catalog = cat
-	}
-
-	const handleDislikeSubmit = async (event: any) => {
-		// const apiUrl = `${import.meta.env.VITE_API_URL}/support/api/v1/anon_ticket`;
-
-		const body = message.text + '\n\n' + reason
-		const payload = {
-			type: 'Incident',
-			group: 'Navigator Support',
-			attachments: [],
-			service_catalog: catalog.value,
-			title: 'TEST ' + message.query,
-			body,
-			non_anonymous: true
-		}
-
-		try {
-			// const response = await axios.put(
-			//   apiUrl,
-			//   { ...payload },
-			//   {
-			//     headers: {
-			//       // Authorization: `Bearer ${token}`,
-			//       "Content-Type": "application/json",
-			//     },
-			//   }
-			// );
-
-			// const response = await putData(apiUrl, { ...payload });
-			// console.log("response", response);
-
-			sendSuccessNotification('Your feedback has been submitted successfully')
-		} catch (error) {
-			sendErrorNotification(error)
-			console.error('There was a problem with the fetch operation:', error)
-		}
-
-		dispatch('close')
+		document.getElementById('feedback_type').value = cat
 	}
 </script>
 
-<div class="relative mt-2 ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl flex flex-col gap-3">
-	<div class="flex flex-row justify-between">
-		<div>Why did you choose this rating? (optional)</div>
-		<!-- svelte-ignore a11y-missing-attribute -->
-		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
+<form
+	id="form"
+	class="mt-4 flex w-4/5 flex-col items-center"
+	method="POST"
+	action="?/feedback"
+	use:enhance
+	on:submit={() => dispatch('close')}
+>
+	<input type="hidden" id="chatbotId" name="chatbotId" value={chatbotId} />
+	<input type="hidden" name="sid" id="sid" value={message.sid} />
+	<input type="hidden" name="feedback_type" id="feedback_type" value="" />
+	<input type="hidden" name="like" id="like" value="false" />
+	<input type="hidden" name="rating" id="rating" value="0" />
+	<div class="relative mt-2 ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl flex flex-col gap-3">
+		<div class="flex flex-row justify-between">
+			<div>Why did you choose this rating? (optional)</div>
+			<!-- svelte-ignore a11y-missing-attribute -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<div>
+				<a class="hover:cursor-pointer" on:click={() => dispatch('close')}>X</a>
+			</div>
+		</div>
+		<div class="flex flex-row gap-2">
+			{#each bad.feedback as item}
+				<Button
+					color="light"
+					class="px-3 py-1 text-xs {item === catalog ? 'border-2 border-green-500' : ''}"
+					on:click={() => handleCatalog(item)}>{item}</Button
+				>
+			{/each}
+		</div>
 		<div>
-			<a class="hover:cursor-pointer" on:click={() => dispatch('close')}>X</a>
+			<Input
+				type="text"
+				id="feedback"
+				bind:value={reason}
+				placeholder="Provide additional feedback"
+				name="feedback"
+				class=""
+			/>
+		</div>
+		<div>
+			<Button type="submit" color="light" size="xs" disabled={catalog === undefined}>Submit</Button>
 		</div>
 	</div>
-	<div class="flex flex-row gap-2">
-		{#each bad.feedback as item}
-			<Button
-				color="light"
-				class="px-3 py-1 text-xs {item === catalog ? 'border-2 border-green-500' : ''}"
-				on:click={() => handleCatalog(item)}>{item}</Button
-			>
-		{/each}
-	</div>
-	<div>
-		<Input
-			type="text"
-			bind:value={reason}
-			placeholder="Provide additional feedback"
-			size="md"
-			disabled={catalog === undefined}
-		/>
-	</div>
-	<div>
-		<Button on:click={handleDislikeSubmit} color="light" size="xs" disabled={catalog === undefined}
-			>Submit</Button
-		>
-	</div>
-</div>
+</form>

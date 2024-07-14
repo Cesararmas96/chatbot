@@ -4,7 +4,7 @@
 	export let query = ''
 	const dispatch = createEventDispatcher()
 
-	const handleSubmit = (event) => {
+	const handleSubmit = (event: Event) => {
 		event.preventDefault()
 		dispatch('submit')
 	}

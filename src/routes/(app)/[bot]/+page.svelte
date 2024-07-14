@@ -6,6 +6,7 @@
 	import { storePromptLibrary } from '$lib/stores/promptlibrary'
 	import { storeGood } from '$lib/stores/good.js'
 	import { storeBad } from '$lib/stores/bad.js'
+	import { storefeedback } from '$lib/stores/feedback.js'
 
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
@@ -22,14 +23,13 @@
 
 	export let data
 
-	const { user, bots, promptLibrary, good, bad } = data
+	const { user, bots, promptLibrary, good, bad, feedback } = data
 	storeUser.set(user)
 	storeBots.set(bots)
-	console.log(bots)
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
 	storeBad.set(bad)
-	console.log(bots)
+	storefeedback.set(feedback)
 	let isLoading = false
 	let messages: any[] = []
 	let query = ''
@@ -44,7 +44,6 @@
 
 	onMount(() => {
 		bot = $page.params.bot
-		console.log(bot)
 		shared = $page.url.searchParams.get('shared') === 'true'
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
 		hidellm = $page.url.searchParams.get('hidellm') === 'true'
@@ -67,22 +66,20 @@
 		}
 	})
 
-	console.log(bot)
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {
-			const { response, question, answer, chat_history } = await fetchChatData(
+			const { response, question, answer, chat_history, sid } = await fetchChatData(
 				bot,
 				query || lastQuery
 			)
 			messages = [
 				...messages,
-				{ text: response, query: query, answer: answer, chat_history: chat_history }
+				{ text: response, query: query, answer: answer, chat_history: chat_history, sid: sid }
 			]
 			// saveChatHistory(messages.map(message => message.chat_history))
 			saveChatHistory(chat_history)
 			query = ''
-			console.log(messages)
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {
@@ -115,10 +112,9 @@
 		const history = localStorage.getItem('chatHistory')
 		return history ? JSON.parse(history) : null
 	}
-
-	function handleSelectQuery(event) {
+	function handleSelectQuery(event: CustomEvent<{ query: string }>) {
 		query = event.detail.query
-		console.log('Selected Query:', query), chatInputRef.submitForm()
+		chatInputRef.submitForm()
 	}
 </script>
 

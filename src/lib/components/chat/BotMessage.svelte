@@ -6,12 +6,13 @@
 	import { convert } from 'html-to-text'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import Typewriter, { cascade, concurrent } from 'svelte-typewriter'
+	import { Input, Label, Helper, Button, Checkbox, A } from 'flowbite-svelte'
 	import { page } from '$app/stores'
 	let bot = $page.params.bot
 	let botName = $page.url.searchParams.get('botName')
-
+	import { Button, Modal } from 'flowbite-svelte'
 	const dispatch = createEventDispatcher()
-
+	let defaultModal = false
 	export let handleRegenerate
 	export let message
 	export let last
@@ -20,7 +21,8 @@
 	export let chatbotId
 
 	console.log(message)
-
+	const currentUrl = new URL($page.url.href).host
+	console.log($page)
 	let copied = false
 	let dislike = false
 	let like = false
@@ -73,6 +75,8 @@
 
 	const typing = () => setInterval(typeChar, 100)
 	typing()
+
+	console.log(message.sid)
 </script>
 
 <div class="col-start-1 col-end-8 p-3 rounded-lg">
@@ -84,6 +88,7 @@
 			<div
 				class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl dark:bg-gray-600 dark:text-white"
 			>
+				<!-- {message.sid} -->
 				<!-- <div use:concurrent={{ interval: 30 }} data-static> -->
 				{@html marked(message.text)}
 				<!-- </div> -->
@@ -150,16 +155,41 @@
 						>
 					</button>
 
-					<button title="share" class="mr-4">
+					<button title="share" class="mr-4" on:click={() => (defaultModal = true)}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="22"
 							height="22"
 							class="svg actions"
 							viewBox="0 0 24 24"
-							><path d="m21 12l-7-7v4C7 10 4 15 3 20c2.5-3.5 6-5.1 11-5.1V19z" /></svg
 						>
+							<path d="m21 12-7-7v4C7 10 4 15 3 20c2.5-3.5 6-5.1 11-5.1V19z" />
+						</svg>
 					</button>
+
+					<Modal title="Share the question and answer" bind:open={defaultModal} autoclose>
+						<Input
+							type="text"
+							id="first_name"
+							placeholder="John"
+							required
+							value={`${currentUrl}/share/${message.sid}`}
+						>
+							<button slot="right" size="sm" type="submit">
+								<svg
+									width="20"
+									height="20"
+									class="svg actions"
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 448 512"
+									><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
+										d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"
+									/></svg
+								>
+							</button>
+						</Input>
+						<svelte:fragment slot="footer"></svelte:fragment>
+					</Modal>
 				</div>
 			</div>
 

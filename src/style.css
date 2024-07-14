@@ -104,3 +104,15 @@ body {
   animation: spin 1s linear infinite;
   /* cambia la duración según desees */
 }
+
+.svg.actions {
+  fill: rgb(85, 85, 85);
+}
+
+.svg.actions:hover {
+  fill: rgb(47, 47, 47);
+}
+
+.active {
+  fill: #025399 !important;
+}

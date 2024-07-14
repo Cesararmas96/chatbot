@@ -151,14 +151,13 @@
 					</button>
 
 					<button title="share" class="mr-4">
-						<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
-							><path
-								fill="none"
-								stroke="currentColor"
-								stroke-linecap="round"
-								stroke-width="2"
-								d="M7.926 10.898L15 7.727m-7.074 5.39L15 16.29M8 12a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Zm12 5.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Zm0-11a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Z"
-							/></svg
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="22"
+							height="22"
+							class="svg actions"
+							viewBox="0 0 24 24"
+							><path d="m21 12l-7-7v4C7 10 4 15 3 20c2.5-3.5 6-5.1 11-5.1V19z" /></svg
 						>
 					</button>
 				</div>
@@ -167,22 +166,8 @@
 			{#if like}
 				<BotMessageLike {good} {message} {chatbotId} on:close={() => (like = false)} />
 			{:else if dislike}
-				<BotMessageDislike {message} {bad} on:close={() => (dislike = false)} />
+				<BotMessageDislike {message} {bad} {chatbotId} on:close={() => (dislike = false)} />
 			{/if}
 		</div>
 	</div>
 </div>
-
-<style>
-	.svg.actions {
-		fill: rgb(85, 85, 85);
-	}
-
-	.svg.actions:hover {
-		fill: rgb(47, 47, 47);
-	}
-
-	.active {
-		fill: #025399 !important;
-	}
-</style>

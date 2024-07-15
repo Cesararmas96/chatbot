@@ -6,13 +6,9 @@
 	import { convert } from 'html-to-text'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import Typewriter, { cascade, concurrent } from 'svelte-typewriter'
-	import { Input, Label, Helper, Button, Checkbox, A } from 'flowbite-svelte'
+	import { Input, Modal, Tooltip } from 'flowbite-svelte'
 	import { page } from '$app/stores'
-	let bot = $page.params.bot
-	let botName = $page.url.searchParams.get('botName')
-	import { Button, Modal } from 'flowbite-svelte'
-	const dispatch = createEventDispatcher()
-	let defaultModal = false
+	import { onMount } from 'svelte'
 	export let handleRegenerate
 	export let message
 	export let last
@@ -20,14 +16,17 @@
 	export let bad
 	export let chatbotId
 
-	console.log(message)
-	const currentUrl = new URL($page.url.href).host
-	console.log($page)
+	let bot = $page.params.bot
+	let botName = $page.url.searchParams.get('botName')
 	let copied = false
 	let dislike = false
 	let like = false
 	let clipboard = marked(message.text)
+	let defaultModal = false
+	let shareUrlInput = ''
 
+	const dispatch = createEventDispatcher()
+	const currentUrl = new URL($page.url.href).host
 	clipboard = convert(clipboard, options)
 
 	function copyToClipboard() {
@@ -44,6 +43,18 @@
 			.catch((error) => {
 				sendErrorNotification(error)
 			})
+	}
+
+	function copyToClipboardUrl() {
+		const shareUrlInput = document.getElementById('shareUrl') as HTMLInputElement
+
+		if (shareUrlInput) {
+			shareUrlInput.select()
+			document.execCommand('copy')
+			sendSuccessNotification('URL copied to clipboard successfully')
+		} else {
+			sendErrorNotification('Failed to copy URL: Element not found')
+		}
 	}
 
 	const handleDislike = () => {
@@ -96,7 +107,21 @@
 				<!-- {@html (typedChars)} -->
 
 				<div class="flex justify-end mt-5 mb-2">
-					<button class="mr-4" on:click={copyToClipboard} title="Copy">
+					<button id="share" class="mr-4" on:click={() => (defaultModal = true)}>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="22"
+							height="22"
+							viewBox="0 0 256 256"
+							class="svg actions"
+							><path
+								d="m232.49 112.49l-48 48a12 12 0 0 1-17-17L195 116h-30a84 84 0 0 0-81.36 63a12 12 0 1 1-23.24-6A107.94 107.94 0 0 1 165 92h30l-27.49-27.52a12 12 0 0 1 17-17l48 48a12 12 0 0 1-.02 17.01M192 204H44V88a12 12 0 0 0-24 0v128a12 12 0 0 0 12 12h160a12 12 0 0 0 0-24"
+							/></svg
+						>
+					</button>
+					<Tooltip triggeredBy="#share">Share</Tooltip>
+
+					<button class="mr-4" on:click={copyToClipboard} id="copy">
 						<svg
 							width="17"
 							height="17"
@@ -108,12 +133,10 @@
 							/></svg
 						>
 					</button>
+					<Tooltip triggeredBy="#copy">Copy</Tooltip>
+
 					{#if last === 'true'}
-						<button
-							class="mr-4"
-							on:click={() => handleRegenerate(message.query)}
-							title="Regenerate"
-						>
+						<button class="mr-4" on:click={() => handleRegenerate(message.query)} id="regenerate">
 							<svg
 								width="17"
 								height="17"
@@ -125,10 +148,11 @@
 								/></svg
 							>
 						</button>
+						<Tooltip triggeredBy="#regenerate">Regenerate</Tooltip>
 					{/if}
 
 					<span>
-						<button title="Like" class="mr-4 button" on:click={handleLike}>
+						<button id="like" class="mr-4 button" on:click={handleLike}>
 							<svg
 								class="svg actions {like ? 'active' : ''}"
 								width="17"
@@ -140,9 +164,10 @@
 								/></svg
 							>
 						</button>
+						<Tooltip triggeredBy="#like">Like</Tooltip>
 					</span>
 
-					<button title="Dislike" class="mr-4" on:click={handleDislike}>
+					<button id="dislike" class="mr-4" on:click={handleDislike}>
 						<svg
 							class="svg actions {dislike ? 'active' : ''}"
 							width="17"
@@ -154,28 +179,17 @@
 							/></svg
 						>
 					</button>
-
-					<button title="share" class="mr-4" on:click={() => (defaultModal = true)}>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="22"
-							height="22"
-							class="svg actions"
-							viewBox="0 0 24 24"
-						>
-							<path d="m21 12-7-7v4C7 10 4 15 3 20c2.5-3.5 6-5.1 11-5.1V19z" />
-						</svg>
-					</button>
+					<Tooltip triggeredBy="#dislike">Dislike</Tooltip>
 
 					<Modal title="Share the question and answer" bind:open={defaultModal} autoclose>
 						<Input
 							type="text"
-							id="first_name"
-							placeholder="John"
+							id="shareUrl"
+							name="shareUrl"
 							required
 							value={`${currentUrl}/share/${message.sid}`}
 						>
-							<button slot="right" size="sm" type="submit">
+							<button id="copyurl" slot="right" type="button" on:click={copyToClipboardUrl}>
 								<svg
 									width="20"
 									height="20"

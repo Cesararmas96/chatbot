@@ -4,8 +4,9 @@
 	import { createEventDispatcher } from 'svelte'
 
 	export let promptLibrary: any
-	export let chatbotId: any
+
 	const dispatch = createEventDispatcher()
+
 	let bot = $page.params.bot
 	let botName = $page.url.searchParams.get('botName')
 
@@ -13,7 +14,7 @@
 		return nameChatBotObj[name as keyof typeof NameChatBot] ?? ''
 	}
 
-	function handleItemClick(query) {
+	function handleItemClick(query: string) {
 		dispatch('selectQuery', { query })
 	}
 </script>
@@ -29,7 +30,7 @@
 		<p class="text-gray-500 md:text-base text-xs">How can I help you today?</p> -->
 	<div class="flex mt-10">
 		{#each promptLibrary as item}
-			<div
+			<button
 				class="card promptlibrary {getNameChatBot(bot, NameChatBot).toLocaleLowerCase() !== ''
 					? getNameChatBot(bot, NameChatBot).toLocaleLowerCase()
 					: botName}  m-2 col-span-2 flex cursor-pointer overflow-hidden rounded-lg hover:-translate-y-1 hover:scale-100 hover:shadow-lg md:col-span-3 lg:col-span-4"
@@ -39,7 +40,6 @@
 					<div class="relative z-10 mb-3 self-start">
 						<span class="flex h-7 w-7 items-center justify-center rounded-full border border-white">
 							<span class="align-center flex justify-center text-white">
-								<!-- <Icon icon={module?.attributes?.icon} size="15" /> -->
 								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
 									><path
 										fill="currentColor"
@@ -53,7 +53,7 @@
 						{item.title}
 					</h2>
 				</div>
-			</div>
+			</button>
 		{/each}
 	</div>
 </div>

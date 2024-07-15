@@ -304,7 +304,7 @@
 			</div>
 		{/if}
 	{:else}
-		<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} {chatbotId} />
+		<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />
 	{/if}
 </div>
 

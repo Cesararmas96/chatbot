@@ -229,7 +229,7 @@
 </script>
 
 <!-- Botón Switch para alternar avatarChat -->
-<div class="flex justify-center mb-5">
+<!-- <div class="flex justify-center mb-5">
 	<span class="mr-2 {!avatarChat ? 'font-medium text-blue-700' : 'text-gray-300'}">Chat</span>
 	<label class="switch">
 		<input
@@ -242,7 +242,7 @@
 	<span class="ml-2 {avatarChat ? 'font-medium text-blue-700' : 'text-gray-300'} "
 		>Video Avatar</span
 	>
-</div>
+</div> -->
 
 <div
 	class="flex flex-auto overflow-x-auto rounded-2xl bg-gray-100 chatbox dark:bg-gray-800 ml-2 mr-2"

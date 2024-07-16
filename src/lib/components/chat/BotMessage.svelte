@@ -107,79 +107,96 @@
 				<!-- {@html (typedChars)} -->
 
 				<div class="flex justify-end mt-5 mb-2">
-					<button id="share" class="mr-4" on:click={() => (defaultModal = true)}>
+					<button id="share" class="mr-3" on:click={() => (defaultModal = true)}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							width="22"
-							height="22"
-							viewBox="0 0 256 256"
-							class="svg actions"
-							><path
-								d="m232.49 112.49l-48 48a12 12 0 0 1-17-17L195 116h-30a84 84 0 0 0-81.36 63a12 12 0 1 1-23.24-6A107.94 107.94 0 0 1 165 92h30l-27.49-27.52a12 12 0 0 1 17-17l48 48a12 12 0 0 1-.02 17.01M192 204H44V88a12 12 0 0 0-24 0v128a12 12 0 0 0 12 12h160a12 12 0 0 0 0-24"
-							/></svg
+							width="16"
+							height="16"
+							class=" dark:fill-white fill-gray"
+							viewBox="0 0 32 32"
 						>
+							<path
+								d="M23 20a5 5 0 0 0-3.89 1.89l-7.31-4.57a4.46 4.46 0 0 0 0-2.64l7.31-4.57A5 5 0 1 0 18 7a4.8 4.8 0 0 0 .2 1.32l-7.31 4.57a5 5 0 1 0 0 6.22l7.31 4.57A4.8 4.8 0 0 0 18 25a5 5 0 1 0 5-5m0-16a3 3 0 1 1-3 3a3 3 0 0 1 3-3M7 19a3 3 0 1 1 3-3a3 3 0 0 1-3 3m16 9a3 3 0 1 1 3-3a3 3 0 0 1-3 3"
+							/>
+						</svg>
 					</button>
 					<Tooltip triggeredBy="#share">Share</Tooltip>
 
-					<button class="mr-4" on:click={copyToClipboard} id="copy">
+					<button class="mr-3" on:click={copyToClipboard} id="copy">
 						<svg
-							width="17"
-							height="17"
-							class="svg actions"
 							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 448 512"
-							><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-								d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"
-							/></svg
+							class=" dark:fill-white fill-black"
+							width="16"
+							height="16"
+							viewBox="0 0 32 32"
 						>
+							<path
+								d="M28 10v18H10V10zm0-2H10a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2"
+							/>
+							<path d="M4 18H2V4a2 2 0 0 1 2-2h14v2H4Z" />
+						</svg>
 					</button>
 					<Tooltip triggeredBy="#copy">Copy</Tooltip>
 
 					{#if last === 'true'}
-						<button class="mr-4" on:click={() => handleRegenerate(message.query)} id="regenerate">
+						<button class="mr-3" on:click={() => handleRegenerate(message.query)} id="regenerate">
 							<svg
-								width="17"
-								height="17"
-								class="svg actions"
 								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 448 512"
-								><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-									d="M105.1 202.6c7.7-21.8 20.2-42.3 37.8-59.8c62.5-62.5 163.8-62.5 226.3 0L386.3 160H352c-17.7 0-32 14.3-32 32s14.3 32 32 32H463.5c0 0 0 0 0 0h.4c17.7 0 32-14.3 32-32V80c0-17.7-14.3-32-32-32s-32 14.3-32 32v35.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5zM39 289.3c-5 1.5-9.8 4.2-13.7 8.2c-4 4-6.7 8.8-8.1 14c-.3 1.2-.6 2.5-.8 3.8c-.3 1.7-.4 3.4-.4 5.1V432c0 17.7 14.3 32 32 32s32-14.3 32-32V396.9l17.6 17.5 0 0c87.5 87.4 229.3 87.4 316.7 0c24.4-24.4 42.1-53.1 52.9-83.7c5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8c-62.5 62.5-163.8 62.5-226.3 0l-.1-.1L125.6 352H160c17.7 0 32-14.3 32-32s-14.3-32-32-32H48.4c-1.6 0-3.2 .1-4.8 .3s-3.1 .5-4.6 1z"
-								/></svg
+								class=" dark:fill-white fill-black"
+								width="16"
+								height="16"
+								viewBox="0 0 32 32"
 							>
+								<path
+									d="M26 18A10 10 0 1 1 16 8h6.182l-3.584 3.585L20 13l6-6l-6-6l-1.402 1.414L22.185 6H16a12 12 0 1 0 12 12Z"
+								/>
+							</svg>
 						</button>
 						<Tooltip triggeredBy="#regenerate">Regenerate</Tooltip>
 					{/if}
 
-					<span>
-						<button id="like" class="mr-4 button" on:click={handleLike}>
-							<svg
-								class="svg actions {like ? 'active' : ''}"
-								width="17"
-								height="17"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 512 512"
-								><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-									d="M323.8 34.8c-38.2-10.9-78.1 11.2-89 49.4l-5.7 20c-3.7 13-10.4 25-19.5 35l-51.3 56.4c-8.9 9.8-8.2 25 1.6 33.9s25 8.2 33.9-1.6l51.3-56.4c14.1-15.5 24.4-34 30.1-54.1l5.7-20c3.6-12.7 16.9-20.1 29.7-16.5s20.1 16.9 16.5 29.7l-5.7 20c-5.7 19.9-14.7 38.7-26.6 55.5c-5.2 7.3-5.8 16.9-1.7 24.9s12.3 13 21.3 13L448 224c8.8 0 16 7.2 16 16c0 6.8-4.3 12.7-10.4 15c-7.4 2.8-13 9-14.9 16.7s.1 15.8 5.3 21.7c2.5 2.8 4 6.5 4 10.6c0 7.8-5.6 14.3-13 15.7c-8.2 1.6-15.1 7.3-18 15.2s-1.6 16.7 3.6 23.3c2.1 2.7 3.4 6.1 3.4 9.9c0 6.7-4.2 12.6-10.2 14.9c-11.5 4.5-17.7 16.9-14.4 28.8c.4 1.3 .6 2.8 .6 4.3c0 8.8-7.2 16-16 16H286.5c-12.6 0-25-3.7-35.5-10.7l-61.7-41.1c-11-7.4-25.9-4.4-33.3 6.7s-4.4 25.9 6.7 33.3l61.7 41.1c18.4 12.3 40 18.8 62.1 18.8H384c34.7 0 62.9-27.6 64-62c14.6-11.7 24-29.7 24-50c0-4.5-.5-8.8-1.3-13c15.4-11.7 25.3-30.2 25.3-51c0-6.5-1-12.8-2.8-18.7C504.8 273.7 512 257.7 512 240c0-35.3-28.6-64-64-64l-92.3 0c4.7-10.4 8.7-21.2 11.8-32.2l5.7-20c10.9-38.2-11.2-78.1-49.4-89zM32 192c-17.7 0-32 14.3-32 32V448c0 17.7 14.3 32 32 32H96c17.7 0 32-14.3 32-32V224c0-17.7-14.3-32-32-32H32z"
-								/></svg
-							>
-						</button>
-						<Tooltip triggeredBy="#like">Like</Tooltip>
-					</span>
-
-					<button id="dislike" class="mr-4" on:click={handleDislike}>
+					<button id="like" class="mr-3 button" on:click={handleLike}>
 						<svg
-							class="svg actions {dislike ? 'active' : ''}"
-							width="17"
-							height="17"
 							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 512 512"
+							class=" {like ? 'active' : ''} dark:fill-white fill-black"
+							width="16"
+							height="16"
+							viewBox="0 0 32 32"
+						>
+							<path
+								d="M26 12h-6V6a3.003 3.003 0 0 0-3-3h-2.133a2.01 2.01 0 0 0-1.98 1.717l-.845 5.917L8.465 16H2v14h21a7.01 7.01 0 0 0 7-7v-7a4.005 4.005 0 0 0-4-4M8 28H4V18h4Zm20-5a5.006 5.006 0 0 1-5 5H10V17.303l3.958-5.937l.91-6.366H17a1 1 0 0 1 1 1v8h8a2.003 2.003 0 0 1 2 2Z"
+							/>
+						</svg>
+					</button>
+
+					<Tooltip triggeredBy="#like">Like</Tooltip>
+
+					<button id="dislike" class="mr-3" on:click={handleDislike}>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="dark:fill-white fill-black {dislike ? 'active' : ''}"
+							width="16"
+							height="16"
+							viewBox="0 0 32 32"
 							><path
-								d="M323.8 477.2c-38.2 10.9-78.1-11.2-89-49.4l-5.7-20c-3.7-13-10.4-25-19.5-35l-51.3-56.4c-8.9-9.8-8.2-25 1.6-33.9s25-8.2 33.9 1.6l51.3 56.4c14.1 15.5 24.4 34 30.1 54.1l5.7 20c3.6 12.7 16.9 20.1 29.7 16.5s20.1-16.9 16.5-29.7l-5.7-20c-5.7-19.9-14.7-38.7-26.6-55.5c-5.2-7.3-5.8-16.9-1.7-24.9s12.3-13 21.3-13L448 288c8.8 0 16-7.2 16-16c0-6.8-4.3-12.7-10.4-15c-7.4-2.8-13-9-14.9-16.7s.1-15.8 5.3-21.7c2.5-2.8 4-6.5 4-10.6c0-7.8-5.6-14.3-13-15.7c-8.2-1.6-15.1-7.3-18-15.2s-1.6-16.7 3.6-23.3c2.1-2.7 3.4-6.1 3.4-9.9c0-6.7-4.2-12.6-10.2-14.9c-11.5-4.5-17.7-16.9-14.4-28.8c.4-1.3 .6-2.8 .6-4.3c0-8.8-7.2-16-16-16H286.5c-12.6 0-25 3.7-35.5 10.7l-61.7 41.1c-11 7.4-25.9 4.4-33.3-6.7s-4.4-25.9 6.7-33.3l61.7-41.1c18.4-12.3 40-18.8 62.1-18.8H384c34.7 0 62.9 27.6 64 62c14.6 11.7 24 29.7 24 50c0 4.5-.5 8.8-1.3 13c15.4 11.7 25.3 30.2 25.3 51c0 6.5-1 12.8-2.8 18.7C504.8 238.3 512 254.3 512 272c0 35.3-28.6 64-64 64l-92.3 0c4.7 10.4 8.7 21.2 11.8 32.2l5.7 20c10.9 38.2-11.2 78.1-49.4 89zM32 384c-17.7 0-32-14.3-32-32V128c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H32z"
+								d="M30 16V9a7.01 7.01 0 0 0-7-7H2v14h6.465l3.577 5.366l.846 5.917A2.01 2.01 0 0 0 14.868 29H17a3.003 3.003 0 0 0 3-3v-6h6a4.005 4.005 0 0 0 4-4M8 14H4V4h4Zm20 2a2.003 2.003 0 0 1-2 2h-8v8a1 1 0 0 1-1 1h-2.133l-.91-6.366L10 14.697V4h13a5.006 5.006 0 0 1 5 5Z"
 							/></svg
 						>
 					</button>
+
 					<Tooltip triggeredBy="#dislike">Dislike</Tooltip>
+
+					<button class="mr-3" id="report">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							class=" dark:fill-white fill-black"
+							height="16"
+							viewBox="0 0 32 32"
+							><path d="M6 30H4V2h24l-5.8 9l5.8 9H6Zm0-12h18.33l-4.53-7l4.53-7H6Z" /></svg
+						>
+					</button>
+					<Tooltip triggeredBy="#report">Report</Tooltip>
 
 					<Modal title="Share the question and answer" bind:open={defaultModal} autoclose>
 						<Input
@@ -191,14 +208,14 @@
 						>
 							<button id="copyurl" slot="right" type="button" on:click={copyToClipboardUrl}>
 								<svg
-									width="20"
-									height="20"
-									class="svg actions"
 									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 448 512"
-									><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-										d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"
-									/></svg
+									class="dark:fill-white fill-black"
+									width="16"
+									height="16"
+									viewBox="0 0 32 32"
+									><path
+										d="M28 10v18H10V10zm0-2H10a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2"
+									/><path d="M4 18H2V4a2 2 0 0 1 2-2h14v2H4Z" /></svg
 								>
 							</button>
 						</Input>

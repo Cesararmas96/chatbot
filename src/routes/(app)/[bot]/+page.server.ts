@@ -126,4 +126,61 @@ const feedback: Action = async ({ request, locals }) => {
   }
 };
 
-export const actions: Actions = { feedback };
+
+const feedbackDislike: Action = async ({ request, locals }) => {
+  console.log("Feedback Action: Received feedback request");
+
+  const user_id = locals.user.user_id;
+  const formData = await request.formData();
+  const chatbotid = formData.get('chatbotId');
+  const sid = formData.get('sid');
+  const feedbackText = formData.get('feedback');
+  const feedback_type = formData.get('feedback_type');
+  const dislike = formData.get('dislike');
+  const rating = formData.get('rating');
+
+  const payload = {
+    chatbot_id: chatbotid,
+    sid: sid,
+    feedback_type:  feedback_type,
+    feedback: feedbackText,
+    _dislike: dislike,
+    rating: rating,
+    user_id: user_id
+  };
+
+  console.log(payload);
+  try {
+    const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/bot_feedback`;
+    const setFeedback = await postData(url, payload);
+    console.log("Response from API:", setFeedback);
+
+    if (setFeedback && setFeedback.message) {
+      console.log('bien')
+      return {
+        status: 200,
+        body: {
+          message: setFeedback.message
+          
+        }
+      };
+    } else {
+      return {
+        status: 500,
+        body: {
+          error: 'Failed'
+        }
+      };
+    }
+
+
+  } catch (error) {
+    return {
+      status: 500,
+      body: {
+        error: 'An unexpected error occurred'
+      }
+    };
+  }
+};
+export const actions: Actions = { feedbackDislike,  feedback};

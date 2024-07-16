@@ -35,7 +35,7 @@
 	id="form"
 	class="mt-4 flex w-4/5 flex-col items-center"
 	method="POST"
-	action="?/feedback"
+	action="?/feedbackDislike"
 	use:enhance
 	on:submit={handleSubmit}
 >
@@ -46,7 +46,7 @@
 		<input type="hidden" name="chatbotId" value={chatbotId} />
 		<input type="hidden" name="sid" id="sid" value={message.sid} />
 		<input type="hidden" name="feedback_type" id="feedback_type" value="" />
-		<input type="hidden" name="like" id="like" value="false" />
+		<input type="hidden" name="dislike" id="dislike" value="true" />
 		<input type="hidden" name="rating" id="rating" value="0" />
 
 		<div

@@ -6,9 +6,12 @@
 	import { convert } from 'html-to-text'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import Typewriter, { cascade, concurrent } from 'svelte-typewriter'
-	import { Input, Modal, Tooltip } from 'flowbite-svelte'
+	import { Input, Modal, Tooltip, Textarea, Label, Button } from 'flowbite-svelte'
 	import { page } from '$app/stores'
 	import { onMount } from 'svelte'
+	import { storeUser } from '$lib/stores'
+	import { postData } from '$lib/services/getData.js'
+
 	export let handleRegenerate
 	export let message
 	export let last
@@ -22,12 +25,42 @@
 	let dislike = false
 	let like = false
 	let clipboard = marked(message.text)
-	let defaultModal = false
+	let shareModal = false
+	let reportModal = false
 	let shareUrlInput = ''
 
 	const dispatch = createEventDispatcher()
 	const currentUrl = new URL($page.url.href).host
 	clipboard = convert(clipboard, options)
+
+	const reportSubmit = async (event: any) => {
+		event.preventDefault()
+		const email = $storeUser.email
+		const subjectInput = document.getElementById('subject')
+		const bodyTextarea = document.getElementById('body')
+		const payload = {
+			subject: subjectInput,
+			body: bodyTextarea,
+			customer: email
+		}
+
+		console.log(payload)
+
+		try {
+			const url = `${import.meta.env.VITE_API_URL}/support/api/v1/anon_ticket`
+			const setReport = await postData(url, payload)
+			console.log('Response from API:', setReport)
+
+			if (setReport) {
+				sendSuccessNotification('Report submitted successfully')
+			} else {
+				sendErrorNotification('Failed to submit report')
+			}
+		} catch (error) {
+			console.log(error)
+			sendErrorNotification('An error occurred while submitting the report')
+		}
+	}
 
 	function copyToClipboard() {
 		navigator.clipboard
@@ -107,7 +140,7 @@
 				<!-- {@html (typedChars)} -->
 
 				<div class="flex justify-end mt-5 mb-2">
-					<button id="share" class="mr-3" on:click={() => (defaultModal = true)}>
+					<button id="share" class="mr-3" on:click={() => (shareModal = true)}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -186,7 +219,7 @@
 
 					<Tooltip triggeredBy="#dislike">Dislike</Tooltip>
 
-					<button class="mr-3" id="report">
+					<button class="mr-3" id="report" on:click={() => (reportModal = true)}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -198,7 +231,29 @@
 					</button>
 					<Tooltip triggeredBy="#report">Report</Tooltip>
 
-					<Modal title="Share the question and answer" bind:open={defaultModal} autoclose>
+					<Modal bind:open={reportModal} autoclose={false} class="w-full">
+						<form on:submit={reportSubmit}>
+							<input type="hidden" id="email" value={$storeUser.email} />
+							<div class="mb-3">
+								<Label for="subject" class="mb-2">Subject</Label>
+								<Input type="text" id="subject" placeholder="Subject" required />
+							</div>
+							<div class="mb-4">
+								<Label for="body" class="mb-2">Body</Label>
+								<Textarea id="body" placeholder="Your message" rows="4" name="message" />
+							</div>
+							<div class="text-center">
+								<Button
+									type="button"
+									class="btn-cancel {bot}"
+									on:click={() => (reportModal = false)}>Cancel</Button
+								>
+								<Button type="submit" class="btn {bot}">Submit</Button>
+							</div>
+						</form>
+					</Modal>
+
+					<Modal title="Share the question and answer" bind:open={shareModal} autoclose>
 						<Input
 							type="text"
 							id="shareUrl"

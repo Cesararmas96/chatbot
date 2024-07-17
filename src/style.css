@@ -83,6 +83,86 @@ aside {
 }
 
 
+.btn.trocers {
+  background: linear-gradient(180deg,
+      rgba(244, 124, 32, 1) 1%,
+      rgb(239, 80, 157) 50%,
+      rgba(0, 174, 229, 1) 100%);
+}
+
+.btn.askbrett {
+  background: #1c64f2;
+  color: white;
+}
+
+.btn.askbrett:hover {
+  background-color: #1d50b4;
+}
+
+
+.btn.bosebot {
+  background: #737373;
+  color: white;
+
+}
+
+.btn.bosebot:hover {
+  background: #505050;
+
+}
+
+.btn.oddie {
+  background: rgba(239, 80, 157, 1);
+  color: white;
+}
+
+
+.btn.oddie:hover {
+  background: #993565;
+}
+
+.btn.askpage {
+  background-color: #296df7;
+  color: white
+}
+
+.btn.askpage:hover {
+  background-color: #2559c0;
+
+}
+
+
+.btn-cancel.trocers {
+  background: linear-gradient(180deg,
+      rgba(244, 124, 32, 1) 1%,
+      rgb(239, 80, 157) 50%,
+      rgba(0, 174, 229, 1) 100%);
+}
+
+.btn-cancel.askbrett {
+  border: 2px solid #1c64f2;
+  color: #1c64f2;
+}
+
+
+
+.btn-cancel.bosebot {
+  border: 2px solid #737373;
+  color: #737373;
+}
+
+
+
+.btn-cancel.oddie {
+  border: 2px solid #ef509d;
+  color: #ef509d;
+}
+
+.btn-cancel.askpage {
+  border: 2px solid #296df7;
+  color: #296df7;
+}
+
 
 
 body {

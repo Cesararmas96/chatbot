@@ -129,6 +129,7 @@
 				<SelectBots {bots} />
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
 			</div>
+
 			<ContainerChatBox
 				{isLoading}
 				{messages}

@@ -45,20 +45,12 @@
 					: ''}"
 			>
 				<span>
-					<svg
-						class="w-4 h-4 transform rotate-45 -mt-px"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32"
+						><path
+							fill="currentColor"
+							d="m27.45 15.11l-22-11a1 1 0 0 0-1.08.12a1 1 0 0 0-.33 1L7 16L4 26.74A1 1 0 0 0 5 28a1 1 0 0 0 .45-.11l22-11a1 1 0 0 0 0-1.78m-20.9 10L8.76 17H18v-2H8.76L6.55 6.89L24.76 16Z"
+						/></svg
 					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-						></path>
-					</svg>
 				</span>
 			</button>
 		</div>

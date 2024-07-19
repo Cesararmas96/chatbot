@@ -19,10 +19,16 @@ export const load: PageServerLoad = async ({ locals, fetch, url }) => {
 		fetch,
 		false
 	)
+	
+	const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
 
+	console.log(askBrettBot);
+
+	
+// console.log(bots)
   return {
     user: locals.user,
-    bots
+    bots : askBrettBot
   };
 };
 

@@ -104,9 +104,9 @@
 												class="mr-2"
 												alt={authMethods[method.name].name}
 											/>
-											{authMethods[method.name].description}
+											Sign in with SSO TROC
 										</Button>
-										<Tooltip>{authMethods[method.name].description}</Tooltip>
+										<Tooltip>Sign in with SSO TROC</Tooltip>
 									</li>
 								{/if}
 							{/each}

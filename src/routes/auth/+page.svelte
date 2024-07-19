@@ -52,8 +52,6 @@
 	}
 </script>
 
-{import.meta.env.VITE_API_URL}
-{import.meta.env.VITE_API_AI_URL}
 <main class="h-screen">
 	<div class="dark:text-white-dark text-black">
 		<div class="flex bg-white">

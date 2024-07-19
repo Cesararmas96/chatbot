@@ -231,7 +231,7 @@
 					</button>
 					<Tooltip triggeredBy="#report">Report</Tooltip>
 
-					<Modal bind:open={reportModal} autoclose={false} class="w-full">
+					<Modal title="Report a problem" bind:open={reportModal} autoclose={false} class="w-full">
 						<form on:submit={reportSubmit}>
 							<input type="hidden" id="email" value={$storeUser.email} />
 							<div class="mb-3">
@@ -246,6 +246,7 @@
 								<Button
 									type="button"
 									class="btn-cancel {bot}"
+									color="alternative"
 									on:click={() => (reportModal = false)}>Cancel</Button
 								>
 								<Button type="submit" class="btn {bot}">Submit</Button>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button, Input, Label, Tooltip } from 'flowbite-svelte'
-	import ImgLogin from '../../assets/slider.png'
 	import { enhance } from '$app/forms'
 	import { page } from '$app/stores'
 
@@ -30,15 +29,15 @@
 			class: 'auth-microsoft',
 			name: 'Microsoft',
 			uri: '/api/v1/auth/azure/'
-		},
-		ADFSAuth: {
-			description: 'Sign in with SSO',
-			external: true,
-			headers: { 'x-auth-method': 'ADFSAuth' },
-			img: 'images/auth/ADFS.png',
-			class: 'auth-adfs',
-			name: 'ADFSAuth'
 		}
+		// ADFSAuth: {
+		// 	description: 'Sign in with SSO',
+		// 	external: true,
+		// 	headers: { 'x-auth-method': 'ADFSAuth' },
+		// 	img: 'images/auth/ADFS.png',
+		// 	class: 'auth-adfs',
+		// 	name: 'ADFSAuth'
+		// }
 	}
 
 	const authMethods = {
@@ -52,73 +51,72 @@
 	}
 </script>
 
-<main class="h-screen">
+<main class="h-screen auth">
 	<div class="dark:text-white-dark text-black">
-		<div class="flex bg-white">
+		<div class="flex items-center justify-center min-h-screen">
 			<div
 				class="hidden w-full flex-col !justify-center text-white dark:text-black lg:!flex lg:!w-3/5"
 			>
-				<div class="carousel">
-					<img src={ImgLogin} alt="Carrousel" />
-				</div>
-
 				<div class="absolute bottom-1 ml-2">
 					<div
-						class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
+						class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-100 lg:flex-row lg:justify-center"
 					>
 						<span class="lg:border-r lg:border-gray-400 lg:pr-1"
 							>Copyright &copy; Navigator by T-ROC.</span
 						>
-						<span class="lg:border-r lg:border-gray-400 lg:pl-1 lg:pr-1">
-							All rights Reserved.
-						</span>
-						<span class=" pl-1"> Privacy Policy Terms and Conditions Cookies </span>
+						<span class="lg:border-r lg:border-gray-400 lg:pl-1 lg:pr-1">All rights Reserved.</span>
+						<span class="pl-1">Privacy Policy Terms and Conditions Cookies</span>
 					</div>
 				</div>
 			</div>
-			<div class="flex w-full justify-center lg:!w-2/5">
-				<div class=" m-2 flex w-full flex-col items-center pl-2 pr-2 sm:p-4">
-					<div class="mb-5 self-start">
-						<img src={ImgLogin} alt="" style="max-width: 80px" />
+			<div
+				id="loginAuth"
+				class="flex lg:!w-2/5 bg-opacity-50 bg-gray-800 rounded-lg items-center justify-center lg:mr-5"
+			>
+				<div class="m-2 flex w-full flex-col items-center pl-2 pr-2 sm:p-4">
+					<div class="self-center">
+						<img src="/images/auth/logo-white.png" alt="" style="max-width: 250px" />
 					</div>
 
-					<div class="text-center text-2xl font-semibold">Welcome Back</div>
+					<div class="text-center text-2xl font-semibold text-gray-100">Welcome Back</div>
 
-					<div class="mb-8 text-center text-lg text-gray-600">
-						Please select how you want to connect with us
+					<div class="mb-8 text-center text-lg text-gray-200">
+						Many thanks for being a tester of T-ROC Bots
 					</div>
 
 					<ul class="grid w-full gap-4 sm:gap-5">
 						{#if filteredObject}
 							{#each Object.values(filteredObject) as method}
-								<li>
-									<Button
-										href={`${apiUrl}${authMethods[method.name].uri}?redirect_uri=${redirecURI}`}
-										weight="24"
-										outline
-										color={method.color}
-										class="ml-auto mr-auto flex w-4/5 border text-gray-600 hover:bg-slate-100 hover:text-gray-700 {authMethods[
-											method.name
-										].class} border-blue-600 p-2 text-base shadow"
-									>
-										<img
-											src={authMethods[method.name].img || 'images/auth/default.png'}
-											style="max-width: 25px"
-											class="mr-2"
-											alt={authMethods[method.name].name}
-										/>
-										{authMethods[method.name].description}
-									</Button>
-									<Tooltip>{authMethods[method.name].description}</Tooltip>
-								</li>
+								{#if method.name === 'AzureAuth'}
+									<li>
+										<Button
+											href={`${apiUrl}/api/v1/auth/azure/?redirect_uri=${redirecURI}`}
+											weight="24"
+											outline
+											color={method.color}
+											class="ml-auto mr-auto flex w-4/5 border text-gray-200 hover:bg-slate-100 hover:text-gray-700 {authMethods[
+												method.name
+											].class} border-white p-2 text-base shadow"
+										>
+											<img
+												src={authMethods[method.name].img || 'images/auth/default.png'}
+												style="max-width: 25px"
+												class="mr-2"
+												alt={authMethods[method.name].name}
+											/>
+											{authMethods[method.name].description}
+										</Button>
+										<Tooltip>{authMethods[method.name].description}</Tooltip>
+									</li>
+								{/if}
 							{/each}
 						{/if}
 					</ul>
 
 					<div class="mt-6 flex w-4/5 items-center justify-center">
-						<div class="h-px flex-grow bg-gray-400 opacity-20" />
-						<span class="flex-shrik px-4 text-gray-600">Or Continue With</span>
-						<div class="h-px flex-grow bg-gray-400 opacity-20" />
+						<div class="h-px flex-grow bg-gray-200 opacity-20" />
+						<span class="flex-shrik px-4 text-gray-100">Or Continue With</span>
+						<div class="h-px flex-grow bg-gray-200 opacity-20" />
 					</div>
 
 					<form
@@ -129,7 +127,7 @@
 						use:enhance
 					>
 						<div class="w-full">
-							<Label for="email" class="mb-1 font-semibold">Email</Label>
+							<Label for="email" class="mb-1 font-semibold text-gray-100">Email</Label>
 							<Input
 								bind:value={username}
 								type="text"
@@ -142,11 +140,11 @@
 							/>
 						</div>
 						<div class="w-full">
-							<Label for="password" class="mb-1 font-semibold">Password</Label>
+							<Label for="password" class="mb-1 font-semibold text-gray-100">Password</Label>
 							<Input
 								id="password"
 								type="password"
-								defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
+								defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-10"
 								name="password"
 								placeholder="**********"
 								required
@@ -178,10 +176,12 @@
 </main>
 
 <style>
-	.carousel {
-		height: 100vh;
-		position: relative;
-		overflow: hidden;
-		max-width: 80%;
+	.auth {
+		background-image: url('./images/auth/ai-background.jpg'); /* Reemplaza 'ruta/de/tu/imagen.jpg' con la ruta de tu imagen */
+		background-size: cover; /* Esto hace que la imagen cubra todo el fondo */
+		background-repeat: no-repeat; /* Esto evita que la imagen se repita */
+		background-position: center; /* Esto centra la imagen en la página */
+		height: 100vh; /* Asegura que el fondo cubra toda la altura del navegador */
+		margin: 0; /* Elimina cualquier margen por defecto */
 	}
 </style>

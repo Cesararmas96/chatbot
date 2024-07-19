@@ -51,7 +51,7 @@
 	}
 </script>
 
-<main class="h-screen auth">
+<main class="h-screen auth" style="background-image: url('./images/auth/ai-background.jpg');">
 	<div class="dark:text-white-dark text-black">
 		<div class="flex items-center justify-center min-h-screen">
 			<div
@@ -121,7 +121,7 @@
 
 					<form
 						id="form"
-						class="mt-4 flex w-4/5 flex-col items-center"
+						class=" flex w-4/5 flex-col items-center"
 						method="POST"
 						action="?/login"
 						use:enhance
@@ -161,7 +161,7 @@
 							</p>
 						{/if}
 
-						<div class="mt-5 w-full">
+						<div class=" w-full">
 							<Button
 								color="blue"
 								class="w-full rounded bg-blue-600 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 focus:outline-none"
@@ -177,7 +177,6 @@
 
 <style>
 	.auth {
-		background-image: url('./images/auth/ai-background.jpg'); /* Reemplaza 'ruta/de/tu/imagen.jpg' con la ruta de tu imagen */
 		background-size: cover; /* Esto hace que la imagen cubra todo el fondo */
 		background-repeat: no-repeat; /* Esto evita que la imagen se repita */
 		background-position: center; /* Esto centra la imagen en la página */

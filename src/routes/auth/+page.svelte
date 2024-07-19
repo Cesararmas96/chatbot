@@ -74,8 +74,8 @@
 				class="flex lg:!w-2/5 bg-opacity-50 bg-gray-800 rounded-lg items-center justify-center lg:mr-5"
 			>
 				<div class="m-2 flex w-full flex-col items-center pl-2 pr-2 sm:p-4">
-					<div class="self-center">
-						<img src="/images/auth/logo-white.png" alt="" style="max-width: 250px" />
+					<div class="self-center mb-10">
+						<img src="/images/auth/logo-white.png" alt="" style="max-width: 200px" />
 					</div>
 
 					<div class="text-center text-2xl font-semibold text-gray-100">Welcome Back</div>

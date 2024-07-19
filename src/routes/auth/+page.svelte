@@ -2,7 +2,12 @@
 	import { Button, Input, Label, Tooltip } from 'flowbite-svelte'
 	import { enhance } from '$app/forms'
 	import { page } from '$app/stores'
+	import { errorCodes } from '$lib/helpers/error-codes'
+	import { onMount } from 'svelte'
+	import { loading } from '$lib/stores/preferences'
+	import type { ActionData } from './$types'
 
+	export let form: ActionData
 	export let data
 	const { filteredObject } = data
 
@@ -49,6 +54,11 @@
 			return acc
 		}, {})
 	}
+
+	$: _loading = Boolean(form && !(form?.invalid === true || form?.credentials === true))
+	onMount(() => {
+		$loading = false
+	})
 </script>
 
 <main class="h-screen auth" style="background-image: url('./images/auth/ai-background.jpg');">
@@ -124,6 +134,7 @@
 						class=" flex w-4/5 flex-col items-center"
 						method="POST"
 						action="?/login"
+						on:submit={() => (_loading = true)}
 						use:enhance
 					>
 						<div class="w-full">
@@ -144,7 +155,7 @@
 							<Input
 								id="password"
 								type="password"
-								defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-10"
+								defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-4"
 								name="password"
 								placeholder="**********"
 								required
@@ -161,10 +172,27 @@
 							</p>
 						{/if}
 
+						{#if form?.invalid}
+							<p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
+								Username and password is required.
+							</p>
+						{/if}
+
+						{#if form?.credentials}
+							<p class="mb-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
+								{@html errorCodes[form?.message?.status]
+									? `${errorCodes[form?.message?.status].title}. ${
+											errorCodes[form?.message?.status].message
+										}`
+									: form?.message?.reason}
+							</p>
+						{/if}
+
 						<div class=" w-full">
 							<Button
+								disabled={_loading}
 								color="blue"
-								class="w-full rounded bg-blue-600 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 focus:outline-none"
+								class="w-full rounded bg-blue-600 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 focus:outline-none mt-4"
 								type="submit">Login</Button
 							>
 						</div>

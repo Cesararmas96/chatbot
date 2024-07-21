@@ -8,6 +8,7 @@
 	import VideoSection from '../video/VideoSection.svelte'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { createEventDispatcher } from 'svelte'
+	import { page } from '$app/stores'
 
 	const dispatch = createEventDispatcher()
 
@@ -19,6 +20,7 @@
 	export let good
 	export let bad
 
+	let bot = $page.params.bot
 	let isLoadingAvatar = false
 	let element: HTMLDivElement
 	let mediaElement: HTMLVideoElement
@@ -304,7 +306,14 @@
 			</div>
 		{/if}
 	{:else}
-		<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />
+		<div class="flex flex-auto flex-col lg:justify-center">
+			<div class="flex justify-center mt-2">
+				<img src="/images/bots/{bot}.png" class="w-32 md:w-36" alt="{bot}-logo" />
+			</div>
+			<div class="">
+				<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />
+			</div>
+		</div>
 	{/if}
 </div>
 

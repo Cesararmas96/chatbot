@@ -15,7 +15,7 @@
 </script>
 
 <form on:submit={handleSubmit} class="mr-2 ml-2">
-	<div class="flex flex-row items-center h-16 rounded-xl w-full">
+	<div class="flex flex-row items-center h-16 rounded-xl w-full md:auto">
 		<div class="flex-grow">
 			<div class="relative">
 				<input

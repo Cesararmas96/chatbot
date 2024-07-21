@@ -120,11 +120,11 @@
 
 <div class="sm:ml-64">
 	<Header />
-	<div class="flex flex-row h-full w-full overflow-x-hidden">
+	<div class="flex flex-row h-full overflow-x-hidden">
 		{#if !shared}
 			<SidebarBot />
 		{/if}
-		<div class="flex flex-col h-screen flex-auto p-2">
+		<div class="flex flex-col h-screen flex-auto p-2 w-20">
 			<div class="flex justify-between px-2 py-2">
 				<SelectBots {bots} />
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />

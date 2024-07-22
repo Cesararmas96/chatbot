@@ -1,7 +1,9 @@
-// import adapter from '@sveltejs/adapter-auto';
-// import adapter from '@sveltejs/adapter-netlify';
 import { mdsvex } from 'mdsvex';
 import mdsvexConfig from './mdsvex.config.js';
+
+// Adaptar https://navai.trocdigital.net/
+// import adapter from '@sveltejs/adapter-netlify';
+
 import adapter from '@sveltejs/adapter-node';
 import preprocess from 'svelte-preprocess';
 

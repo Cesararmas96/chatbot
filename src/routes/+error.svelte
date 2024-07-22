@@ -21,7 +21,7 @@
 				<div class="rounded-md bg-gray-900 p-4 text-white">
 					<div class="overflow-auto">
 						<pre id="code" class="flex text-gray-300">
-								<code class="flex flex-col text-white">{@html $page.error?.message}</code>
+								<code class="flex flex-col text-white">{@html $page.error?.message}.</code>
 							</pre>
 					</div>
 				</div>

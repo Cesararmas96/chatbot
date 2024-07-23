@@ -29,7 +29,7 @@
 		</div>
 
 		<div class="flex justify-between text-center text-muted">
-			<a href="/" class="block text-md hover:text-body">Go back to home page</a>
+			<!-- <a href="/" class="block text-md hover:text-body">Go back to home page</a> -->
 			<a href="/logout" class="block text-md hover:text-body">Go back to login page</a>
 		</div>
 	</div>

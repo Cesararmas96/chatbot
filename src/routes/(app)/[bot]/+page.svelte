@@ -1,66 +1,46 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { page } from '$app/stores'
+	import { goto } from '$app/navigation'
+	import { v4 as uuidv4 } from 'uuid'
 	import { storeUser } from '$lib/stores/session.js'
 	import { storeBots } from '$lib/stores/bots'
 	import { storePromptLibrary } from '$lib/stores/promptlibrary'
 	import { storeGood } from '$lib/stores/good.js'
 	import { storeBad } from '$lib/stores/bad.js'
-	import { storefeedback } from '$lib/stores/feedback.js'
-
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
-	import ContainerChatBox from '$lib/components/chat/ContainerChatBox.svelte'
-	// import SelectBots from "$lib/components/chat/SelectBots.svelte";
-	// import SelectLlm from "$lib/components/chat/SelectLlm.svelte";
-	// import Fab from "$lib/components/chat/Fab.svelte";
-	// import FloatingActionButton from "$lib/components/chat/FloatingActionButton.svelte";
-	// import SettingModal from "$lib/components/chat/SettingModal.svelte";
 	import { DarkMode } from 'flowbite-svelte'
 	import SelectBots from '$lib/components/chat/SelectBots.svelte'
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import Header from '$lib/components/chat/Header.svelte'
+	import WelcomeChat from '$lib/components/chat/WelcomeChat.svelte'
 
 	export let data
 
-	const { user, bots, promptLibrary, good, bad, feedback } = data
+	const { user, bots, promptLibrary, good, bad } = data
 	storeUser.set(user)
 	storeBots.set(bots)
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
 	storeBad.set(bad)
-	storefeedback.set(feedback)
+	// storefeedback.set(feedback)
+
 	let isLoading = false
 	let messages: any[] = []
 	let query = ''
 	let bot = ''
 	let shared = false
-	let hidebot = false
-	let hidellm = false
-	let llm = ''
 	let showSettings = false
 	let chatInputRef: any
 	let chatbotId = ''
+	let uuid = ''
 
 	onMount(() => {
 		bot = $page.params.bot
-		shared = $page.url.searchParams.get('shared') === 'true'
-		hidebot = $page.url.searchParams.get('hidebot') === 'true'
-		hidellm = $page.url.searchParams.get('hidellm') === 'true'
-		const lastChatHistory = getChatHistory()
-		if (lastChatHistory) {
-			messages = [{ chat_history: lastChatHistory }]
-		}
-
-		// bots.forEach(({ chatbot_id, name }) => {
-		// 	console.log('Chatbot ID:', chatbot_id, 'Name:', name)
-		// })
-
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
-
 		if (currentBot) {
 			chatbotId = currentBot.chatbot_id
-			// console.log('Current chatbot_id:', chatbotId)
 		} else {
 			console.error('Bot not found')
 		}
@@ -77,9 +57,16 @@
 				...messages,
 				{ text: response, query: query, answer: answer, chat_history: chat_history, sid: sid }
 			]
-			// saveChatHistory(messages.map(message => message.chat_history))
-			saveChatHistory(chat_history)
 			query = ''
+			if (!uuid) {
+				uuid = uuidv4()
+				// Guardar los datos en localStorage
+				localStorage.setItem('messages', JSON.stringify(messages))
+				// localStorage.setItem('chatbotId', chatbotId)
+				// localStorage.setItem('good', good)
+				// localStorage.setItem('bad', bad)
+				goto(`/${bot}/${uuid}`)
+			}
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {
@@ -92,26 +79,6 @@
 		await handleFetchData()
 	}
 
-	const handleSelectChange = (event: CustomEvent) => {
-		llm = event.detail.value
-	}
-
-	const toggleSettings = () => {
-		showSettings = !showSettings
-	}
-
-	const handleRegenerate = async (lastquery: string) => {
-		await handleFetchData(lastquery)
-	}
-
-	const saveChatHistory = (chatHistory: any) => {
-		localStorage.setItem('chatHistory', JSON.stringify(chatHistory))
-	}
-
-	const getChatHistory = (): any => {
-		const history = localStorage.getItem('chatHistory')
-		return history ? JSON.parse(history) : null
-	}
 	function handleSelectQuery(event: CustomEvent<{ query: string }>) {
 		query = event.detail.query
 		chatInputRef.submitForm()
@@ -130,28 +97,20 @@
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
 			</div>
 
-			<ContainerChatBox
-				{isLoading}
-				{messages}
-				{promptLibrary}
-				{chatbotId}
-				{good}
-				{bad}
-				{handleRegenerate}
-				on:selectQuery={handleSelectQuery}
-			/>
+			<div
+				class="flex flex-auto overflow-x-auto rounded-2xl bg-gray-100 chatbox dark:bg-gray-800 ml-2 mr-2"
+			>
+				<div class="flex flex-auto flex-col lg:justify-center">
+					<div class="flex justify-center mt-2">
+						<img src="/images/bots/{bot}.png" class="w-32 md:w-36" alt="{bot}-logo" />
+					</div>
+					<div class="">
+						<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />
+					</div>
+				</div>
+			</div>
+
 			<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
 		</div>
 	</div>
 </div>
-
-<!-- <FloatingActionButton on:click={toggleSettings} /> -->
-<!-- <div class="flex justify-between px-2 py-2">
-	<SelectBots/>
-	<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
-</div>
-<ContainerChatBox {isLoading} {messages} {handleRegenerate} />
-<ChatInput {isLoading} bind:query on:submit={handleSubmit} /> -->
-<!-- {#if showSettings}
-<SettingModal on:close={toggleSettings} />
-{/if} -->

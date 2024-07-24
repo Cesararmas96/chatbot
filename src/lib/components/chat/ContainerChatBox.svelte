@@ -13,7 +13,6 @@
 	export let handleRegenerate
 	export let messages
 	export let isLoading
-	export let promptLibrary: any
 	export let chatbotId
 	export let good
 	export let bad
@@ -32,9 +31,9 @@
 		node.scroll({ top: node.scrollHeight, behavior: 'smooth' })
 	}
 
-	function handleSelectQuery(event) {
-		dispatch('selectQuery', { query: event.detail.query })
-	}
+	// function handleSelectQuery(event) {
+	// 	dispatch('selectQuery', { query: event.detail.query })
+	// }
 </script>
 
 <div
@@ -62,7 +61,7 @@
 				{/if}
 			</div>
 		</div>
-	{:else}
+		<!-- {:else}
 		<div class="flex flex-auto flex-col lg:justify-center">
 			<div class="flex justify-center mt-2">
 				<img src="/images/bots/{bot}.png" class="w-32 md:w-36" alt="{bot}-logo" />
@@ -70,6 +69,6 @@
 			<div class="">
 				<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />
 			</div>
-		</div>
+		</div> -->
 	{/if}
 </div>

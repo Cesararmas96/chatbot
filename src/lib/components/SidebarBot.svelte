@@ -49,6 +49,10 @@
 			}
 		}
 	})
+
+	function refreshPage() {
+		location.reload()
+	}
 </script>
 
 <aside
@@ -82,9 +86,11 @@
 			>
 		</a>
 		<ul class="space-y-2 font-medium">
-			<li>
-				<a
-					href="/{bot}"
+			<li
+				class="group text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+			>
+				<button
+					on:click={refreshPage}
 					class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
 				>
 					<svg
@@ -99,7 +105,7 @@
 						/><path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z" /></svg
 					>
 					<span class="ms-3">New Chat</span>
-				</a>
+				</button>
 			</li>
 		</ul>
 		<div class="mt-auto pb-5">

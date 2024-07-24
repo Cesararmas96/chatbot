@@ -11,16 +11,15 @@
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import ContainerChatBox from '$lib/components/chat/ContainerChatBox.svelte'
+	// import SelectBots from "$lib/components/chat/SelectBots.svelte";
+	// import SelectLlm from "$lib/components/chat/SelectLlm.svelte";
+	// import Fab from "$lib/components/chat/Fab.svelte";
+	// import FloatingActionButton from "$lib/components/chat/FloatingActionButton.svelte";
+	// import SettingModal from "$lib/components/chat/SettingModal.svelte";
 	import { DarkMode } from 'flowbite-svelte'
 	import SelectBots from '$lib/components/chat/SelectBots.svelte'
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import Header from '$lib/components/chat/Header.svelte'
-
-	// uid
-	import { goto } from '$app/navigation'
-	import { v4 as uuidv4 } from 'uuid'
-
-	import { addChat, getChat, updateChat } from '$lib/db.js'
 
 	export let data
 
@@ -42,9 +41,8 @@
 	let showSettings = false
 	let chatInputRef: any
 	let chatbotId = ''
-	let chatId: number
 
-	onMount(async () => {
+	onMount(() => {
 		bot = $page.params.bot
 		shared = $page.url.searchParams.get('shared') === 'true'
 		hidebot = $page.url.searchParams.get('hidebot') === 'true'
@@ -54,20 +52,18 @@
 			messages = [{ chat_history: lastChatHistory }]
 		}
 
+		// bots.forEach(({ chatbot_id, name }) => {
+		// 	console.log('Chatbot ID:', chatbot_id, 'Name:', name)
+		// })
+
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
+
 		if (currentBot) {
 			chatbotId = currentBot.chatbot_id
+			// console.log('Current chatbot_id:', chatbotId)
 		} else {
 			console.error('Bot not found')
 		}
-
-		const newChat = {
-			chatbot_id: chatbotId,
-			user_id: user.id,
-			messages: []
-		}
-
-		chatId = await addChat(newChat)
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
@@ -77,27 +73,13 @@
 				bot,
 				query || lastQuery
 			)
-
 			messages = [
 				...messages,
 				{ text: response, query: query, answer: answer, chat_history: chat_history, sid: sid }
 			]
-
-			const chatToUpdate = await getChat(chatId)
-			chatToUpdate.question = question
-			chatToUpdate.response = response
-			chatToUpdate.sid = sid
-			chatToUpdate.chatbot_id = chatbotId
-			chatToUpdate.user_id = user.id
-
-			await updateChat(chatId, chatToUpdate)
-
+			// saveChatHistory(messages.map(message => message.chat_history))
 			saveChatHistory(chat_history)
 			query = ''
-
-			// Navegar a una nueva URL con el UID del chat
-			const newUid = sid // Usa el SID como nuevo UID en la URL
-			goto(`/bosebot/${uuidv4()}`)
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {
@@ -130,7 +112,6 @@
 		const history = localStorage.getItem('chatHistory')
 		return history ? JSON.parse(history) : null
 	}
-
 	function handleSelectQuery(event: CustomEvent<{ query: string }>) {
 		query = event.detail.query
 		chatInputRef.submitForm()
@@ -163,3 +144,14 @@
 		</div>
 	</div>
 </div>
+
+<!-- <FloatingActionButton on:click={toggleSettings} /> -->
+<!-- <div class="flex justify-between px-2 py-2">
+	<SelectBots/>
+	<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
+</div>
+<ContainerChatBox {isLoading} {messages} {handleRegenerate} />
+<ChatInput {isLoading} bind:query on:submit={handleSubmit} /> -->
+<!-- {#if showSettings}
+<SettingModal on:close={toggleSettings} />
+{/if} -->

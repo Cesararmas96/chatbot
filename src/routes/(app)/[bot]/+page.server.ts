@@ -62,7 +62,7 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
 
   return {
     user: locals.user,
-    bots: askBrettBot,
+    bots,
     promptLibrary,
     good,
     bad,

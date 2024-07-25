@@ -11,6 +11,7 @@
 	import { DarkMode } from 'flowbite-svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { fetchChatData } from '$lib/services/chatService'
+	import { db } from '$lib/db' // Importa la instancia de Dexie
 
 	export let data
 	let isLoading = false
@@ -26,16 +27,8 @@
 	let chatInputRef: any
 	let chatbotId = ''
 
-	onMount(() => {
+	onMount(async () => {
 		bot = $page.params.bot
-		// shared = $page.url.searchParams.get('shared') === 'true'
-		// hidebot = $page.url.searchParams.get('hidebot') === 'true'
-		// hidellm = $page.url.searchParams.get('hidellm') === 'true'
-		// const lastChatHistory = getChatHistory()
-		// if (lastChatHistory) {
-		// 	messages = [{ chat_history: lastChatHistory }]
-		// }
-
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
 
 		if (currentBot) {
@@ -44,11 +37,29 @@
 			console.error('Bot not found')
 		}
 
-		messages = JSON.parse(localStorage.getItem('messages') || '[]')
-		// good = localStorage.getItem('good') || good
-		// bad = localStorage.getItem('bad') || ''
-		// const handleRegenerateString = localStorage.getItem('handleRegenerate') || ''
-		// handleRegenerate = new Function('return ' + handleRegenerateString)()
+		// Guardar usuario y bot en IndexedDB
+		const userExists = await db.users.where('userId').equals(user.user_id).count()
+		if (!userExists) {
+			await db.users.add({ userId: user.user_id, name: user.name })
+		}
+
+		const botExists = await db.bots.where('botId').equals(chatbotId).count()
+		if (!botExists) {
+			await db.bots.add({ botId: chatbotId, userId: user.user_id })
+		}
+
+		const pageUrl = $page.url.pathname
+		const storedMessages = await db.messages.where('pageId').equals(pageUrl).toArray()
+
+		if (storedMessages.length > 0) {
+			messages = storedMessages.map((msg) => ({
+				text: msg.text,
+				query: msg.query,
+				answer: msg.answer,
+				chat_history: msg.chat_history,
+				sid: msg.sid
+			}))
+		}
 	})
 
 	const handleFetchData = async (lastQuery = '') => {
@@ -58,13 +69,18 @@
 				bot,
 				query || lastQuery
 			)
-			messages = [
-				...messages,
-				{ text: response, query: query, answer: answer, chat_history: chat_history, sid: sid }
-			]
-			// saveChatHistory(messages.map(message => message.chat_history))
-			saveChatHistory(chat_history)
+			const newMessage = {
+				text: response,
+				query: query,
+				answer: answer,
+				chat_history: chat_history,
+				sid: sid
+			}
+			messages = [...messages, newMessage]
 			query = ''
+
+			const pageUrl = $page.url.pathname
+			await db.messages.add({ ...newMessage, pageId: pageUrl })
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {
@@ -81,19 +97,10 @@
 		await handleFetchData(lastquery)
 	}
 
-	const saveChatHistory = (chatHistory: any) => {
-		localStorage.setItem('chatHistory', JSON.stringify(chatHistory))
-	}
-
-	const getChatHistory = (): any => {
-		const history = localStorage.getItem('chatHistory')
-		return history ? JSON.parse(history) : null
-	}
 	function handleSelectQuery(event: CustomEvent<{ query: string }>) {
 		query = event.detail.query
 		chatInputRef.submitForm()
 	}
-	console.log(messages)
 </script>
 
 <div class="sm:ml-64">

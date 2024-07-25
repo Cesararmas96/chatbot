@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-export const storefeedback = writable<any | null>(null)
-export const storefeedbacks = writable<any[] | null>(null)
+export const storeFeedback = writable<any | null>(null)
+export const storeFeedbacks = writable<any[] | null>(null)
 
-export const variablesOperationalfeedbackMessagefeedback = writable<any[]>([])
+export const variablesOperationalFeedback = writable<any[]>([])

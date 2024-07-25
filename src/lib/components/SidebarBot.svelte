@@ -1,12 +1,54 @@
 <script lang="ts">
+	import Dexie from 'dexie'
 	import { enhance } from '$app/forms'
 	import { page } from '$app/stores'
 	import Avatar from './common/Avatar.svelte'
 	import { onMount } from 'svelte'
+	import { goto } from '$app/navigation'
+	// Define la base de datos Dexie
+	const db = new Dexie('ChatDB')
+	db.version(1).stores({
+		users: '++id, &userId, name',
+		bots: '++id, &botId, userId',
+		messages: '++id, pageId, text, query, answer, chat_history, sid'
+	})
+
 	let botName = $page.params.bot
 	const bot = $page.params.bot
 	let hidden2 = false
+	let pageIds: string[] = [] // Para almacenar los pageId recuperados
 
+	let pageData = []
+
+	async function fetchPageIds() {
+		try {
+			const messages = await db.messages.toArray()
+			console.log(messages)
+
+			const pageDataArray = messages
+				.filter((message) => message.pageId && message.query)
+				.map((message) => ({ pageId: message.pageId, query: message.query }))
+
+			pageData = Array.from(new Map(pageDataArray.map((item) => [item.pageId, item])).values())
+
+			console.log(pageData)
+		} catch (error) {
+			console.error('Error fetching pageIds:', error)
+		}
+	}
+
+	// Montar el componente y obtener los pageIds
+	onMount(() => {
+		fetchPageIds()
+
+		const button = document.getElementById('toggle-drawer-button')
+		if (button) button.addEventListener('click', toggleDrawer)
+
+		const closeButton = document.getElementById('close-drawer-button')
+		if (closeButton) closeButton.addEventListener('click', closeDrawer)
+	})
+
+	// Toggle sidebar visibility
 	const toggleDrawer = () => {
 		hidden2 = !hidden2
 		const sidebar = document.getElementById('default-sidebar')
@@ -16,6 +58,7 @@
 		}
 	}
 
+	// Close sidebar
 	const closeDrawer = () => {
 		hidden2 = true
 		const sidebar = document.getElementById('default-sidebar')
@@ -25,19 +68,9 @@
 		}
 	}
 
-	onMount(() => {
-		const button = document.getElementById('toggle-drawer-button')
-		button.addEventListener('click', toggleDrawer)
-
-		const closeButton = document.getElementById('close-drawer-button')
-		closeButton.addEventListener('click', closeDrawer)
-	})
-
-	// Añadir un listener para cambiar hidden2 cuando cambie el tamaño de la ventana
+	// Update sidebar visibility on window resize
 	window.addEventListener('resize', () => {
-		// Cambiar hidden2 dependiendo de la resolución
-		hidden2 = window.innerWidth >= 640 // Cambiar 640 por el ancho en píxeles que deseas para la transición
-		// Actualizar la clase del sidebar según el valor de hidden2
+		hidden2 = window.innerWidth >= 640 // Adjust as needed
 		const sidebar = document.getElementById('default-sidebar')
 		if (sidebar) {
 			if (!hidden2) {
@@ -49,6 +82,21 @@
 			}
 		}
 	})
+
+	// Función para eliminar un pageId
+	async function deletePageId(pageId: string) {
+		try {
+			// Elimina los mensajes asociados con el pageId
+			await db.messages.where('pageId').equals(pageId).delete()
+			// Actualiza la lista de pageIds
+			await fetchPageIds()
+		} catch (error) {
+			console.error('Error deleting pageId:', error)
+		}
+	}
+	const currentUrl = $page.url
+	const newUrl = `${currentUrl.origin}`
+	console.log(newUrl)
 </script>
 
 <aside
@@ -61,18 +109,18 @@
 		class="sm:hidden absolute top-3 right-4 p-2 text-sm hover:text-gray-700 focus:outline-none"
 	>
 		<span class="sr-only">Close sidebar</span>
-
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			class="w-6 h-6"
 			width="32"
 			height="32"
 			viewBox="0 0 32 32"
-			><path
+		>
+			<path
 				fill="currentColor"
 				d="M17.414 16L24 9.414L22.586 8L16 14.586L9.414 8L8 9.414L14.586 16L8 22.586L9.414 24L16 17.414L22.586 24L24 22.586z"
-			/></svg
-		>
+			/>
+		</svg>
 	</button>
 	<div class="flex flex-col h-full px-3 py-4 overflow-y-auto dark:bg-gray-800">
 		<a href="/" class="flex items-center ps-2.5 mb-5">
@@ -81,10 +129,13 @@
 				>T-ROC Chatbot</span
 			>
 		</a>
-		<ul class="space-y-2 font-medium">
-			<li>
+		<ul>
+			<li
+				class="group text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+			>
 				<a
-					href="/{bot}"
+					href={`/${bot}`}
+					target="_self"
 					class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
 				>
 					<svg
@@ -101,6 +152,39 @@
 					<span class="ms-3">New Chat</span>
 				</a>
 			</li>
+			{#each pageData as { pageId, query }}
+				<li class="flex items-center justify-between">
+					<a
+						target="_self"
+						href={`${newUrl}${pageId}`}
+						class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="32"
+							height="32"
+							viewBox="0 0 32 32"
+							class="w-5 h-5 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+						>
+							<path
+								fill="currentColor"
+								d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"
+							/>
+							<path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z" />
+						</svg>
+						<span class="ms-3 text-sm">{query}</span>
+					</a>
+					<button on:click={() => deletePageId(pageId)}>
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
+							<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
+							<path
+								fill="currentColor"
+								d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
+							/>
+						</svg>
+					</button>
+				</li>
+			{/each}
 		</ul>
 		<div class="mt-auto pb-5">
 			<ul>

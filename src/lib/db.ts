@@ -1,21 +1,9 @@
 import Dexie from 'dexie';
 
-const db = new Dexie('chatDatabase');
+export const db = new Dexie('ChatDB');
 
 db.version(1).stores({
-    chats: '++id, chatbot_id, user_id, question, response, sid'
+    users: '++id, &userId, name',
+    bots: '++id, &botId, userId',
+    messages: '++id, pageId, text, query, answer, chat_history, sid'
 });
-
-export const addChat = async (chat) => {
-    return await db.chats.add(chat);
-};
-
-export const getChat = async (id) => {
-    return await db.chats.get(id);
-};
-
-export const updateChat = async (id, chat) => {
-    await db.chats.update(id, chat);
-};
-
-export default db;

@@ -198,3 +198,8 @@ body {
 .active {
   fill: #025399 !important;
 }
+
+.sourceLink {
+  /* text-decoration: underline; */
+  color: #17568d;
+}

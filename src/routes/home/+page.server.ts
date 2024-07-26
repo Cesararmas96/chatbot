@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ locals, fetch, url }) => {
 
   return {
     user: locals.user,
-    bots
+    bots: askBrettBot
   };
 };
 

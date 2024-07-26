@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte'
+	import { createEventDispatcher, onMount } from 'svelte'
 	export let isLoading
 	export let query = ''
 	const dispatch = createEventDispatcher()
-
 	const handleSubmit = (event: Event) => {
 		event.preventDefault()
 		dispatch('submit')
 	}
+	let answerInput
+	onMount(() => answerInput.focus())
 
 	export function submitForm() {
 		dispatch('submit')
@@ -22,6 +23,7 @@
 					placeholder="Send a message."
 					type="text"
 					disabled={isLoading}
+					bind:this={answerInput}
 					bind:value={query}
 					class="dark:text-white text-sm md:text-base dark:bg-gray-800 flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-10 h-10 {isLoading
 						? 'bg-gray-200 cursor-not-allowed opacity-50'

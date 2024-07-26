@@ -120,7 +120,11 @@
 	const typing = () => setInterval(typeChar, 100)
 	typing()
 
-	console.log(message.sid)
+	function addTargetBlank(html) {
+		return html.replace(/<a href="(.*?)">/g, '<a class="sourceLink" href="$1" target="_blank">')
+	}
+	const html = marked(message.text)
+	const htmlWithTargetBlank = addTargetBlank(html)
 </script>
 
 <div class="col-start-1 md:col-end-8 col-end-13 p-3 rounded-lg">
@@ -134,7 +138,9 @@
 			>
 				<!-- {message.sid} -->
 				<!-- <div use:concurrent={{ interval: 30 }} data-static> -->
-				{@html marked(message.text)}
+				<div class="response">
+					{@html marked(htmlWithTargetBlank)}
+				</div>
 				<!-- </div> -->
 
 				<!-- {@html (typedChars)} -->

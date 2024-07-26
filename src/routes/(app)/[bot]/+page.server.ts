@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
   // locals.chatbotid = chatbotid;
   return {
     user: locals.user,
-    bots,
+    bots: askBrettBot,
     promptLibrary,
     good,
     bad,

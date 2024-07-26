@@ -26,7 +26,7 @@
 	async function fetchPageIds(chatbotid, user_id) {
 		try {
 			const messages = await db.messages.toArray()
-			console.log(messages)
+			// console.log(messages)
 			console.log(user_id)
 			const pageDataArray = messages.filter(
 				(message) => message.chatbot_id === chatbotid && message.user_id === user_id
@@ -92,7 +92,7 @@
 			// Elimina los mensajes asociados con el pageId
 			await db.messages.where('pageId').equals(pageId).delete()
 			// Actualiza la lista de pageIds
-			await fetchPageIds()
+			await fetchPageIds(chatbotid, user_id)
 		} catch (error) {
 			console.error('Error deleting pageId:', error)
 		}
@@ -155,12 +155,14 @@
 					<span class="ms-3">New Chat</span>
 				</a>
 			</li>
-			{#each pageData as { pageId, query }}
-				<li class="flex items-center justify-between">
+			{#each pageData as data}
+				<li
+					class="flex items-center justify-between group text-white dark:text-white dark:hover:bg-gray-700 rounded-lg hover:text-gray-800"
+				>
 					<a
 						target="_self"
-						href={`${newUrl}${pageId}`}
-						class="flex items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
+						href={`${newUrl}${data.pageId}`}
+						class="flex items-center p-2 text-white rounded-lg dark:text-white dark:hover:bg-gray-700 group hover:text-black"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -175,9 +177,9 @@
 							/>
 							<path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z" />
 						</svg>
-						<span class="ms-3 text-sm">{query}</span>
+						<span class="ms-3 text-sm">{data.query}</span>
 					</a>
-					<button on:click={() => deletePageId(pageId)}>
+					<button on:click={() => deletePageId(data.pageId)}>
 						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
 							<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
 							<path

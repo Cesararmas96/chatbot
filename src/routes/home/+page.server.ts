@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ locals, fetch, url }) => {
 		false
 	)
 	
-	// const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
+	const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
 
 	// console.log(askBrettBot);
 
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals, fetch, url }) => {
 // console.log(bots)
   return {
     user: locals.user,
-    bots
+    bots: askBrettBot
   };
 };
 

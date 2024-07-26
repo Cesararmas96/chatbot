@@ -1,22 +1,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { storeGood } from '$lib/stores/good.js'
-	import { storeBad } from '$lib/stores/bad.js'
 	import { storeUser } from '$lib/stores/session.js'
 	import { storeBots } from '$lib/stores/bots'
+	import { storeGood } from '$lib/stores/good.js'
+	import { storeBad } from '$lib/stores/bad.js'
 	import { storeChatbotid } from '$lib/stores/chatbotid'
-
-	import { page } from '$app/stores'
+	import { fetchChatData } from '$lib/services/chatService'
+	import { db } from '$lib/db'
 	import Header from '$lib/components/chat/Header.svelte'
 	import ContainerChatBox from '$lib/components/chat/ContainerChatBox.svelte'
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import { DarkMode } from 'flowbite-svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
-	import { fetchChatData } from '$lib/services/chatService'
-	import { db } from '$lib/db'
+	import { page } from '$app/stores'
+
 	export let data
 	let isLoading = false
-
 	const { user, bots, good, bad, chatbotid } = data
 	storeChatbotid.set(chatbotid)
 	storeUser.set(user)
@@ -29,10 +28,10 @@
 	let chatInputRef: any
 	let chatbotId = ''
 	let user_id = user.user_id
+
 	onMount(async () => {
 		bot = $page.params.bot
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
-
 		if (currentBot) {
 			chatbotId = currentBot.chatbot_id
 		} else {
@@ -50,6 +49,7 @@
 			await db.bots.add({ botId: chatbotId, userId: user.user_id })
 		}
 
+		// Obtener el pageId de la URL actual
 		const pageUrl = $page.url.pathname
 		const storedMessages = await db.messages.where('pageId').equals(pageUrl).toArray()
 
@@ -115,7 +115,7 @@
 		<SidebarBot {chatbotid} {user_id} />
 
 		<div class="flex flex-col h-screen flex-auto p-2 w-20">
-			<div class="flex justify-between px-2 py-2">
+			<div class="flex justify-end px-2 py-2">
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
 			</div>
 

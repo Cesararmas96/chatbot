@@ -16,6 +16,7 @@
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import Header from '$lib/components/chat/Header.svelte'
 	import WelcomeChat from '$lib/components/chat/WelcomeChat.svelte'
+	import { db } from '$lib/db'
 
 	export let data
 
@@ -26,7 +27,6 @@
 	storeGood.set(good)
 	storeBad.set(bad)
 	storeChatbotid.set(chatbotid)
-	// storefeedback.set(feedback)
 
 	let isLoading = false
 	let messages: any[] = []
@@ -38,7 +38,6 @@
 	let uuid = ''
 	let user_id = user.user_id
 	let chatbotId
-	console.log(`est${chatbotid}`)
 	onMount(() => {
 		bot = $page.params.bot
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
@@ -56,19 +55,30 @@
 				bot,
 				query || lastQuery
 			)
-			messages = [
-				...messages,
-				{ text: response, query: query, answer: answer, chat_history: chat_history, sid: sid }
-			]
+			const newMessage = {
+				text: response,
+				query: query,
+				answer: answer,
+				chat_history: chat_history,
+				sid: sid,
+				user_id: user_id,
+				chatbot_id: chatbotId
+			}
+			messages = [...messages, newMessage]
 			query = ''
+
 			if (!uuid) {
 				uuid = uuidv4()
-				// Guardar los datos en localStorage
+				// Guardar los datos en IndexedDB con el nuevo pageId
+				const pageUrl = `/${bot}/${uuid}`
+				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
 				localStorage.setItem('messages', JSON.stringify(messages))
-				// localStorage.setItem('chatbotId', chatbotId)
-				// localStorage.setItem('good', good)
-				// localStorage.setItem('bad', bad)
-				goto(`/${bot}/${uuid}`)
+				goto(pageUrl)
+			} else {
+				// Actualizar los mensajes en IndexedDB para la página actual
+				const pageUrl = $page.url.pathname
+				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
+				localStorage.setItem('messages', JSON.stringify(messages))
 			}
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
@@ -95,9 +105,9 @@
 			<SidebarBot {chatbotid} {user_id} />
 		{/if}
 		<div class="flex flex-col h-screen flex-auto p-2 w-20">
-			<div class="flex justify-between px-2 py-2">
-				<SelectBots {bots} />
-				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
+			<div class="flex justify-end px-2 py-2">
+				<!-- <SelectBots {bots} /> -->
+				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900 " />
 			</div>
 
 			<div

@@ -1,10 +1,14 @@
 <script lang="ts">
 	import Dexie from 'dexie'
+	import { Button, Dropdown, DropdownItem, ToolbarButton, DropdownDivider } from 'flowbite-svelte'
+	import { DotsHorizontalOutline, DotsVerticalOutline } from 'flowbite-svelte-icons'
 	import { enhance } from '$app/forms'
 	import { page } from '$app/stores'
 	import Avatar from './common/Avatar.svelte'
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+
 	export let chatbotid
 	export let user_id
 	// Define la base de datos Dexie
@@ -91,6 +95,8 @@
 		try {
 			// Elimina los mensajes asociados con el pageId
 			await db.messages.where('pageId').equals(pageId).delete()
+			sendSuccessNotification('Chat deleted successfully')
+
 			// Actualiza la lista de pageIds
 			await fetchPageIds(chatbotid, user_id)
 		} catch (error) {
@@ -134,7 +140,7 @@
 		</a>
 		<ul>
 			<li
-				class="group text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+				class="group text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ml-2"
 			>
 				<a
 					href={`/${bot}`}
@@ -157,37 +163,42 @@
 			</li>
 			{#each pageData as data}
 				<li
-					class="flex items-center justify-between group text-white dark:text-white dark:hover:bg-gray-700 rounded-lg hover:text-gray-800"
+					class="mt-2 flex items-center justify-between group text-white dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
 				>
 					<a
 						target="_self"
 						href={`${newUrl}${data.pageId}`}
-						class="flex items-center p-2 text-white rounded-lg dark:text-white dark:hover:bg-gray-700 group hover:text-black"
+						class="flex items-center p-2 text-white rounded-lg dark:text-white group-hover:text-black"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="32"
-							height="32"
-							viewBox="0 0 32 32"
-							class="w-5 h-5 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+						<span class="ms-3 text-sm">
+							{data.query.length > 45 ? `${data.query.slice(0, 45)} ...` : data.query}</span
 						>
-							<path
-								fill="currentColor"
-								d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"
-							/>
-							<path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z" />
-						</svg>
-						<span class="ms-3 text-sm">{data.query}</span>
 					</a>
-					<button on:click={() => deletePageId(data.pageId)}>
-						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 32 32">
-							<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
-							<path
-								fill="currentColor"
-								d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
-							/>
-						</svg>
-					</button>
+
+					<div class="relative group-hover:text-black">
+						<DotsVerticalOutline
+							class="dots-menu text-white dark:text-white group-hover:text-black"
+						/>
+						<Dropdown triggeredBy=".dots-menu">
+							<DropdownItem>
+								<button class="flex" on:click={() => deletePageId(data.pageId)}>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="20"
+										height="20"
+										viewBox="0 0 32 32"
+									>
+										<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
+										<path
+											fill="currentColor"
+											d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
+										/>
+									</svg>
+									<span class="ml-2">Delete</span>
+								</button>
+							</DropdownItem>
+						</Dropdown>
+					</div>
 				</li>
 			{/each}
 		</ul>

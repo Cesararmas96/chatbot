@@ -6,8 +6,9 @@
 	import { storeUser } from '$lib/stores/session.js'
 	import { storeBots } from '$lib/stores/bots'
 	import { storePromptLibrary } from '$lib/stores/promptlibrary'
-	import { storeGood } from '$lib/stores/good.js'
-	import { storeBad } from '$lib/stores/bad.js'
+	import { storeGood } from '$lib/stores/good'
+	import { storeBad } from '$lib/stores/bad'
+	import { storeChatbotid } from '$lib/stores/chatbotid'
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { DarkMode } from 'flowbite-svelte'
@@ -18,12 +19,13 @@
 
 	export let data
 
-	const { user, bots, promptLibrary, good, bad } = data
+	const { user, bots, promptLibrary, good, bad, chatbotid } = data
 	storeUser.set(user)
 	storeBots.set(bots)
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
 	storeBad.set(bad)
+	storeChatbotid.set(chatbotid)
 	// storefeedback.set(feedback)
 
 	let isLoading = false
@@ -33,9 +35,10 @@
 	let shared = false
 	let showSettings = false
 	let chatInputRef: any
-	let chatbotId = ''
 	let uuid = ''
-
+	let user_id = user.user_id
+	let chatbotId
+	console.log(`est${chatbotid}`)
 	onMount(() => {
 		bot = $page.params.bot
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
@@ -89,7 +92,7 @@
 	<Header />
 	<div class="flex flex-row h-full overflow-x-hidden">
 		{#if !shared}
-			<SidebarBot />
+			<SidebarBot {chatbotid} {user_id} />
 		{/if}
 		<div class="flex flex-col h-screen flex-auto p-2 w-20">
 			<div class="flex justify-between px-2 py-2">

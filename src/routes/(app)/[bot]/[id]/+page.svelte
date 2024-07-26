@@ -4,6 +4,8 @@
 	import { storeBad } from '$lib/stores/bad.js'
 	import { storeUser } from '$lib/stores/session.js'
 	import { storeBots } from '$lib/stores/bots'
+	import { storeChatbotid } from '$lib/stores/chatbotid'
+
 	import { page } from '$app/stores'
 	import Header from '$lib/components/chat/Header.svelte'
 	import ContainerChatBox from '$lib/components/chat/ContainerChatBox.svelte'
@@ -11,12 +13,12 @@
 	import { DarkMode } from 'flowbite-svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { fetchChatData } from '$lib/services/chatService'
-	import { db } from '$lib/db' // Importa la instancia de Dexie
-
+	import { db } from '$lib/db'
 	export let data
 	let isLoading = false
 
-	const { user, bots, good, bad } = data
+	const { user, bots, good, bad, chatbotid } = data
+	storeChatbotid.set(chatbotid)
 	storeUser.set(user)
 	storeBots.set(bots)
 	storeGood.set(good)
@@ -26,7 +28,7 @@
 	let bot = ''
 	let chatInputRef: any
 	let chatbotId = ''
-
+	let user_id = user.user_id
 	onMount(async () => {
 		bot = $page.params.bot
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
@@ -57,7 +59,9 @@
 				query: msg.query,
 				answer: msg.answer,
 				chat_history: msg.chat_history,
-				sid: msg.sid
+				sid: msg.sid,
+				user_id: msg.user_id,
+				chatbot_id: msg.chatbot_id
 			}))
 		}
 	})
@@ -74,7 +78,9 @@
 				query: query,
 				answer: answer,
 				chat_history: chat_history,
-				sid: sid
+				sid: sid,
+				user_id: user_id,
+				chatbot_id: chatbotId
 			}
 			messages = [...messages, newMessage]
 			query = ''
@@ -106,7 +112,8 @@
 <div class="sm:ml-64">
 	<Header />
 	<div class="flex flex-row h-full overflow-x-hidden">
-		<SidebarBot />
+		<SidebarBot {chatbotid} {user_id} />
+
 		<div class="flex flex-col h-screen flex-auto p-2 w-20">
 			<div class="flex justify-between px-2 py-2">
 				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />

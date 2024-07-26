@@ -5,6 +5,8 @@
 	import Avatar from './common/Avatar.svelte'
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
+	export let chatbotid
+	export let user_id
 	// Define la base de datos Dexie
 	const db = new Dexie('ChatDB')
 	db.version(1).stores({
@@ -16,18 +18,19 @@
 	let botName = $page.params.bot
 	const bot = $page.params.bot
 	let hidden2 = false
-	let pageIds: string[] = [] // Para almacenar los pageId recuperados
+	// let pageIds: string[] = [] // Para almacenar los pageId recuperados
 
+	// let chatbotidpage = `/${botName}/${chatbotid}`
 	let pageData = []
 
-	async function fetchPageIds() {
+	async function fetchPageIds(chatbotid, user_id) {
 		try {
 			const messages = await db.messages.toArray()
 			console.log(messages)
-
-			const pageDataArray = messages
-				.filter((message) => message.pageId && message.query)
-				.map((message) => ({ pageId: message.pageId, query: message.query }))
+			console.log(user_id)
+			const pageDataArray = messages.filter(
+				(message) => message.chatbot_id === chatbotid && message.user_id === user_id
+			)
 
 			pageData = Array.from(new Map(pageDataArray.map((item) => [item.pageId, item])).values())
 
@@ -39,7 +42,7 @@
 
 	// Montar el componente y obtener los pageIds
 	onMount(() => {
-		fetchPageIds()
+		fetchPageIds(chatbotid, user_id)
 
 		const button = document.getElementById('toggle-drawer-button')
 		if (button) button.addEventListener('click', toggleDrawer)

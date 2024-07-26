@@ -22,7 +22,8 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
   );
 
   const chat = bots.find((bot: any) => bot.name.toLowerCase() === params.bot);
-  const chatbotid = chat.chatbot_id;
+  let chatbotid = chat.chatbot_id;
+
 
 	const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
   
@@ -58,8 +59,6 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
   );
 
   // Save chatbotid to locals for later use in actions
-  // locals.chatbotid = chatbotid;
-
   return {
     user: locals.user,
     bots,

@@ -51,7 +51,7 @@
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {
-			const { response, question, answer, chat_history, sid } = await fetchChatData(
+			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
 				bot,
 				query || lastQuery
 			)
@@ -62,7 +62,8 @@
 				chat_history: chat_history,
 				sid: sid,
 				user_id: user_id,
-				chatbot_id: chatbotId
+				chatbot_id: chatbotId,
+				at: at
 			}
 			messages = [...messages, newMessage]
 			query = ''

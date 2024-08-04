@@ -10,6 +10,7 @@
 	export let form: ActionData
 	export let data
 	const { filteredObject } = data
+	console.log('filteredObject:', filteredObject)
 
 	const apiUrl = import.meta.env.VITE_API_AI_URL
 	const redirecURI = `${$page.url.origin}/auth/callback`
@@ -54,6 +55,7 @@
 			return acc
 		}, {})
 	}
+	console.log('authMethods:', authMethods)
 
 	$: _loading = Boolean(form && !(form?.invalid === true || form?.credentials === true))
 	onMount(() => {
@@ -143,7 +145,7 @@
 								bind:value={username}
 								type="text"
 								id="username"
-								defaultClass="block w-full mb-4 p-2.5  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
+								defaultClass="block w-full mb-4 p-2.5 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
 								name="username"
 								placeholder="Email@email.com"
 								required
@@ -155,7 +157,7 @@
 							<Input
 								id="password"
 								type={showPassword ? 'text' : 'password'}
-								defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-4"
+								defaultClass="block w-full !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-4"
 								name="password"
 								placeholder="**********"
 								required
@@ -170,9 +172,9 @@
 									{#if showPassword}
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											width="22"
-											height="22"
 											viewBox="0 0 32 32"
+											class="h-5 w-5"
+											stroke-width="1.5"
 											><path
 												fill="currentColor"
 												d="M30.94 15.66A16.69 16.69 0 0 0 16 5A16.69 16.69 0 0 0 1.06 15.66a1 1 0 0 0 0 .68A16.69 16.69 0 0 0 16 27a16.69 16.69 0 0 0 14.94-10.66a1 1 0 0 0 0-.68M16 25c-5.3 0-10.9-3.93-12.93-9C5.1 10.93 10.7 7 16 7s10.9 3.93 12.93 9C26.9 21.07 21.3 25 16 25"
@@ -184,9 +186,9 @@
 									{:else}
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											width="22"
-											height="22"
 											viewBox="0 0 32 32"
+											class="h-5 w-5"
+											stroke-width="1.5"
 											><path
 												fill="currentColor"
 												d="m5.24 22.51l1.43-1.42A14.06 14.06 0 0 1 3.07 16C5.1 10.93 10.7 7 16 7a12.4 12.4 0 0 1 4 .72l1.55-1.56A14.7 14.7 0 0 0 16 5A16.69 16.69 0 0 0 1.06 15.66a1 1 0 0 0 0 .68a16 16 0 0 0 4.18 6.17"
@@ -199,38 +201,21 @@
 								</button>
 							</Input>
 						</div>
-
 						{#if errorMessage}
-							<p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
-								{errorMessage}
-							</p>
+							<p class="text-red-500 text-xs italic">{errorMessage}</p>
 						{/if}
-
-						{#if form?.invalid}
-							<p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
-								Username and password is required.
-							</p>
-						{/if}
-
-						{#if form?.credentials}
-							<p class="mb-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
-								{@html errorCodes[form?.message?.status]
-									? `${errorCodes[form?.message?.status].title}. ${
-											errorCodes[form?.message?.status].message
-										}`
-									: form?.message?.reason}
-							</p>
-						{/if}
-
-						<div class=" w-full">
-							<Button
-								disabled={_loading}
-								color="blue"
-								class="w-full rounded bg-blue-600 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 focus:outline-none mt-4"
-								type="submit">Login</Button
-							>
-						</div>
+						<Button
+							disabled={_loading}
+							type="submit"
+							class="mt-3 w-full p-3 rounded font-semibold text-sm">Sign In</Button
+						>
 					</form>
+
+					<div class="mt-4 flex w-4/5 items-center justify-center">
+						<a class="mt-2 text-sm text-gray-100 hover:underline" href="?/forgot-password"
+							>Forgot your password?</a
+						>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -239,10 +224,10 @@
 
 <style>
 	.auth {
-		background-size: cover; /* Esto hace que la imagen cubra todo el fondo */
-		background-repeat: no-repeat; /* Esto evita que la imagen se repita */
-		background-position: center; /* Esto centra la imagen en la página */
-		height: 100vh; /* Asegura que el fondo cubra toda la altura del navegador */
-		margin: 0; /* Elimina cualquier margen por defecto */
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		height: 100vh;
+		margin: 0;
 	}
 </style>

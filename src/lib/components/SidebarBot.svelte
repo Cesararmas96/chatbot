@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import moment from 'moment'
 
 	export let chatbotid
 	export let user_id
@@ -105,7 +106,34 @@
 	}
 	const currentUrl = $page.url
 	const newUrl = `${currentUrl.origin}`
-	console.log(newUrl)
+
+	function isSameDay(created_at1, created_at2) {
+		return moment(created_at1).isSame(created_at2, 'day')
+	}
+
+	function formatDate(created_at) {
+		const today = moment().startOf('day')
+		const yesterday = moment().subtract(1, 'days').startOf('day')
+
+		if (moment(created_at).isSame(today, 'day')) {
+			return 'Today'
+		} else if (moment(created_at).isSame(yesterday, 'day')) {
+			return 'Yesterday'
+		} else {
+			return moment(created_at).format('DD MMM YYYY')
+		}
+	}
+
+	let lastDate = ''
+
+	function isDifferentDate(date) {
+		const formattedDate = formatDate(date)
+		if (formattedDate !== lastDate) {
+			lastDate = formattedDate
+			return true
+		}
+		return false
+	}
 </script>
 
 <aside
@@ -149,56 +177,75 @@
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
+						class="w-5 h-5 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
 						width="32"
 						height="32"
 						viewBox="0 0 32 32"
-						class="w-5 h-5 text-white transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
 						><path
 							fill="currentColor"
 							d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"
-						/><path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z" /></svg
+						/><path fill="currentColor" d="M17 9h-2v4h-4v2h4v4h2v-4h4v-2h-4z" /></svg
 					>
 					<span class="ms-3">New Chat</span>
 				</a>
 			</li>
-			{#each pageData as data}
+			{#each pageData.slice().reverse() as data}
+				{#if isDifferentDate(data.at)}
+					<li class="mt-3">
+						<span class="ms-3 text-sm">
+							{formatDate(data.at)}
+						</span>
+					</li>
+				{/if}
 				<li
-					class="mt-2 flex items-center justify-between group text-white dark:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+					class="group text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ml-2"
 				>
 					<a
 						target="_self"
 						href={`${newUrl}${data.pageId}`}
-						class="flex items-center p-2 text-white rounded-lg dark:text-white group-hover:text-black"
+						class="flex justify-between items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
 					>
-						<span class="ms-3 text-sm">
-							{data.query.length > 45 ? `${data.query.slice(0, 45)} ...` : data.query}</span
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 32 32"
+							class="mr-2 self-start flex-shrink-0"
 						>
+							<path
+								fill="currentColor"
+								d="M17.74 30L16 29l4-7h6a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9v2H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-4.84Z"
+							/>
+							<path fill="currentColor" d="M8 10h16v2H8zm0 6h10v2H8z" />
+						</svg>
+						<span class="text-sm flex-grow">
+							{data.query.length > 21 ? `${data.query.slice(0, 21)}...` : data.query}
+						</span>
+						<div class="flex-shrink-0 group-hover:text-black">
+							<DotsVerticalOutline
+								class="dots-menu text-white dark:text-white group-hover:text-black"
+							/>
+							<Dropdown triggeredBy=".dots-menu">
+								<DropdownItem>
+									<button class="flex" on:click={() => deletePageId(data.pageId)}>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="20"
+											height="20"
+											viewBox="0 0 32 32"
+										>
+											<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
+											<path
+												fill="currentColor"
+												d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
+											/>
+										</svg>
+										<span class="ml-2">Delete</span>
+									</button>
+								</DropdownItem>
+							</Dropdown>
+						</div>
 					</a>
-
-					<div class="relative group-hover:text-black">
-						<DotsVerticalOutline
-							class="dots-menu text-white dark:text-white group-hover:text-black"
-						/>
-						<Dropdown triggeredBy=".dots-menu">
-							<DropdownItem>
-								<button class="flex" on:click={() => deletePageId(data.pageId)}>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="20"
-										height="20"
-										viewBox="0 0 32 32"
-									>
-										<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
-										<path
-											fill="currentColor"
-											d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
-										/>
-									</svg>
-									<span class="ml-2">Delete</span>
-								</button>
-							</DropdownItem>
-						</Dropdown>
-					</div>
 				</li>
 			{/each}
 		</ul>

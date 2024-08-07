@@ -21,3 +21,9 @@
 		</div>
 	</a>
 </div>
+
+<style>
+	.img-logo {
+		max-width: 120px;
+	}
+</style>

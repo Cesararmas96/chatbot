@@ -25,7 +25,6 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
   let chatbotid = chat.chatbot_id;
 
 
-	const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
   
   const promptLibrary = await getApiData(
     `${import.meta.env.VITE_API_AI_URL}/api/v1/prompt_library?chatbot_id=${chat.chatbot_id}`,
@@ -58,10 +57,15 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
     false
   );
 
+  const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
+	const attBot = bots.filter(bot => bot.name === 'ATTBot');
+
+	const combinedBots = [...askBrettBot, ...attBot]
+
   // Save chatbotid to locals for later use in actions
   return {
     user: locals.user,
-    bots,
+    bots: combinedBots,
     promptLibrary,
     good,
     bad,

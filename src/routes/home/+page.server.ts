@@ -21,10 +21,13 @@ export const load: PageServerLoad = async ({ locals, fetch, url }) => {
 	)
 	
 	const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
+	const attBot = bots.filter(bot => bot.name === 'ATTBot');
+
+	const combinedBots = [...askBrettBot, ...attBot]
 
   return {
     user: locals.user,
-    bots
+    bots:  combinedBots
   };
 };
 

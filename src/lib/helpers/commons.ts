@@ -10,6 +10,7 @@ export enum ApiChatBot {
   askbrett = "AskBrett",
   oddie = "Oddie",
   cody = "Cody",
+  attbot = "ATTBot",
 
 }
 
@@ -19,6 +20,7 @@ export enum NameChatBot {
   askbrett = "AskBrett",
   oddie = "Oddie",
   cody = "Cody",
+  attbot = "ATTBot",
 }
 
 

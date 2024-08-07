@@ -198,7 +198,7 @@
 					</li>
 				{/if}
 				<li
-					class="group text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ml-2"
+					class="group flex items-center text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ml-2"
 				>
 					<a
 						target="_self"
@@ -221,31 +221,31 @@
 						<span class="text-sm flex-grow">
 							{data.query.length > 21 ? `${data.query.slice(0, 21)}...` : data.query}
 						</span>
-						<div class="flex-shrink-0 group-hover:text-black">
-							<DotsVerticalOutline
-								class="dots-menu text-white dark:text-white group-hover:text-black"
-							/>
-							<Dropdown triggeredBy=".dots-menu">
-								<DropdownItem>
-									<button class="flex" on:click={() => deletePageId(data.pageId)}>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="20"
-											height="20"
-											viewBox="0 0 32 32"
-										>
-											<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
-											<path
-												fill="currentColor"
-												d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
-											/>
-										</svg>
-										<span class="ml-2">Delete</span>
-									</button>
-								</DropdownItem>
-							</Dropdown>
-						</div>
 					</a>
+					<div class="flex-shrink-0 group-hover:text-black">
+						<DotsVerticalOutline
+							class="dots-menu text-white dark:text-white group-hover:text-black"
+						/>
+						<Dropdown triggeredBy=".dots-menu">
+							<DropdownItem>
+								<button class="flex" on:click={() => deletePageId(data.pageId)}>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="20"
+										height="20"
+										viewBox="0 0 32 32"
+									>
+										<path fill="currentColor" d="M12 12h2v12h-2zm6 0h2v12h-2z" />
+										<path
+											fill="currentColor"
+											d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20zm4-26h8v2h-8z"
+										/>
+									</svg>
+									<span class="ml-2">Delete</span>
+								</button>
+							</DropdownItem>
+						</Dropdown>
+					</div>
 				</li>
 			{/each}
 		</ul>

@@ -65,7 +65,7 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
   // Save chatbotid to locals for later use in actions
   return {
     user: locals.user,
-    bots,
+    bots: combinedBots,
     promptLibrary,
     good,
     bad,

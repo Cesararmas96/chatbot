@@ -5,7 +5,7 @@ import { sendErrorNotification, sendSuccessNotification } from "$lib/helpers/toa
 import { message } from "$lib/stores/loading";
 
 export const load: PageServerLoad = async ({ locals, fetch, params }) => {
-  if (!locals.user || !locals.user.token) throw redirect(302, "/auth");
+  if (!locals.user || !locals.user.token) throw redirect(302, "/login");
 
   const headers = !locals.user?.apikey
     ? { authorization: `Bearer ${locals.user?.token}` }

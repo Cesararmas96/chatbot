@@ -4,7 +4,7 @@ import { getApiData } from "$lib/services/getData";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, fetch, url }) => {
-  if (!locals.user || !locals.user.token) throw redirect(302, "/auth");
+  if (!locals.user || !locals.user.token) throw redirect(302, "/login");
 
   const headers = !locals.user?.apikey
 		? { authorization: `Bearer ${locals.user?.token}` }

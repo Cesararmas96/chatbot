@@ -125,7 +125,7 @@
 	}
 
 	function removeAnswerHeader(content) {
-		return content.replace('**Answer**:', '**Answer**').trim()
+		return content.replace('Answer: ', 'Answer: \n').trim()
 	}
 
 	const cleanedContent = removeAnswerHeader(message.text)

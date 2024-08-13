@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fail, redirect } from "@sveltejs/kit";
 import type { Action, Actions, PageServerLoad } from "./$types";
 import { encrypt } from "$lib/helpers/auth";
@@ -7,9 +7,11 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
   if (locals.user) throw redirect(302, "/");
 
 	const apiUrl = import.meta.env.VITE_API_AI_URL
-	const tenant = url.hostname.split('.')[0]
+  const tenant = url.hostname.split('.')[0]
+  console.log(tenant)
 
-  const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/clients?subdomain_prefix=${tenant}`, {method: "GET"});
+  const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/clients?subdomain_prefix=${tenant}`, { method: "GET" });
+  console.log(resp)
   if (resp?.ok) {
     const response = await resp.json()
 
@@ -26,7 +28,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
     delete filteredObject.BasicAuth
 
     return {
-      filteredObject,
+      
       authMethods: totalAuthMethods
     }
   }

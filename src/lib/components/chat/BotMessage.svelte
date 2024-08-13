@@ -44,12 +44,12 @@
 			customer: email
 		}
 
-		// console.log(payload)
+		console.log(payload)
 
 		try {
 			const url = `${import.meta.env.VITE_API_URL}/support/api/v1/anon_ticket`
 			const setReport = await postData(url, payload)
-			// console.log('Response from API:', setReport)
+			console.log('Response from API:', setReport)
 
 			if (setReport) {
 				sendSuccessNotification('Report submitted successfully')
@@ -123,25 +123,8 @@
 	function addTargetBlank(html) {
 		return html.replace(/<a href="(.*?)">/g, '<a class="sourceLink" href="$1" target="_blank">')
 	}
-
-	function removeAnswerHeader(content) {
-		return content.replace('Answer: ', 'Answer: \n').trim()
-	}
-
-	const cleanedContent = removeAnswerHeader(message.text)
-
-	const html = marked(cleanedContent)
-
-	const htmlWithTargetBlank = addTargetBlank(cleanedContent)
-
-	function remove(content) {
-		return content.replace('<strong>Answer</strong>', '<strong>Answer</strong> </br>').trim()
-	}
-
-	// console.log(html)
-
-	console.log(html)
-	console.log(message.text)
+	const html = marked(message.text)
+	const htmlWithTargetBlank = addTargetBlank(html)
 </script>
 
 <div class="col-start-1 md:col-end-8 col-end-13 p-3 rounded-lg">
@@ -156,8 +139,7 @@
 				<!-- {message.sid} -->
 				<!-- <div use:concurrent={{ interval: 30 }} data-static> -->
 				<div class="response">
-					{@html remove}
-					<!-- {message.text} -->
+					{@html marked(htmlWithTargetBlank)}
 				</div>
 				<!-- </div> -->
 

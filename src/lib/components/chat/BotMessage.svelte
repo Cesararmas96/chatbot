@@ -112,27 +112,31 @@
 	let typedChars = ''
 	let index = 0
 
-	// const typeChar = () => {
-	// 	typedChars += phrase[index]
-	// 	index += 1
-	// }
+	const typeChar = () => {
+		typedChars += phrase[index]
+		index += 1
+	}
 
-	// const typing = () => setInterval(typeChar, 100)
-	// typing()
+	const typing = () => setInterval(typeChar, 100)
+	typing()
 
 	function addTargetBlank(html) {
 		return html.replace(/<a href="(.*?)">/g, '<a class="sourceLink" href="$1" target="_blank">')
 	}
 
 	function removeAnswerHeader(content) {
-		return content.replace('**Answer**:', '').trim()
+		return content.replace('**Answer**:', '**Answer**').trim()
 	}
 
 	const cleanedContent = removeAnswerHeader(message.text)
 
 	const html = marked(cleanedContent)
 
-	// const htmlWithTargetBlank = addTargetBlank(cleanedContent)
+	const htmlWithTargetBlank = addTargetBlank(cleanedContent)
+
+	function remove(content) {
+		return content.replace('<strong>Answer</strong>', '<strong>Answer</strong> </br>').trim()
+	}
 
 	// console.log(html)
 
@@ -152,7 +156,7 @@
 				<!-- {message.sid} -->
 				<!-- <div use:concurrent={{ interval: 30 }} data-static> -->
 				<div class="response">
-					{@html html}
+					{@html remove}
 					<!-- {message.text} -->
 				</div>
 				<!-- </div> -->

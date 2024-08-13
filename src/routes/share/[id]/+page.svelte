@@ -50,7 +50,7 @@
 			})
 	}
 
-	console.log(message)
+	// console.log(message)
 </script>
 
 <div class="">

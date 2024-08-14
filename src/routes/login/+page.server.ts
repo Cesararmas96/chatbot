@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
   console.log(tenant)
 
   const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/clients?subdomain_prefix=${tenant}`, { method: "GET" });
-  console.log(resp)
+  // console.log(resp)
   if (resp?.ok) {
     const response = await resp.json()
 
@@ -27,6 +27,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
     filteredObject = filterAuthMethods(totalAuthMethods, auth_backends)
     delete filteredObject.BasicAuth
 
+   
     return {
       
       authMethods: totalAuthMethods

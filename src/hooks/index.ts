@@ -26,6 +26,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   try {
     let session;
+console.log(token)
     if (token) {
       const rawSession = await fetch(
         `${import.meta.env.VITE_API_AI_URL}/api/v1/user/session`,
@@ -39,7 +40,9 @@ export const handle: Handle = async ({ event, resolve }) => {
       );
       if (rawSession.status !== 401) session = await rawSession.json();
       apikey = undefined;
+      console.log(session)
     }
+
 
     if (!session && apikey) {
       const rawSession = await fetch(
@@ -56,7 +59,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
       token = apikey;
     }
-
+    console.log(session)
     if (session) {
       event.locals.user = { ...session.session };
       event.locals.user.aux = { ...session };

@@ -13,7 +13,7 @@
 	console.log('filteredObject:', filteredObject)
 
 	const apiUrl = import.meta.env.VITE_API_AI_URL
-	const redirecURI = `${$page.url.origin}/auth/callback`
+	const redirecURI = `${$page.url.origin}/login/callback`
 	let showPassword: boolean = false
 	let errorMessage = ''
 	let username = ''

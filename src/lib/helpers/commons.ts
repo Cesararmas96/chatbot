@@ -21,7 +21,7 @@ export enum NameChatBot {
   oddie = "Oddie",
   cody = "Cody",
   attbot = "ATTBot",
-  rfpbot = "RFPBot"
+  rfpbot = "T-ROC RFPBot"
 }
 
 

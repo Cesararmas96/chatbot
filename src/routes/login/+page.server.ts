@@ -115,8 +115,8 @@ console.log("Login Action: API Response", response);
   }
 
   // redirect the user
-  console.log("Login Action: Redirecting to /home");
-  throw redirect(302, "/home");
+  console.log("Login Action: Redirecting to /bots");
+  throw redirect(302, "/bots");
 };
 
 export const actions: Actions = { login };

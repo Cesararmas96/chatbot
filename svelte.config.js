@@ -4,7 +4,7 @@ import mdsvexConfig from './mdsvex.config.js';
 // Adaptar https://navai.trocdigital.net/
 // import adapter from '@sveltejs/adapter-netlify';
 
-import adapter from '@sveltejs/adapter-node';
+// import adapter from '@sveltejs/adapter-node';
 import preprocess from 'svelte-preprocess';
 
 

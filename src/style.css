@@ -268,3 +268,7 @@ input:checked+.slider:before {
   margin: 10px 0;
   padding: 0 0 0 20px;
 }
+
+.img-logo {
+  max-width: 120px;
+}

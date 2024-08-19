@@ -1,18 +1,34 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte'
+	import { createEventDispatcher, onMount, afterUpdate } from 'svelte'
 	export let isLoading
 	export let query = ''
 	const dispatch = createEventDispatcher()
+
+	let answerInput: HTMLInputElement
+
 	const handleSubmit = (event: Event) => {
 		event.preventDefault()
 		dispatch('submit')
+		setFocus()
 	}
-	let answerInput
-	onMount(() => answerInput.focus())
+
+	onMount(() => {
+		setFocus()
+	})
+
+	function setFocus() {
+		if (answerInput && !isLoading) {
+			answerInput.focus()
+		}
+	}
 
 	export function submitForm() {
 		dispatch('submit')
 	}
+
+	afterUpdate(() => {
+		setFocus() // Asegura el foco después de cualquier actualización
+	})
 </script>
 
 <form on:submit={handleSubmit} class="mr-2 ml-2">
@@ -28,6 +44,7 @@
 					class="dark:text-white text-sm md:text-base dark:bg-gray-800 flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-10 h-10 {isLoading
 						? 'bg-gray-200 cursor-not-allowed opacity-50'
 						: ''}"
+					on:load={() => setFocus()}
 				/>
 				<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 					{#if isLoading}
@@ -47,12 +64,12 @@
 					: ''}"
 			>
 				<span>
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32"
-						><path
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32">
+						<path
 							fill="currentColor"
 							d="m27.45 15.11l-22-11a1 1 0 0 0-1.08.12a1 1 0 0 0-.33 1L7 16L4 26.74A1 1 0 0 0 5 28a1 1 0 0 0 .45-.11l22-11a1 1 0 0 0 0-1.78m-20.9 10L8.76 17H18v-2H8.76L6.55 6.89L24.76 16Z"
-						/></svg
-					>
+						/>
+					</svg>
 				</span>
 			</button>
 		</div>

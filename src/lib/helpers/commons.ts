@@ -12,7 +12,8 @@ export enum ApiChatBot {
   oddie = "Oddie",
   cody = "Cody",
   attbot = "ATTBot",
-  rfpbot = "RFPBot"
+  rfpbot = "RFPBot",
+  copilot = "Copilot"
 }
 
 export enum NameChatBot {
@@ -23,7 +24,9 @@ export enum NameChatBot {
   oddie = "Oddie",
   cody = "Cody",
   attbot = "ATTBot",
-  rfpbot = "T-ROC RFPBot"
+  rfpbot = "T-ROC RFPBot",
+  copilot = "Copilot"
+
 }
 
 

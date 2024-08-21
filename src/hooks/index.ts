@@ -26,7 +26,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   try {
     let session;
-console.log(token)
+
     if (token) {
       const rawSession = await fetch(
         `${import.meta.env.VITE_API_AI_URL}/api/v1/user/session`,
@@ -43,7 +43,6 @@ console.log(token)
       console.log(session)
     }
 
-
     if (!session && apikey) {
       const rawSession = await fetch(
         `${import.meta.env.VITE_API_AI_URL}/api/v1/login?apikey=${apikey}`,
@@ -59,7 +58,12 @@ console.log(token)
 
       token = apikey;
     }
-    console.log(session)
+    if (!session) {
+			event.cookies.delete('_session1', { path: "/" })
+			event.cookies.delete('_session2', { path: "/" })
+			event.cookies.delete('_session3', { path: "/" })
+			throw redirect(301, `/login`)
+		}
     if (session) {
       event.locals.user = { ...session.session };
       event.locals.user.aux = { ...session };

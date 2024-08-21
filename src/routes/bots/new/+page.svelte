@@ -1,51 +1,89 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { storeFormNewBots } from '$lib/stores/formnewbot.js'
 	import { Form } from '@mixoo/form'
-	import { getApiData } from '$lib/services/getData'
-	import { merge } from 'lodash-es'
+	import { storeFormNewBots } from '$lib/stores/formnewbot.js'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import {
+		getJsonSchema,
+		handleSubmitForm,
+	} from '$lib/helpers/formbuilder'
+	import { storeUser } from '$lib/stores/session.js'
 
 	export let data
+	const baseUrl = import.meta.env.VITE_API_URL
+	const token = $storeUser?.token
+	const apikey = $storeUser?.apikey
 	$storeFormNewBots = data.FormNewBot
-	let jsonSchema = null
-	let formBot = $storeFormNewBots
+	let schema: any = null
+	let jsonSchema = $storeFormNewBots
 	let schemadefault = {
 		properties: {
+			rationale: {"ui:widget": 'textarea'},
+			backstory: {"ui:widget": 'textarea'},
+			collection_name: { "type": "string", default: "codebase_flowtask"},
+			llm: {type: "dict", default: {
+				name: "VertexLLM",
+				model: "chat",
+				"config": {
+					"temperature": 0.2
+				}
+			}},
+			attributes: { attrs: { visible: false } },
+			bot_type: { attrs: { visible: false } },
+			classification_model: { attrs: { visible: false } },
+			config_file: { attrs: { visible: false } },
+			enabled: {default: true },
+			description: { attrs: { visible: false } },
+			embedding_name: { attrs: { visible: false } },
+			// goal: { attrs: { visible: false } },
 			updated_at: { attrs: { visible: false } },
-			created_at: { attrs: { visible: false } }
+			custom_class: { attrs: { visible: false } },
+			avatar: { attrs: { visible: false } },
+			created_at: { attrs: { visible: false } },
+			language: { attrs: { visible: false } },
+			summarize_model: { attrs: { visible: false } },
+			tokenizer: { attrs: { visible: false } },
+			created_by: { attrs: { visible: false } },
+		},
+		required: [
+        "name",
+        "enabled",
+        "goal",
+        "backstory",
+        "rationale"
+    ],
+		$withoutDefs: true
+	}
+
+onMount(async () => {
+	if (jsonSchema) {
+		schema = await getJsonSchema(jsonSchema, schemadefault, {baseUrl, token, apikey})
+		// console.log(JSON.stringify(schema))
 		}
-	}
-	if (formBot) {
-		console.log(formBot)
-		jsonSchema = merge({}, formBot, schemadefault || {})
-		console.log(jsonSchema)
-	}
+	})
 
 	async function handleSubmitFormLocal(
 		handleValidateForm: any,
-		type: string,
 		handleResetForm: any,
 		handleSetFormErrors: any
 	) {
-		const payload = handleValidateForm()
+		const endpoint = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
 
-		if (!Array.isArray(payload)) {
-		} else {
-			sendErrorNotification('Please review your form responses and complete the required fields.')
+		const response = await handleSubmitForm(handleValidateForm, 'PUT', schema, {
+			endpoint,
+			handleSetFormErrors
+		})
+
+		if (response) {
+			console.log('response', response)
+			handleResetForm()
 		}
-		console.log(handleValidateForm)
-		console.log(type)
-		console.log(handleResetForm)
-		console.log(handleSetFormErrors)
 	}
 </script>
 
 <h1>Crear un Nuevo Bot</h1>
-{#if jsonSchema}
-	<!-- <Form schema={jsonSchema}></Form> -->
-
-	<Form schema={jsonSchema}>
+{#if schema}
+	<Form schema={schema}>
 		<div
 			class="w-full"
 			slot="buttons-footer"
@@ -55,11 +93,9 @@
 		>
 			<div class="flex items-end justify-end">
 				<button
-					class="btn btn-form text-md disabled:text-gray-400 disabled:hover:cursor-not-allowed dark:text-white"
 					on:click={() =>
 						handleSubmitFormLocal(
 							handleValidateForm,
-							'formSaved',
 							handleResetForm,
 							handleSetFormErrors
 						)}
@@ -67,6 +103,6 @@
 					boton
 				</button>
 			</div>
-		</div></Form
-	>
+		</div>
+		</Form>
 {/if}

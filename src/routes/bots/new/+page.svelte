@@ -17,21 +17,13 @@
 
 	let schemadefault = {
 		properties: {
-			config_file: {
-				default:
-					'/home/jesuslara/proyectos/navigator/navigator-ai/etc/config/chatbots/attbot/config.toml'
-			},
-			custom_class: { default: 'HRAgent' },
-			company_information: {
-				type: 'dict',
-				default: {
-					company: 'T-ROC Global',
-					contact_form: 'https://bose.trocdigital.io/bose/bose_ticketing_system',
-					contact_email: 'communications@trocglobal.com',
-					company_website: 'https://www.trocglobal.com'
-				}
-			},
-			avatar: { default: null },
+			name: { default: '' },
+			description: { default: '' },
+			config_file: { attrs: { visible: false } },
+			custom_class: { attrs: { visible: false } },
+			company_information: { attrs: { visible: false } },
+			avatar: { attrs: { visible: false } },
+
 			enabled: { default: true },
 			attributes: { default: {} },
 			timezone: { default: 'UTC' },
@@ -66,8 +58,8 @@
 			},
 			bot_type: { attrs: { visible: false } },
 			updated_at: { attrs: { visible: false } },
-			created_at: { attrs: { visible: false } }
-			// created_by: { attrs: { visible: false } },
+			created_at: { attrs: { visible: false } },
+			created_by: { attrs: { visible: false } }
 		},
 
 		required: ['name', 'enabled', 'goal', 'backstory', 'rationale'],
@@ -92,7 +84,24 @@
 
 		const response = await handleSubmitForm(handleValidateForm, 'PUT', schema, {
 			endpoint,
-			handleSetFormErrors
+			handleSetFormErrors,
+			defaults: {
+				custom_class: 'HRAgent',
+				config_file:
+					'/home/jesuslara/proyectos/navigator/navigator-ai/etc/config/chatbots/attbot/config.toml',
+				company_information: {
+					company: 'T-ROC Global',
+					contact_form: 'https://bose.trocdigital.io/bose/bose_ticketing_system',
+					contact_email: 'communications@trocglobal.com',
+					company_website: 'https://www.trocglobal.com'
+				},
+				avatar: ''
+			},
+			options: {
+				headers: {
+					authorization: `Bearer ${token}`
+				}
+			}
 		})
 
 		if (response) {

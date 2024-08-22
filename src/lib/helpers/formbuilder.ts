@@ -204,10 +204,7 @@ export const handleSubmitForm = async (handleValidateForm: any, method: string, 
 	}
 
 	try {
-		console.log('url', url)
-		console.log('method', method)
-		console.log('payload', payload)
-		const dataModel = await getApiData(url, method, payload)
+		const dataModel = await getApiData(url, method, payload, {}, extra.options)
 
 		if (dataModel) {
 			sendSuccessNotification(dataModel?.message || message)

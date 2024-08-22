@@ -76,7 +76,6 @@
 	}
 
 	onMount(async () => {
-		console.log(token)
 		if (jsonSchema) {
 			schema = await getJsonSchema(jsonSchema, schemadefault, { baseUrl, token, apikey })
 			// console.log(JSON.stringify(schema))
@@ -92,7 +91,12 @@
 
 		const response = await handleSubmitForm(handleValidateForm, 'PUT', schema, {
 			endpoint,
-			handleSetFormErrors
+			handleSetFormErrors,
+			options: {
+				headers: {
+					authorization: `Bearer ${token}`
+				}
+			}
 		})
 
 		if (response) {

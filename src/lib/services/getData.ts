@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { storeUser } from "$lib/stores";
+import { storeUser } from '$lib/stores/session.js'
 // import { sendErrorNotification } from '$lib/stores/toast'
 import { error } from "@sveltejs/kit";
 import { get } from "svelte/store";

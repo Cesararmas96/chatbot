@@ -23,39 +23,23 @@
 			custom_class: { attrs: { visible: false } },
 			company_information: { attrs: { visible: false } },
 			avatar: { attrs: { visible: false } },
-
-			enabled: { default: true },
-			attributes: { default: {} },
-			timezone: { default: 'UTC' },
-			rationale: { 'ui:widget': 'textarea' },
-			backstory: { 'ui:widget': 'textarea' },
+			// enabled: { default: true, attrs: { visible: false } }, //revisar
+			timezone: { attrs: { visible: false } },
+			attributes: { attrs: { visible: false } },
+			role: { default: '' },
+			goal: { default: '' },
+			rationale: { default: '', 'ui:widget': 'textarea' },
+			backstory: { default: '', 'ui:widget': 'textarea' },
+			language: { attrs: { visible: false } },
 			template_prompt: { default: null },
 			pre_instructions: { default: [] },
-			llm: { default: 'VertexLLM' },
-			llm_config: {
-				type: 'dict',
-				default: {
-					top_k: 20,
-					top_p: 0.6,
-					chunk_size: 768,
-					max_tokens: 2048,
-					model_name: 'gemini-1.5-flash-preview-0514',
-					use_garden: false,
-					temperature: 0.1
-				}
-			},
-
-			database: {
-				type: 'dict',
-				default: {
-					database: 'ATT',
-					dimension: 768,
-					index_type: 'SCANN',
-					metric_type: 'IP',
-					collection_name: 'promotions',
-					vector_database: 'MilvusStore'
-				}
-			},
+			llm: { attrs: { visible: false } },
+			llm_config: { attrs: { visible: false } },
+			embedding_name: { attrs: { visible: false } },
+			tokenizer: { attrs: { visible: false } },
+			summarize_model: { attrs: { visible: false } },
+			classification_model: { attrs: { visible: false } },
+			database: { attrs: { visible: false } },
 			bot_type: { attrs: { visible: false } },
 			updated_at: { attrs: { visible: false } },
 			created_at: { attrs: { visible: false } },
@@ -95,7 +79,34 @@
 					contact_email: 'communications@trocglobal.com',
 					company_website: 'https://www.trocglobal.com'
 				},
-				avatar: ''
+				avatar: '',
+				// enabled: true,
+
+				timezone: 'UTC',
+				attributes: {},
+				language: 'en',
+				llm: 'VertexLLM',
+				llm_config: {
+					top_k: 20,
+					top_p: 0.6,
+					chunk_size: 768,
+					max_tokens: 2048,
+					model_name: 'gemini-1.5-flash-preview-0514',
+					use_garden: false,
+					temperature: 0.1
+				},
+				embedding_name: 'thenlper/gte-base',
+				tokenize: 'thenlper/gte-base',
+				summarize_model: 'facebook/bart-large-cnn',
+				classification_model: 'facebook/bart-large-cnn',
+				database: {
+					database: 'ATT',
+					dimension: 768,
+					index_type: 'SCANN',
+					metric_type: 'IP',
+					collection_name: 'promotions',
+					vector_database: 'MilvusStore'
+				}
 			},
 			options: {
 				headers: {

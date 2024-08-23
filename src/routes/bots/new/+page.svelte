@@ -5,11 +5,12 @@
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { getJsonSchema, handleSubmitForm } from '$lib/helpers/formbuilder'
 	import { storeUser } from '$lib/stores/session.js'
+	const baseUrl = import.meta.env.VITE_API_URL
 
 	export let data
-	const baseUrl = import.meta.env.VITE_API_URL
-	const token =
-		'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjQ2MDY4NTQuMDc0NDQyLCJpYXQiOjE3MjQyNDY4NTQsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjozNjA4NSwidXNlcm5hbWUiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjozNjA4NSwiaWQiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJzZXNzaW9uX2lkIjoiZGY1NjgxODYxMjY2NDExZTk3NjZmNzViMGRiOTM5N2IifQ.okyRNlkWZUvzJJopeTs6g0MjgSUOFeAObAh4lNr6Olk'
+	const { user } = data
+	let token = user.token
+
 	const apikey = $storeUser?.apikey
 	$storeFormNewBots = data.FormNewBot
 	let schema: any = null
@@ -23,7 +24,7 @@
 			custom_class: { attrs: { visible: false } },
 			company_information: { attrs: { visible: false } },
 			avatar: { attrs: { visible: false } },
-			// enabled: { default: true, attrs: { visible: false } }, //revisar
+			enabled: { attrs: { visible: false } },
 			timezone: { attrs: { visible: false } },
 			attributes: { attrs: { visible: false } },
 			role: { default: '' },
@@ -31,28 +32,28 @@
 			rationale: { default: '', 'ui:widget': 'textarea' },
 			backstory: { default: '', 'ui:widget': 'textarea' },
 			language: { attrs: { visible: false } },
-			template_prompt: { default: null },
-			pre_instructions: { default: [] },
+			template_prompt: { attrs: { visible: false } },
+			// pre_instructions: { default: [] },
 			llm: { attrs: { visible: false } },
 			llm_config: { attrs: { visible: false } },
+
 			embedding_name: { attrs: { visible: false } },
 			tokenizer: { attrs: { visible: false } },
 			summarize_model: { attrs: { visible: false } },
 			classification_model: { attrs: { visible: false } },
+
 			database: { attrs: { visible: false } },
-			bot_type: { attrs: { visible: false } },
 			updated_at: { attrs: { visible: false } },
 			created_at: { attrs: { visible: false } },
 			created_by: { attrs: { visible: false } }
 		},
 
-		required: ['name', 'enabled', 'goal', 'backstory', 'rationale'],
+		required: ['name', 'goal', 'backstory', 'rationale'],
 
 		$withoutDefs: true
 	}
 
 	onMount(async () => {
-		console.log(token)
 		if (jsonSchema) {
 			schema = await getJsonSchema(jsonSchema, schemadefault, { baseUrl, token, apikey })
 			// console.log(JSON.stringify(schema))
@@ -80,11 +81,11 @@
 					company_website: 'https://www.trocglobal.com'
 				},
 				avatar: '',
-				// enabled: true,
-
+				enabled: true,
 				timezone: 'UTC',
 				attributes: {},
 				language: 'en',
+				template_prompt: '',
 				llm: 'VertexLLM',
 				llm_config: {
 					top_k: 20,
@@ -95,10 +96,12 @@
 					use_garden: false,
 					temperature: 0.1
 				},
+
 				embedding_name: 'thenlper/gte-base',
-				tokenize: 'thenlper/gte-base',
+				tokenizer: 'thenlper/gte-base',
 				summarize_model: 'facebook/bart-large-cnn',
 				classification_model: 'facebook/bart-large-cnn',
+
 				database: {
 					database: 'ATT',
 					dimension: 768,

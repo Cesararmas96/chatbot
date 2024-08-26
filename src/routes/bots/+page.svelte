@@ -5,6 +5,7 @@
 	import { storeBots } from '$lib/stores/bots'
 
 	export let data
+
 	$storeBots = data.bots.sort((a, b) => a.name.localeCompare(b.name))
 </script>
 

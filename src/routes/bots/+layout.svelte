@@ -1,23 +1,3 @@
-<!-- <script lang="ts">
-	// import Footer from '$lib/components/layouts/Footer.svelte'
-	// import Header from '$lib/components/layouts/Header.svelte'
-	// // import LoadingEnv from '$lib/components/common/LoadingEnv.svelte'
-	import '@mixoo/ui/css/theme/default.css'
-	import '@mixoo/form/css/theme/default.css'
-</script>
-
-<Header /> -->
-<!-- 
-<div class="mx-auto flex w-full">
-	<div class="mx-auto w-full">
-		<div class="flex h-[calc(100vh-4rem)] flex-col justify-between" data-simplebar>
-			<main class="pt-10">
-				<slot />
-			</main>
-		</div>
-	</div>
-</div> -->
-
 <script lang="ts">
 	// import ChevronLeft from 'lucide-svelte/icons/chevron-left'
 	// import ChevronRight from 'lucide-svelte/icons/chevron-right'
@@ -29,10 +9,10 @@
 	// import ListFilter from 'lucide-svelte/icons/list-filter'
 	// import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical'
 	// import Package from 'lucide-svelte/icons/package'
-	// import Package2 from 'lucide-svelte/icons/package-2'
-	// import PanelLeft from 'lucide-svelte/icons/panel-left'
+	import Package2 from 'lucide-svelte/icons/package-2'
+	import PanelLeft from 'lucide-svelte/icons/panel-left'
 	// import Search from 'lucide-svelte/icons/search'
-	// import Settings from 'lucide-svelte/icons/settings'
+	import Settings from 'lucide-svelte/icons/settings'
 	import ShoppingCart from 'lucide-svelte/icons/shopping-cart'
 
 	// import Truck from 'lucide-svelte/icons/truck'
@@ -51,90 +31,45 @@
 	import * as Table from '$lib/components/ui/table/index.js'
 	import * as Tabs from '$lib/components/ui/tabs/index.js'
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js'
+
+	import { storeBots } from '$lib/stores/bots'
+	export let data
+	$storeBots = data.bots.sort((a, b) => a.name.localeCompare(b.name))
 </script>
 
 <div class="bg-muted/40 flex min-h-screen w-full flex-col">
-	<aside class="bg-background fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r sm:flex">
-		<nav class="flex flex-col items-center gap-4 px-2 py-4">
+	<aside class="bg-background fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r sm:flex">
+		<nav class="flex flex-col items-left gap-4 px-2 py-4">
 			<a
 				href="##"
-				class="bg-primary text-primary-foreground group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold md:h-8 md:w-8 md:text-base"
+				class="text-muted-foreground hover:text-foreground flex items-center h-9 items-right rounded-lg transition-colors w-full"
 			>
-				<!-- <Package2 class="h-4 w-4 transition-all group-hover:scale-110" /> -->
-				<span class="sr-only">Acme Inc</span>
+				<img src="/images/bots/troc.png" alt="img-toc-logo" class="h-6 me-3 sm:h-12" />
+				<span class="font-bold text-xl">T-ROC Chatbot</span>
 			</a>
-			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<a
-						href="##"
-						class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
-						use:builder.action
-						{...builder}
-					>
-						<!-- <Home class="h-5 w-5" /> -->
-						<span class="sr-only">Dashboard</span>
-					</a>
-				</Tooltip.Trigger>
-				<Tooltip.Content side="right">Dashboard</Tooltip.Content>
-			</Tooltip.Root>
-			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<a
-						href="##"
-						class="bg-accent text-accent-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
-						use:builder.action
-						{...builder}
-					>
-						<ShoppingCart class="h-5 w-5" />
-						<span class="sr-only">Orders</span>
-					</a>
-				</Tooltip.Trigger>
-				<Tooltip.Content side="right">Orders</Tooltip.Content>
-			</Tooltip.Root>
-			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<a
-						href="##"
-						class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
-						use:builder.action
-						{...builder}
-					>
-						<!-- <Package class="h-5 w-5" /> -->
-						<span class="sr-only">Products</span>
-					</a>
-				</Tooltip.Trigger>
-				<Tooltip.Content side="right">Products</Tooltip.Content>
-			</Tooltip.Root>
-			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<a
-						href="##"
-						class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
-						use:builder.action
-						{...builder}
-					>
-						<!-- <UsersRound class="h-5 w-5" /> -->
-						<span class="sr-only">Customers</span>
-					</a>
-				</Tooltip.Trigger>
-				<Tooltip.Content side="right">Customers</Tooltip.Content>
-			</Tooltip.Root>
-			<Tooltip.Root>
-				<Tooltip.Trigger asChild let:builder>
-					<a
-						href="##"
-						class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
-						use:builder.action
-						{...builder}
-					>
-						<!-- <LineChart class="h-5 w-5" /> -->
-						<span class="sr-only">Analytics</span>
-					</a>
-				</Tooltip.Trigger>
-				<Tooltip.Content side="right">Analytics</Tooltip.Content>
-			</Tooltip.Root>
+			<Separator />
+			{#each $storeBots as bot}
+				<Tooltip.Root>
+					<Tooltip.Trigger asChild let:builder>
+						<a
+							href="##"
+							class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-right rounded-lg transition-colors md:h-8 md:w-8"
+							use:builder.action
+							{...builder}
+						>
+							<img
+								src="/images/bots/{bot.name.toLowerCase()}.png"
+								alt="img-{name}-logo"
+								class="h-6 me-3 sm:h-7"
+							/>
+							<span class="">{bot.name}</span>
+						</a>
+					</Tooltip.Trigger>
+				</Tooltip.Root>
+			{/each}
 		</nav>
-		<nav class="mt-auto flex flex-col items-center gap-4 px-2 py-4">
+
+		<!-- <nav class="mt-auto flex flex-col items-center gap-4 px-2 py-4">
 			<Tooltip.Root>
 				<Tooltip.Trigger asChild let:builder>
 					<a
@@ -143,84 +78,47 @@
 						use:builder.action
 						{...builder}
 					>
-						<!-- <Settings class="h-5 w-5" /> -->
+						<Settings class="h-5 w-5" />
 						<span class="sr-only">Settings</span>
 					</a>
 				</Tooltip.Trigger>
 				<Tooltip.Content side="right">Settings</Tooltip.Content>
 			</Tooltip.Root>
-		</nav>
+		</nav> -->
 	</aside>
-	<div class="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+	<div class="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
 		<header
 			class="bg-background sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6"
 		>
+			<!-- Menu mobil -->
 			<Sheet.Root>
 				<Sheet.Trigger asChild let:builder>
 					<Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
-						<!-- <PanelLeft class="h-5 w-5" /> -->
+						<PanelLeft class="h-5 w-5" />
 						<span class="sr-only">Toggle Menu</span>
 					</Button>
 				</Sheet.Trigger>
 				<Sheet.Content side="left" class="sm:max-w-xs">
 					<nav class="grid gap-6 text-lg font-medium">
-						<a
-							href="##"
-							class="bg-primary text-primary-foreground group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold md:text-base"
-						>
-							<!-- <Package2 class="h-5 w-5 transition-all group-hover:scale-110" /> -->
-							<span class="sr-only">Acme Inc</span>
+						<a href="/bots" class="flex items-center">
+							<img src="/images/bots/troc.png" alt="img-troc-logo" class="h-10 me-3 sm:h-7" />
+							<span class="font-bold text-xl">T-ROC Chatbot</span>
 						</a>
-						<a
-							href="##"
-							class="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
-						>
-							<!-- <Home class="h-5 w-5" /> -->
-							Dashboard
-						</a>
-						<a href="##" class="text-foreground flex items-center gap-4 px-2.5">
-							<!-- <ShoppingCart class="h-5 w-5" /> -->
-							Orders
-						</a>
-						<a
-							href="##"
-							class="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
-						>
-							<!-- <Package class="h-5 w-5" /> -->
-							Products
-						</a>
-						<a
-							href="##"
-							class="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
-						>
-							<!-- <UsersRound class="h-5 w-5" /> -->
-							Customers
-						</a>
-						<a
-							href="##"
-							class="text-muted-foreground hover:text-foreground flex items-center gap-4 px-2.5"
-						>
-							<!-- <LineChart class="h-5 w-5" /> -->
-							Settings
-						</a>
+						<Separator />
+						{#each $storeBots as bot}
+							<a href="##" class="text-foreground flex items-center gap-4 px-2.5">
+								<img
+									src="/images/bots/{bot.name.toLowerCase()}.png"
+									alt="img-{name}-logo"
+									class="h-6 me-3 sm:h-7"
+								/>
+								{bot.name}
+							</a>
+						{/each}
 					</nav>
 				</Sheet.Content>
 			</Sheet.Root>
-			<Breadcrumb.Root class="hidden md:flex">
-				<Breadcrumb.List>
-					<Breadcrumb.Item>
-						<Breadcrumb.Link href="##">Dashboard</Breadcrumb.Link>
-					</Breadcrumb.Item>
-					<Breadcrumb.Separator />
-					<Breadcrumb.Item>
-						<Breadcrumb.Link href="##">Orders</Breadcrumb.Link>
-					</Breadcrumb.Item>
-					<Breadcrumb.Separator />
-					<Breadcrumb.Item>
-						<Breadcrumb.Page>Recent Orders</Breadcrumb.Page>
-					</Breadcrumb.Item>
-				</Breadcrumb.List>
-			</Breadcrumb.Root>
+
 			<div class="relative ml-auto flex-1 md:grow-0">
 				<!-- <Search class="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" /> -->
 				<Input
@@ -259,6 +157,21 @@
 		<main
 			class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-1 xl:grid-cols-1"
 		>
+			<Breadcrumb.Root class="hidden md:flex">
+				<Breadcrumb.List>
+					<Breadcrumb.Item>
+						<Breadcrumb.Link href="##">Home</Breadcrumb.Link>
+					</Breadcrumb.Item>
+					<!-- <Breadcrumb.Separator />
+					<Breadcrumb.Item>
+						<Breadcrumb.Link href="##">Orders</Breadcrumb.Link>
+					</Breadcrumb.Item>
+					<Breadcrumb.Separator />
+					<Breadcrumb.Item>
+						<Breadcrumb.Page>Recent Orders</Breadcrumb.Page>
+					</Breadcrumb.Item> -->
+				</Breadcrumb.List>
+			</Breadcrumb.Root>
 			<slot />
 		</main>
 	</div>

@@ -5,6 +5,10 @@
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { getJsonSchema, handleSubmitForm } from '$lib/helpers/formbuilder'
 	import { storeUser } from '$lib/stores/session.js'
+
+	// import('@mixoo/ui/css/theme/default.css')
+	// import('@mixoo/form/css/theme/default.css')
+
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	export let data
@@ -125,7 +129,7 @@
 	}
 </script>
 
-<div class="mx-5 mb-5">
+<div>
 	<h2 class="font-semibold text-2xl">Create Bot</h2>
 	<div class="">
 		{#if schema}
@@ -137,7 +141,7 @@
 					let:handleResetForm
 					let:handleSetFormErrors
 				>
-					<div class="flex items-end justify-end">
+					<div class="flex items-end justify-end mt-5">
 						<a
 							href="/bots"
 							class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
@@ -157,3 +161,6 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+</style>

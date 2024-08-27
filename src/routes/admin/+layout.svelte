@@ -169,12 +169,12 @@
 			<Breadcrumb.Root class="hidden md:flex">
 				<Breadcrumb.List>
 					<Breadcrumb.Item>
-						<Breadcrumb.Link href="/bots">Bots</Breadcrumb.Link>
+						<Breadcrumb.Link href="/bots">Admin</Breadcrumb.Link>
 					</Breadcrumb.Item>
-					<Breadcrumb.Separator />
+					<!-- <Breadcrumb.Separator />
 					<Breadcrumb.Item>
-						<Breadcrumb.Link href="/bots/new">Create Bot</Breadcrumb.Link>
-					</Breadcrumb.Item>
+						<Breadcrumb.Link href="/profile">Profile</Breadcrumb.Link>
+					</Breadcrumb.Item> -->
 				</Breadcrumb.List>
 			</Breadcrumb.Root>
 			<slot />

@@ -45,10 +45,9 @@
 							{...builder}
 						>
 							<img
-								src={`/images/bots/${bot.name ? bot.name.toLowerCase() : 'default'}.png`}
-								alt={`img-${bot.name ? bot.name.toLowerCase() : 'default'}-logo`}
+								src="/images/bots/{bot.name.toLowerCase()}.png"
+								alt="img-{name}-logo"
 								class="h-6 me-3 sm:h-7"
-								onerror="this.onerror=null; this.src='/images/bots/default.png';"
 							/>
 							<span class="">{bot.name}</span>
 						</a>
@@ -171,6 +170,10 @@
 				<Breadcrumb.List>
 					<Breadcrumb.Item>
 						<Breadcrumb.Link href="/bots">Bots</Breadcrumb.Link>
+					</Breadcrumb.Item>
+					<Breadcrumb.Separator />
+					<Breadcrumb.Item>
+						<Breadcrumb.Link href="/bots/new">Create Bot</Breadcrumb.Link>
 					</Breadcrumb.Item>
 				</Breadcrumb.List>
 			</Breadcrumb.Root>

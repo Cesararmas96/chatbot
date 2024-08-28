@@ -272,3 +272,96 @@ input:checked+.slider:before {
 .img-logo {
   max-width: 120px;
 }
+
+
+
+.form__container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  row-gap: 0.5rem;
+}
+
+.form__content {
+  -moz-column-gap: 0.5rem;
+  column-gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.form__group .name {
+  grid-column: span 12;
+}
+
+.form__group {
+  margin-top: 1rem;
+}
+
+.form__label {
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity));
+}
+
+
+
+.input__main {
+  --tw-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  background-color: transparent;
+  border-radius: calc(var(--radius) - 2px);
+  border-width: 1px;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+  display: flex;
+  font-size: 0.875rem;
+  height: 2.25rem;
+  line-height: 1.25rem;
+  padding: 0.25rem 0.75rem;
+  transition-duration: 0.15s;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.textarea__main {
+  --light: #e4e4e7;
+  --dark: #27272a;
+  --tw-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  background-color: transparent;
+  border-color: var(--light);
+  border-radius: calc(var(--radius) - 2px);
+  border-width: 1px;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+  display: flex;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  min-height: 60px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+.select__header {
+  --border-color: #e4e4e7;
+  --border-color-dark: #27272a;
+  --color: #09090b;
+  --tw-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  align-items: center;
+  background-color: transparent;
+  border-color: var(--border-color);
+  border-radius: calc(var(--radius) - 2px);
+  border-width: 1px;
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
+  color: var(--color);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.875rem;
+  height: 2.25rem;
+  justify-content: space-between;
+  line-height: 1.25rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}

@@ -6,49 +6,101 @@
 	import { storeBots } from '$lib/stores/bots'
 	import { Bot } from 'lucide-svelte'
 	import { Circle } from 'lucide-svelte'
+	import axios from 'axios'
 	export let data
 
 	$storeBots = data.bots.sort((a, b) => a.name.localeCompare(b.name))
 
-	import axios from 'axios'
+	// let datos = []
+	// let loading = false
+	// let error = null
 
-	let datos = []
-	let loading = false
-	let error = null
+	// // Con Fetch
+	// const token =
+	// 	'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjUxMjg1MzEuMzYyMzc1LCJpYXQiOjE3MjQ3Njg1MzEsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjozNjA4NSwidXNlcm5hbWUiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjozNjA4NSwiaWQiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJzZXNzaW9uX2lkIjoiZGY1NjgxODYxMjY2NDExZTk3NjZmNzViMGRiOTM5N2IifQ.vkRJDWo9LsgNzbqsowzqjYmgrHN-YOtXpg2ESwO6V50' // Reemplaza con tu token real
+	// const url = 'https://ai-dev.trocdigital.net/api/v1/bots' // Reemplaza con la URL de tu API
 
-	const token =
+	// const fetchData = async () => {
+	// 	loading = true
+	// 	error = null
+
+	// 	try {
+	// 		const response = await fetch(url, {
+	// 			method: 'GET',
+	// 			headers: {
+	// 				Authorization: `Bearer ${token}`,
+	// 				'Content-Type': 'application/json',
+	// 				Accept: 'application/json'
+	// 			}
+	// 		})
+
+	// 		if (!response.ok) {
+	// 			throw new Error(`HTTP error! status: ${response.status}`)
+	// 		}
+
+	// 		const data = await response.json()
+	// 		datos = data.datos // Asegúrate de que esta estructura coincida con la respuesta de tu API
+	// 	} catch (err) {
+	// 		error = err.message
+	// 	} finally {
+	// 		loading = false
+	// 	}
+	// }
+
+	// // Llama a la función fetchData al cargar la componente
+	// $: fetchData()
+
+	let datos2 = []
+	let loading2 = false
+	let error2 = null
+
+	const token2 =
 		'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjUxMjg1MzEuMzYyMzc1LCJpYXQiOjE3MjQ3Njg1MzEsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjozNjA4NSwidXNlcm5hbWUiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjozNjA4NSwiaWQiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJzZXNzaW9uX2lkIjoiZGY1NjgxODYxMjY2NDExZTk3NjZmNzViMGRiOTM5N2IifQ.vkRJDWo9LsgNzbqsowzqjYmgrHN-YOtXpg2ESwO6V50' // Reemplaza con tu token real
-	const url = 'https://ai.trocdigital.net/api/v1/bots' // Reemplaza con la URL de tu API
+	const url2 = 'https://ai.trocdigital.net/api/v1/bots' // Reemplaza con la URL de tu API
 
-	const fetchData = async () => {
-		loading = true
-		error = null
+	const fetchData2 = async () => {
+		loading2 = true
+		error2 = null
 
 		try {
-			const response = await axios.get(url, {
+			const response2 = await axios.get(url2, {
 				headers: {
-					Authorization: `Bearer ${token}`
+					Authorization: `Bearer ${token2}`,
+					'Content-Type': 'application/json',
+					Accept: 'application/json'
 				}
 			})
-			datos = response.datos
+
+			datos2 = response2.data.datos // Asegúrate de que esta estructura coincida con la respuesta de tu API
 		} catch (err) {
-			error = err.message
+			error2 = err.message
 		} finally {
-			loading = false
+			loading2 = false
 		}
 	}
 
-	// Llama a la función fetchData al cargar la componente
-	$: fetchData()
+	// Llama a la función fetchData2 al cargar la componente
+	$: fetchData2()
 </script>
 
-{#if loading}
+<!-- {#if loading}
 	<p>Cargando datos...</p>
 {:else if error}
 	<p>Error al cargar datos: {error}</p>
 {:else}
 	{#each datos as item}
 		<p>{item.name}</p>
+	{/each}
+{/if} -->
+
+<!-- Axios -->
+{#if loading2}
+	<p>Cargando datos...</p>
+{:else if error2}
+	<p>Error al cargar datos2: {error2}</p>
+{:else}
+	{#each datos2 as item2}
+		<p>{item2.name}</p>
 	{/each}
 {/if}
 

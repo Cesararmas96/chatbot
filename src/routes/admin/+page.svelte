@@ -57,7 +57,7 @@
 				</DropdownMenu.Root>
 
 				<Button size="sm" class="h-7 gap-1">
-					<a href="/bots/new" class="flex items-center">
+					<a href="/new" class="flex items-center">
 						<CirclePlus class="h-3.5 w-3.5 mr-2" />
 						<span class="sr-only sm:not-sr-only sm:whitespace-nowrap"> Add Bot </span>
 					</a>

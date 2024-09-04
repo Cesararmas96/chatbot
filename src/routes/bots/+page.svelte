@@ -3,111 +3,68 @@
 	import { getApiData } from '$lib/services/getData'
 	import * as Card from '$lib/components/ui/card/index.js'
 	import { Badge } from '$lib/components/ui/badge/index.js'
-	import { storeBots } from '$lib/stores/bots'
-	import { Bot } from 'lucide-svelte'
-	import { Circle } from 'lucide-svelte'
-	import axios from 'axios'
+	import { Bot, Circle } from 'lucide-svelte'
+
+	// Loading state variables
+	let isLoading = false
+	let bots = []
+
+	// User authentication token
 	export let data
+	const { user } = data
+	let token = user.token
 
-	$storeBots = data.bots.sort((a, b) => a.name.localeCompare(b.name))
+	// Function to handle click events on links
+	function handleClick(event) {
+		isLoading = true // Set loading state when a link is clicked
+	}
 
-	let datos = []
-	let loading = false
-	let error = null
-
-	// Con Fetch
-	const token =
-		'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjUxMjg1MzEuMzYyMzc1LCJpYXQiOjE3MjQ3Njg1MzEsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjozNjA4NSwidXNlcm5hbWUiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjozNjA4NSwiaWQiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJzZXNzaW9uX2lkIjoiZGY1NjgxODYxMjY2NDExZTk3NjZmNzViMGRiOTM5N2IifQ.vkRJDWo9LsgNzbqsowzqjYmgrHN-YOtXpg2ESwO6V50' // Reemplaza con tu token real
-	const url = 'https://ai-dev.trocdigital.net/api/v1/bots' // Reemplaza con la URL de tu API
-
-	const fetchData = async () => {
-		loading = true
-		error = null
-
+	// Function to fetch bots data from the API
+	const fetchBots = async () => {
+		isLoading = true // Set loading state during data fetching
+		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
 		try {
-			const response = await fetch(url, {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'application/json',
-					Accept: 'application/json'
-				}
-			})
+			const fetchedBots = await getApiData(
+				apiUrl,
+				'GET',
+				{},
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json'
+					}
+				},
+				null,
+				true
+			)
 
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`)
-			}
-
-			const data = await response.json()
-			datos = data.datos // Asegúrate de que esta estructura coincida con la respuesta de tu API
-		} catch (err) {
-			error = err.message
+			bots = fetchedBots.sort((a, b) => a.name.localeCompare(b.name))
+		} catch (error) {
+			console.error('There was a problem with the fetch operation:', error)
 		} finally {
-			loading = false
+			isLoading = false // Reset loading state after fetching
 		}
 	}
 
-	// Llama a la función fetchData al cargar la componente
-	$: fetchData()
-
-	// let datos2 = []
-	// let loading2 = false
-	// let error2 = null
-
-	// const token2 =
-	// 	'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MjUxMjg1MzEuMzYyMzc1LCJpYXQiOjE3MjQ3Njg1MzEsImlzcyI6Ik1vYmlsZWluc2lnaHQiLCJ1c2VyIjozNjA4NSwidXNlcm5hbWUiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJ1c2VyX2lkIjozNjA4NSwiaWQiOiJjYXJtYXNAdHJvY2dsb2JhbC5jb20iLCJzZXNzaW9uX2lkIjoiZGY1NjgxODYxMjY2NDExZTk3NjZmNzViMGRiOTM5N2IifQ.vkRJDWo9LsgNzbqsowzqjYmgrHN-YOtXpg2ESwO6V50' // Reemplaza con tu token real
-	// const url2 = 'https://ai.trocdigital.net/api/v1/bots' // Reemplaza con la URL de tu API
-
-	// const fetchData2 = async () => {
-	// 	loading2 = true
-	// 	error2 = null
-
-	// 	try {
-	// 		const response2 = await axios.get(url2, {
-	// 			headers: {
-	// 				Authorization: `Bearer ${token2}`,
-	// 				'Content-Type': 'application/json',
-	// 				Accept: 'application/json'
-	// 			}
-	// 		})
-
-	// 		datos2 = response2.datos2 // Asegúrate de que esta estructura coincida con la respuesta de tu API
-	// 	} catch (err) {
-	// 		error2 = err.message
-	// 	} finally {
-	// 		loading2 = false
-	// 	}
-	// }
-
-	// Llama a la función fetchData2 al cargar la componente
-	// $: fetchData2()
+	// Fetch bots data when the component is mounted
+	onMount(() => {
+		fetchBots()
+	})
 </script>
 
-{#if loading}
-	<p>Cargando datos...</p>
-{:else if error}
-	<p>Error al cargar datos: {error}</p>
-{:else}
-	{#each datos as item}
-		<p>{item.name}</p>
-	{/each}
+<!-- Show loader if data is still loading -->
+{#if isLoading}
+	<div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+		<div class="loader"></div>
+	</div>
 {/if}
 
-<!-- Axios -->
-<!-- {#if loading2}
-	<p>Cargando datos...</p>
-{:else if error2}
-	<p>Error al cargar datos2: {error2}</p>
-{:else}
-	{#each datos2 as item2}
-		<p>{item2.name}</p>
-	{/each}
-{/if} -->
-
+<!-- Display list of bots -->
 <ul class="grid grid-cols-2 gap-4 p-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
-	{#each $storeBots as bot}
-		<a href="/{bot.name.toLowerCase()}" class="dark:text-gray-200">
-			<Card.Root class="overflow-hidden transition-all hover:shadow-md bg-white">
+	{#each bots as bot}
+		<a href="/{bot.name.toLowerCase()}" class="dark:text-gray-200" on:click={handleClick}>
+			<Card.Root class="overflow-hidden transition-all hover:shadow-md bg-white dark:bg-gray-700">
 				<Card.Header class="pb-2">
 					<div class="flex items-center space-x-4">
 						<div class="w-12 h-12">
@@ -118,7 +75,6 @@
 						</div>
 						<div>
 							<Card.Title class="text-lg">{bot.name}</Card.Title>
-
 							<Badge variant="outline" class="mt-1">
 								<Circle class="w-3 h-3 mr-1" />
 								<span class="text-xs">{bot.enabled === 'true' ? 'Disable' : 'Active'}</span>
@@ -139,3 +95,24 @@
 		</a>
 	{/each}
 </ul>
+
+<style>
+	/* Styling for the loader */
+	.loader {
+		border: 4px solid rgba(255, 255, 255, 0.3);
+		border-radius: 50%;
+		border-top: 4px solid #fff;
+		width: 40px;
+		height: 40px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+</style>

@@ -10,24 +10,10 @@ export const load: PageServerLoad = async ({ locals, fetch, url }) => {
 		? { authorization: `Bearer ${locals.user?.token}` }
 		: { 'x-api-key': locals.user?.token }
 
-  const bots = await getApiData(
-		`${import.meta.env.VITE_API_AI_URL}/api/v1/bots`,
-		'GET',
-		{},
-		{},
-		{headers},
-		fetch,
-		false
-	)
 	
-	const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
-	const attBot = bots.filter(bot => bot.name === 'ATTBot');
-
-	const combinedBots = [...askBrettBot, ...attBot]
 
   return {
-    user: locals.user,
-    bots
+    user: locals.user
   };
 };
 

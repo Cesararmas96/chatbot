@@ -19,13 +19,10 @@ export const load: LayoutServerLoad = async ({ locals, fetch, url }) => {
     false
   );
 
-  const askBrettBot = bots.filter(bot => bot.name === 'AskBrett');
-  const attBot = bots.filter(bot => bot.name === 'ATTBot');
 
-  const combinedBots = [...askBrettBot, ...attBot];
 
   return {
     user: locals.user,
-    bots 
+  
   };
 };

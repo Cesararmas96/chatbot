@@ -49,7 +49,7 @@ export async function getData(
       options.headers["Content-Type"] =
         options.headers["Content-Type"] || "application/json; charset=utf-8";
 
-    options.headers["Origin"] = "https://navigator.com";
+    // options.headers["Origin"] = "https://navigator.com";
     // Add the authentication token if authenticated
     if (loggedIn && options.headers.authorization)
       options.headers.authorization = options.headers.authorization || null;

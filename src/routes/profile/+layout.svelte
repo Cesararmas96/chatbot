@@ -45,7 +45,7 @@
 							{...builder}
 						>
 							<img
-								src="/images/bots/{bot.name.toLowerCase()}.png"
+								src="/images/bots/{bot.name}.png"
 								alt="img-{name}-logo"
 								class="h-6 me-3 sm:h-7"
 							/>
@@ -95,7 +95,7 @@
 						{#each $storeBots as bot}
 							<a href="##" class="text-foreground flex items-center gap-4 px-2.5">
 								<img
-									src="/images/bots/{bot.name.toLowerCase()}.png"
+									src="/images/bots/{bot.name}.png"
 									alt="img-{name}-logo"
 									class="h-6 me-3 sm:h-7"
 								/>

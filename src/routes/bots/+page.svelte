@@ -69,7 +69,7 @@
 					<div class="flex items-center space-x-4">
 						<div class="w-12 h-12">
 							<img
-								src={`/images/bots/${bot.name ? bot.name.toLowerCase() : 'default'}.png`}
+								src={`/images/bots/${bot.name.toLowerCase() ? bot.name.toLowerCase() : 'default'}.png`}
 								alt={bot.name}
 							/>
 						</div>

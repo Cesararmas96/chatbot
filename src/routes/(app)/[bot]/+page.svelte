@@ -9,6 +9,7 @@
 	import { storeGood } from '$lib/stores/good'
 	import { storeBad } from '$lib/stores/bad'
 	import { storeChatbotid } from '$lib/stores/chatbotid'
+	import { storeChatbotname } from '$lib/stores/chatbotname'
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { DarkMode } from 'flowbite-svelte'
@@ -20,14 +21,15 @@
 
 	export let data
 
-	const { user, bots, promptLibrary, good, bad, chatbotid } = data
+	const { user, bots, promptLibrary, good, bad, chatbotid, chatbotname } = data
 	storeUser.set(user)
 	storeBots.set(bots)
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
 	storeBad.set(bad)
 	storeChatbotid.set(chatbotid)
-
+	storeChatbotname.set(chatbotname)
+	console.log(chatbotname)
 	let isLoading = false
 	let messages: any[] = []
 	let query = ''
@@ -52,6 +54,7 @@
 		isLoading = true
 		try {
 			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
+				chatbotname,
 				bot,
 				query || lastQuery
 			)
@@ -97,6 +100,8 @@
 		query = event.detail.query
 		chatInputRef.submitForm()
 	}
+
+	console.log(promptLibrary)
 </script>
 
 <div class="sm:ml-64">

@@ -53,7 +53,6 @@
 
 			// Sorting bots by name
 			bots = fetchedBots.sort((a, b) => a.name.localeCompare(b.name))
-			console.log(bots)
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {
@@ -65,12 +64,26 @@
 	onMount(() => {
 		fetchBots()
 	})
+
+	// Function to handle click events on links
+	function handleClick(event) {
+		isLoading = true // Set loading state when a link is clicked
+	}
 </script>
+
+<!-- Show loader if data is still loading -->
+{#if isLoading}
+	<div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+		<div class="loader"></div>
+	</div>
+{/if}
 
 <!-- Main container for the layout -->
 <div class="bg-muted/40 flex min-h-screen w-full flex-col">
 	<!-- Sidebar with navigation -->
-	<aside class="bg-background fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r sm:flex">
+	<aside
+		class="bg-background fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r sm:flex p-2"
+	>
 		<nav class="flex flex-col items-left gap-4 px-2 py-4">
 			<a
 				href="##"
@@ -85,17 +98,12 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger asChild let:builder>
 						<a
-							href="##"
+							href="/{bot.name.toLowerCase()}"
+							on:click={handleClick}
 							class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-right rounded-lg transition-colors md:h-8 md:w-8"
 							use:builder.action
 							{...builder}
 						>
-							<img
-								src={`/images/bots/${bot.name ? bot.name.toLowerCase() : 'default'}.png`}
-								alt={`img-${bot.name ? bot.name.toLowerCase() : 'default'}-logo`}
-								class="h-6 me-3 sm:h-7"
-								onerror="this.onerror=null; this.src='/images/bots/default.png';"
-							/>
 							<span class="">{bot.name}</span>
 						</a>
 					</Tooltip.Trigger>
@@ -139,11 +147,6 @@
 						<Separator />
 						{#each bots as bot}
 							<a href="##" class="text-foreground flex items-center gap-4 px-2.5">
-								<img
-									src={`/images/bots/${bot.name.toLowerCase()}.png`}
-									alt={`img-${bot.name.toLowerCase()}-logo`}
-									class="h-6 me-3 sm:h-7"
-								/>
 								{bot.name}
 							</a>
 						{/each}
@@ -229,3 +232,24 @@
 		</main>
 	</div>
 </div>
+
+<style>
+	/* Styling for the loader */
+	.loader {
+		border: 4px solid rgba(255, 255, 255, 0.3);
+		border-radius: 50%;
+		border-top: 4px solid #fff;
+		width: 40px;
+		height: 40px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+</style>

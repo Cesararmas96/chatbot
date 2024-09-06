@@ -77,19 +77,19 @@
 	}
 
 	// Update sidebar visibility on window resize
-	window.addEventListener('resize', () => {
-		hidden2 = window.innerWidth >= 640 // Adjust as needed
-		const sidebar = document.getElementById('default-sidebar')
-		if (sidebar) {
-			if (!hidden2) {
-				sidebar.classList.add('-translate-x-full')
-				sidebar.classList.remove('translate-x-0')
-			} else {
-				sidebar.classList.remove('-translate-x-full')
-				sidebar.classList.add('translate-x-0')
-			}
-		}
-	})
+	// window.addEventListener('resize', () => {
+	// 	hidden2 = window.innerWidth >= 640 // Adjust as needed
+	// 	const sidebar = document.getElementById('default-sidebar')
+	// 	if (sidebar) {
+	// 		if (!hidden2) {
+	// 			sidebar.classList.add('-translate-x-full')
+	// 			sidebar.classList.remove('translate-x-0')
+	// 		} else {
+	// 			sidebar.classList.remove('-translate-x-full')
+	// 			sidebar.classList.add('translate-x-0')
+	// 		}
+	// 	}
+	// })
 
 	// Función para eliminar un pageId
 	async function deletePageId(pageId: string) {

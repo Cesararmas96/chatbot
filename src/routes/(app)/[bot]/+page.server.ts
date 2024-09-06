@@ -23,6 +23,7 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
 
   const chat = bots.find((bot: any) => bot.name.toLowerCase() === params.bot);
   const chatbotid = chat.chatbot_id;
+  const chatbotname = chat.name
 
 
   
@@ -70,7 +71,8 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
     promptLibrary,
     good,
     bad,
-    chatbotid
+    chatbotid,
+    chatbotname
   };
 };
 

@@ -25,7 +25,6 @@ export const load: PageServerLoad = async ({ locals, fetch, params }) => {
   const chatbotid = chat.chatbot_id;
   const chatbotname = chat.name
 
-
   
   const promptLibrary = await getApiData(
     `${import.meta.env.VITE_API_AI_URL}/api/v1/prompt_library?chatbot_id=${chat.chatbot_id}`,

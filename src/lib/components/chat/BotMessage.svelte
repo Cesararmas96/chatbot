@@ -143,7 +143,10 @@
 <div class="col-start-1 md:col-end-8 col-end-13 p-3 rounded-lg">
 	<div class="flex flex-row">
 		<div class="flex items-center justify-center h-10 w-10 rounded-full flex-shrink-0">
-			<img src="/images/bots/{bot}.png" alt="logo" />
+			<img
+				src={`/images/bots/${bot.toLowerCase() ? bot.toLowerCase() : 'default'}.png`}
+				alt="{bot}-logo"
+			/>
 		</div>
 		<div class="flex flex-col">
 			<div

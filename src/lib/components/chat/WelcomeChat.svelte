@@ -24,11 +24,7 @@
 		<div class="flex flex-col justify-center items-center w-full">
 			<!-- <img src="/images/bots/{bot}.png" class="w-32 md:w-36 text-center" alt="{bot}-logo" /> -->
 			<div class="text-center">
-				<h2 class="font-bold md:text-lg dark:text-white text-sm">
-					Welcome Back to {getNameChatBot(bot, NameChatBot) !== ''
-						? getNameChatBot(bot, NameChatBot)
-						: botName} Chatbot
-				</h2>
+				<h2 class="font-bold md:text-lg dark:text-white text-sm">Welcome Back to Chatbot</h2>
 				<p class="text-gray-500 md:text-base text-xs">How can I help you today?</p>
 			</div>
 		</div>

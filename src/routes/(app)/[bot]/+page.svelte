@@ -30,10 +30,12 @@
 	storeChatbotid.set(chatbotid)
 	storeChatbotname.set(chatbotname)
 	console.log(chatbotname)
+
 	let isLoading = false
 	let messages: any[] = []
 	let query = ''
 	let bot = ''
+	let nombre = ''
 	let shared = false
 	let showSettings = false
 	let chatInputRef: any
@@ -41,7 +43,9 @@
 	let user_id = user.user_id
 	let chatbotId
 	onMount(() => {
-		bot = $page.params.bot
+		let nombre = $page.params.bot
+		sessionStorage.setItem('chatbotname', data.chatbotname)
+
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
 		if (currentBot) {
 			chatbotId = currentBot.chatbot_id
@@ -49,6 +53,8 @@
 			console.error('Bot not found')
 		}
 	})
+
+	console.log(chatbotname)
 
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
@@ -121,7 +127,11 @@
 			>
 				<div class="flex flex-auto flex-col lg:justify-center">
 					<div class="flex justify-center mt-2">
-						<img src="/images/bots/{bot}.png" class="w-32 md:w-36" alt="{bot}-logo" />
+						<img
+							src={`/images/bots/${nombre.toLowerCase() ? nombre.toLowerCase() : 'default'}.png`}
+							class="w-32 md:w-36"
+							alt="{nombre}-logo"
+						/>
 					</div>
 					<div class="">
 						<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />

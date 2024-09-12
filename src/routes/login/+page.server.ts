@@ -8,10 +8,10 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 
 	const apiUrl = import.meta.env.VITE_API_AI_URL
   const tenant = url.hostname.split('.')[0]
-  console.log(tenant)
+  // console.log(tenant)
 
   const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/clients?subdomain_prefix=${tenant}`, { method: "GET" });
-  console.log(resp)
+  // console.log(resp)
   if (resp?.ok) {
     const response = await resp.json()
 
@@ -59,10 +59,10 @@ const login: Action = async ({ cookies, request }) => {
     return fail(400, { invalid: true });
   }
 
-  console.log("Login Action: Making API request with", { username, password });
+  // console.log("Login Action: Making API request with", { username, password });
 
   const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/login`;
-  console.log("Login Action: API URL", apiUrl);
+  // console.log("Login Action: API URL", apiUrl);
 
   const response = await fetch(apiUrl, {
     method: "POST",
@@ -72,12 +72,12 @@ const login: Action = async ({ cookies, request }) => {
     },
     body: JSON.stringify({ username, password }),
   });
-console.log("Login Action: API Response", response);
-  console.log("Login Action: API Response Status", response.status);
+// console.log("Login Action: API Response", response);
+//   console.log("Login Action: API Response Status", response.status);
 
   if (response.ok) {
     const data = await response.json();
-    console.log("Login Action: API Response Data", data);
+    // console.log("Login Action: API Response Data", data);
 
     const length = Math.ceil(data.token.length / 3);
     const token1 = encrypt(data.token.substring(0, length));
@@ -109,14 +109,14 @@ console.log("Login Action: API Response", response);
     });
     cookies.delete("_program", { path: "/" });
   } else {
-    const errorData = await response.json();
-    console.error("Login Action: API Error", errorData);
-    return fail(400, { credentials: true, message: errorData });
+    // const errorData = await response.json();
+    // console.error("Login Action: API Error", errorData);
+    return fail(400, { credentials: true, message: await response.json() })
+    // return fail(400, { credentials: true, message: errorData });
   }
 
   // redirect the user
-  console.log("Login Action: Redirecting to /bots");
-  throw redirect(302, "/bots");
+  throw redirect(302, "/");
 };
 
 export const actions: Actions = { login };

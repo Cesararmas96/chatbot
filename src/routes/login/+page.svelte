@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { Button, Input, Label, Tooltip } from 'flowbite-svelte'
 	import { enhance } from '$app/forms'
+	import type { ActionData } from './$types'
 	import { page } from '$app/stores'
 	import { errorCodes } from '$lib/helpers/error-codes'
 	import { onMount } from 'svelte'
 	import { loading } from '$lib/stores/preferences'
-	import type { ActionData } from './$types'
 
-	export let form: ActionData
 	export let data
 	const { filteredObject } = data
-	console.log('filteredObject:', filteredObject)
 
+	export let form: ActionData
 	const apiUrl = import.meta.env.VITE_API_AI_URL
 	const redirecURI = `${$page.url.origin}/login/callback`
 	let showPassword: boolean = false
-	let errorMessage = ''
+
+	let errorMessage = form?.error?.message || ''
 	let username = ''
 	let password = ''
 
@@ -209,6 +209,22 @@
 							type="submit"
 							class="mt-3 w-full p-3 rounded font-semibold text-sm">Sign In</Button
 						>
+
+						{#if form?.invalid}
+							<p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
+								Username and password is required.
+							</p>
+						{/if}
+
+						{#if form?.credentials}
+							<p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
+								{@html errorCodes[form?.message?.status]
+									? `${errorCodes[form?.message?.status].title}. ${
+											errorCodes[form?.message?.status].message
+										}`
+									: form?.message?.reason}
+							</p>
+						{/if}
 					</form>
 
 					<div class="mt-4 flex w-4/5 items-center justify-center">

@@ -1,18 +1,24 @@
 <script lang="ts">
-	import { Button, Input, Label, Tooltip } from 'flowbite-svelte'
+	import { Button } from '$lib/components/ui/button/index.js'
+	// import { Input } from '$lib/components/ui/input/index.js'
+	import { Input } from 'flowbite-svelte'
+	import { Label } from '$lib/components/ui/label/index.js'
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js'
 	import { enhance } from '$app/forms'
 	import type { ActionData } from './$types'
 	import { page } from '$app/stores'
 	import { errorCodes } from '$lib/helpers/error-codes'
 	import { onMount } from 'svelte'
+
 	import { loading } from '$lib/stores/preferences'
 
 	export let data
 	const { filteredObject } = data
-
 	export let form: ActionData
+
 	const apiUrl = import.meta.env.VITE_API_AI_URL
 	const redirecURI = `${$page.url.origin}/login/callback`
+
 	let showPassword: boolean = false
 
 	let errorMessage = form?.error?.message || ''
@@ -55,7 +61,6 @@
 			return acc
 		}, {})
 	}
-	console.log('authMethods:', authMethods)
 
 	$: _loading = Boolean(form && !(form?.invalid === true || form?.credentials === true))
 	onMount(() => {
@@ -87,7 +92,12 @@
 			>
 				<div class="m-2 flex w-full flex-col items-center pl-2 pr-2 sm:p-4">
 					<div class="self-center mb-10">
-						<img src="/images/auth/logo-white.png" alt="" style="max-width: 200px" />
+						<img
+							src="/images/auth/logo-white.png"
+							alt="Logo T-Roc"
+							style="max-width: 200px"
+							loading="lazy"
+						/>
 					</div>
 
 					<div class="text-center text-2xl font-semibold text-gray-100">Welcome Back</div>
@@ -101,24 +111,28 @@
 							{#each Object.values(filteredObject) as method}
 								{#if method.name === 'AzureAuth'}
 									<li>
-										<Button
-											href={`${apiUrl}/api/v1/auth/azure/?redirect_uri=${redirecURI}`}
-											weight="24"
-											outline
-											color={method.color}
-											class="ml-auto mr-auto flex w-4/5 border text-gray-200 hover:bg-slate-100 hover:text-gray-700 {authMethods[
-												method.name
-											].class} border-white p-2 text-base shadow"
-										>
-											<img
-												src={authMethods[method.name].img || 'images/auth/default.png'}
-												style="max-width: 25px"
-												class="mr-2"
-												alt={authMethods[method.name].name}
-											/>
-											Sign in with SSO TROC
-										</Button>
-										<Tooltip>Sign in with SSO TROC</Tooltip>
+										<Tooltip.Root>
+											<Tooltip.Trigger asChild let:builder>
+												<Button
+													href={`${apiUrl}/api/v1/auth/azure/?redirect_uri=${redirecURI}`}
+													class="ml-auto mr-auto flex w-4/5 border text-gray-200 hover:bg-slate-100 hover:text-gray-700 {authMethods[
+														method.name
+													].class} border-white p-2 text-base shadow"
+												>
+													<img
+														src={authMethods[method.name].img || 'images/auth/default.png'}
+														style="max-width: 25px"
+														class="mr-2"
+														alt={authMethods[method.name].name}
+														loading="lazy"
+													/>
+													Sign in with SSO TROC
+												</Button>
+											</Tooltip.Trigger>
+											<Tooltip.Content>
+												<p>Sign in with SSO TROC</p>
+											</Tooltip.Content>
+										</Tooltip.Root>
 									</li>
 								{/if}
 							{/each}
@@ -145,7 +159,7 @@
 								bind:value={username}
 								type="text"
 								id="username"
-								defaultClass="block w-full mb-4 p-2.5 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
+								defaultClass="block w-full mb-4 p-2.5 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded "
 								name="username"
 								placeholder="Email@email.com"
 								required
@@ -153,18 +167,18 @@
 							></Input>
 						</div>
 						<div class="w-full">
-							<Label for="password" class="mb-1 font-semibold text-gray-100">Password</Label>
+							<Label for="password" class="font-semibold text-gray-100">Password</Label>
 							<Input
 								id="password"
 								type={showPassword ? 'text' : 'password'}
-								defaultClass="block w-full !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-4"
+								defaultClass="flex block w-full !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-2"
 								name="password"
 								placeholder="**********"
 								required
 								maxlength="100"
 								bind:value={password}
 							>
-								<button
+								<!-- <button
 									slot="right"
 									on:click|preventDefault={() => (showPassword = !showPassword)}
 									class="pointer-events-auto mt-1"
@@ -187,7 +201,7 @@
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											viewBox="0 0 32 32"
-											class="h-5 w-5"
+											class="h-5 w-5 mr-5"
 											stroke-width="1.5"
 											><path
 												fill="currentColor"
@@ -198,7 +212,7 @@
 											/></svg
 										>
 									{/if}
-								</button>
+								</button> -->
 							</Input>
 						</div>
 						{#if errorMessage}
@@ -207,7 +221,7 @@
 						<Button
 							disabled={_loading}
 							type="submit"
-							class="mt-3 w-full p-3 rounded font-semibold text-sm">Sign In</Button
+							class="mt-8 w-full p-3 rounded font-semibold text-sm">Sign In</Button
 						>
 
 						{#if form?.invalid}

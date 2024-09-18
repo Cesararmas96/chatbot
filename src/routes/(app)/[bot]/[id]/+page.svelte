@@ -5,8 +5,6 @@
 	import { storeGood } from '$lib/stores/good.js'
 	import { storeBad } from '$lib/stores/bad.js'
 	import { storeChatbotid } from '$lib/stores/chatbotid'
-	// import { storeChatbotname } from '$lib/stores/chatbotname'
-
 	import { fetchChatData } from '$lib/services/chatService'
 	import { db } from '$lib/db'
 	import Header from '$lib/components/chat/Header.svelte'
@@ -20,10 +18,6 @@
 	let isLoading = false
 	const { user, bots, good, bad, chatbotid } = data
 	storeChatbotid.set(chatbotid)
-
-	let chatbotname: string
-	chatbotname = sessionStorage.getItem('chatbotname')
-	console.log(chatbotname)
 	storeUser.set(user)
 	storeBots.set(bots)
 	storeGood.set(good)
@@ -76,7 +70,6 @@
 		isLoading = true
 		try {
 			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
-				chatbotname,
 				bot,
 				query || lastQuery
 			)

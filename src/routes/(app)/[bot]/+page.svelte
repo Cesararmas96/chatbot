@@ -9,7 +9,6 @@
 	import { storeGood } from '$lib/stores/good'
 	import { storeBad } from '$lib/stores/bad'
 	import { storeChatbotid } from '$lib/stores/chatbotid'
-	import { storeChatbotname } from '$lib/stores/chatbotname'
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { DarkMode } from 'flowbite-svelte'
@@ -21,21 +20,18 @@
 
 	export let data
 
-	const { user, bots, promptLibrary, good, bad, chatbotid, chatbotname } = data
+	const { user, bots, promptLibrary, good, bad, chatbotid } = data
 	storeUser.set(user)
 	storeBots.set(bots)
 	storePromptLibrary.set(promptLibrary)
 	storeGood.set(good)
 	storeBad.set(bad)
 	storeChatbotid.set(chatbotid)
-	storeChatbotname.set(chatbotname)
-	console.log(chatbotname)
 
 	let isLoading = false
 	let messages: any[] = []
 	let query = ''
 	let bot = ''
-	let nombre = ''
 	let shared = false
 	let showSettings = false
 	let chatInputRef: any
@@ -43,9 +39,7 @@
 	let user_id = user.user_id
 	let chatbotId
 	onMount(() => {
-		let nombre = $page.params.bot
-		sessionStorage.setItem('chatbotname', data.chatbotname)
-
+		bot = $page.params.bot
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
 		if (currentBot) {
 			chatbotId = currentBot.chatbot_id
@@ -54,13 +48,10 @@
 		}
 	})
 
-	console.log(chatbotname)
-
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
 		try {
 			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
-				chatbotname,
 				bot,
 				query || lastQuery
 			)
@@ -106,8 +97,6 @@
 		query = event.detail.query
 		chatInputRef.submitForm()
 	}
-
-	console.log(promptLibrary)
 </script>
 
 <div class="sm:ml-64">
@@ -127,11 +116,7 @@
 			>
 				<div class="flex flex-auto flex-col lg:justify-center">
 					<div class="flex justify-center mt-2">
-						<img
-							src={`/images/bots/${nombre.toLowerCase() ? nombre.toLowerCase() : 'default'}.png`}
-							class="w-32 md:w-36"
-							alt="{nombre}-logo"
-						/>
+						<img src="/images/bots/{bot}.png" class="w-32 md:w-36" alt="{bot}-logo" />
 					</div>
 					<div class="">
 						<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />

@@ -54,11 +54,11 @@
 </script>
 
 <!-- Show loader if data is still loading -->
-{#if isLoading}
+<!-- {#if isLoading}
 	<div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
 		<div class="loader"></div>
 	</div>
-{/if}
+{/if} -->
 
 <!-- Display list of bots -->
 <ul class="grid grid-cols-2 gap-4 p-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">

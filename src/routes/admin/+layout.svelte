@@ -72,11 +72,11 @@
 </script>
 
 <!-- Show loader if data is still loading -->
-{#if isLoading}
+<!-- {#if isLoading}
 	<div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
 		<div class="loader"></div>
 	</div>
-{/if}
+{/if} -->
 
 <!-- Main container for the layout -->
 <div class="bg-muted/40 flex min-h-screen w-full flex-col">

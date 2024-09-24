@@ -9,6 +9,7 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import { Upload, FileAudio, Plus, LogOut, Settings, Search } from 'lucide-svelte'
+	import { enhance } from '$app/forms'
 
 	import { storeUser } from '$lib/stores'
 	export let data: any
@@ -114,15 +115,23 @@
 						</div>
 					</div>
 				</DropdownMenu.Trigger>
-				<DropdownMenu.Content class="w-56" align="end">
-					<DropdownMenu.Item>
-						<Settings class="mr-2 h-4 w-4" />
-						<span>Settings</span>
-					</DropdownMenu.Item>
-					<DropdownMenu.Item>
-						<LogOut class="mr-2 h-4 w-4" />
-						<span>Log out</span>
-					</DropdownMenu.Item>
+
+				<DropdownMenu.Content class="w-56">
+					<DropdownMenu.Group>
+						<DropdownMenu.Item>
+							<Settings class="mr-2 h-4 w-4" />
+							<span>Settings</span>
+						</DropdownMenu.Item>
+
+						<DropdownMenu.Item>
+							<LogOut class="mr-2 h-4 w-4" />
+							<form action="/logout" method="POST" use:enhance>
+								<button type="submit">
+									<span>Logout</span>
+								</button>
+							</form>
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		</div>
@@ -131,23 +140,3 @@
 	<!-- Main Content -->
 	<slot />
 </div>
-
-<style>
-	/* Estilos propios del componente que en Svelte se aplican de manera aislada al componente */
-	.dropzone {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		border: 2px dashed #ccc;
-		border-radius: 8px;
-		padding: 20px;
-		height: 200px;
-		background-color: #1a1a1a;
-		cursor: pointer;
-	}
-
-	.dropzone:hover {
-		background-color: #333;
-	}
-</style>

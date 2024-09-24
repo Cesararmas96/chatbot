@@ -1,10 +1,10 @@
 <script>
-	import { onMount } from 'svelte'
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Input } from '$lib/components/ui/input/index.js'
 	import { Label } from '$lib/components/ui/label/index.js'
 	import * as RadioGroup from '$lib/components/ui/radio-group/index.js'
-	import { Upload, Trash, FileAudio } from 'lucide-svelte'
+	import { Upload, Trash, FileAudio, Link, CheckCircle } from 'lucide-svelte'
+	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
 
 	let inputType = 'file'
 	let searchTerm = ''
@@ -17,91 +17,91 @@
 	]
 
 	let filteredAudios = [...processedAudios]
-	let isDragging = false // Para cambiar el estilo cuando se arrastra
-	let selectedFile = null // Archivo seleccionado
+	let isDragging = false
+	let selectedFile = null
+	let isLoading = false
+	let isSubmitted = false // Variable para controlar el estado de submit
+	let showAlertDialog = false // Controlar la visibilidad del AlertDialog
 
-	// Mantener la lista filtrada
 	$: filteredAudios = processedAudios.filter((audio) =>
 		audio.name.toLowerCase().includes(searchTerm.toLowerCase())
 	)
 
-	let dropzoneInput // Referencia al input de archivo
+	let dropzoneInput
 
-	// Evento de enviar el formulario
 	const handleSubmit = (e) => {
 		e.preventDefault()
+		isLoading = true
 		if (selectedFile) {
-			const newAudioId = `audio-${Date.now()}`
-			processedAudios = [
-				...processedAudios,
-				{ id: newAudioId, status: 'processing', name: selectedFile.name }
-			]
-			selectedFile = null // Resetear el archivo cargado después de enviar el formulario
+			setTimeout(() => {
+				const newAudioId = `audio-${Date.now()}`
+				processedAudios = [
+					...processedAudios,
+					{ id: newAudioId, status: 'processing', name: selectedFile.name }
+				]
+				selectedFile = null
+				isLoading = false
+				isSubmitted = true // Actualizar el estado cuando se complete el submit
+				showAlertDialog = true // Mostrar el AlertDialog automáticamente
+			}, 2000)
 		}
 	}
-
-	// Proceso para manejar la nueva carga de audio
-	const handleNewProcess = () => {
-		console.log('Starting new audio process')
-	}
-
-	// Para manejar la selección de archivos
 	const handleFiles = (files) => {
 		if (files.length > 0) {
-			// Limitar a un solo archivo a la vez
 			selectedFile = files[0]
 		}
 	}
 
-	// Eliminar el archivo seleccionado
 	const removeFile = (e) => {
-		e.stopPropagation() // Detener la propagación del evento para que no abra el input de archivo
+		e.stopPropagation()
 		selectedFile = null
-		dropzoneInput.value = '' // Resetear el valor del input
+		dropzoneInput.value = ''
 	}
 
-	// Al hacer clic en el área de la dropzone
 	const handleClickDropzone = () => {
-		dropzoneInput.click() // Activa el input de archivo oculto
+		dropzoneInput.click()
 	}
 
-	// Evento de dragover para permitir el drop
 	const handleDragOver = (event) => {
 		event.preventDefault()
 		isDragging = true
 	}
 
-	// Evento de salida del drag
 	const handleDragLeave = () => {
 		isDragging = false
 	}
 
-	// Evento de drop para manejar los archivos arrastrados
 	const handleDrop = (event) => {
 		event.preventDefault()
 		isDragging = false
 		const files = event.dataTransfer.files
-		handleFiles(files) // Manejar archivos arrastrados
+		handleFiles(files)
+	}
+
+	// Función para cerrar el diálogo y permitir un nuevo proceso
+	const handleContinue = () => {
+		showAlertDialog = false // Cerrar el diálogo
+		isSubmitted = false // Reiniciar el proceso para permitir otro submit
 	}
 </script>
 
 <div class="flex-1 flex flex-col">
-	<!-- Content Area -->
 	<div class="flex-1 p-4 bg-zinc-900 overflow-y-auto">
 		<form class="space-y-6" on:submit={handleSubmit}>
 			<RadioGroup.Root bind:value={inputType} class="flex space-x-4">
-				<div class="flex items-center space-x-2">
+				<div class="flex items-center space-x-2 cursor-pointer">
 					<RadioGroup.Item value="file" id="file" />
-					<Label htmlFor="file">Upload Audio</Label>
+					<Upload class="w-5 h-5 text-gray-400 cursor-pointer" />
+					<Label for="file" class="cursor-pointer">Upload Audio</Label>
 				</div>
 				<div class="flex items-center space-x-2">
 					<RadioGroup.Item value="url" id="url" />
-					<Label htmlFor="url">Enter URL</Label>
+					<Link class="w-5 h-5 text-gray-400 cursor-pointer" />
+					<Label for="url" class="cursor-pointer">Enter URL</Label>
 				</div>
 			</RadioGroup.Root>
 
 			{#if inputType === 'file'}
-				<!-- Dropzone -->
 				<div
 					class="dropzone {isDragging ? 'dragging' : ''}"
 					on:click={handleClickDropzone}
@@ -110,7 +110,6 @@
 					on:drop={handleDrop}
 				>
 					{#if selectedFile}
-						<!-- Mostrar el archivo cargado -->
 						<div class="file-info">
 							<FileAudio class="w-6 h-6 text-gray-400" />
 							<p class="ml-2">{selectedFile.name}</p>
@@ -119,15 +118,12 @@
 							</Button>
 						</div>
 					{:else}
-						<!-- Mostrar la zona de arrastrar si no hay archivo -->
 						<Upload class="w-12 h-12 mb-4 text-gray-400" />
 						<p class="mb-2 text-sm text-gray-400">
 							<span class="font-semibold">Click to upload</span> or drag and drop
 						</p>
 						<p class="text-xs text-gray-400">MP3, WAV, or OGG (MAX. 10MB)</p>
 					{/if}
-
-					<!-- Input de archivo oculto -->
 					<input
 						type="file"
 						accept="audio/*"
@@ -138,23 +134,47 @@
 					/>
 				</div>
 			{:else}
-				<!-- Entrada de URL -->
 				<Input type="url" placeholder="Enter audio URL here" class="bg-zinc-800 border-gray-600" />
 			{/if}
 
-			<Button
-				type="submit"
-				class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-				disabled={!selectedFile}
-			>
-				Process Audio
-			</Button>
+			{#if !isSubmitted}
+				<Button
+					type="submit"
+					class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+					disabled={!selectedFile || isLoading}
+				>
+					{#if isLoading}
+						<span>Processing...</span>
+					{:else}
+						<span>Process Audio</span>
+					{/if}
+				</Button>
+			{/if}
 		</form>
+
+		{#if showAlertDialog}
+			<!-- Mostrar AlertDialog automáticamente cuando showAlertDialog es true -->
+			<AlertDialog.Root open={showAlertDialog}>
+				<AlertDialog.Content>
+					<AlertDialog.Header>
+						<CheckCircle class="w-16 h-16 text-green-500 mx-auto" />
+						<AlertDialog.Title class="text-xl font-semibold text-center"
+							>Audio Submitted Successfully!</AlertDialog.Title
+						>
+						<AlertDialog.Description class="text-center text-gray-400"
+							>Audio Submitted Successfully!</AlertDialog.Description
+						>
+					</AlertDialog.Header>
+					<AlertDialog.Footer>
+						<AlertDialog.Action on:click={handleContinue}>Continue</AlertDialog.Action>
+					</AlertDialog.Footer>
+				</AlertDialog.Content>
+			</AlertDialog.Root>
+		{/if}
 	</div>
 </div>
 
 <style>
-	/* Estilos propios del componente que en Svelte se aplican de manera aislada al componente */
 	.dropzone {
 		display: flex;
 		flex-direction: column;
@@ -173,7 +193,6 @@
 		background-color: #333;
 	}
 
-	/* Estilo cuando está arrastrando archivos */
 	.dragging {
 		background-color: #444;
 	}

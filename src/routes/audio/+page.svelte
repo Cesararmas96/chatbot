@@ -162,7 +162,7 @@
 							>Audio Submitted Successfully!</AlertDialog.Title
 						>
 						<AlertDialog.Description class="text-center text-gray-400"
-							>Audio Submitted Successfully!</AlertDialog.Description
+							>Your audio has been sent for processing.</AlertDialog.Description
 						>
 					</AlertDialog.Header>
 					<AlertDialog.Footer>

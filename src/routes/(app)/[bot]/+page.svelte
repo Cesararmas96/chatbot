@@ -97,20 +97,23 @@
 		query = event.detail.query
 		chatInputRef.submitForm()
 	}
+
+	shared = Boolean($page.url.searchParams.get('shared'))
 </script>
 
-<div class="sm:ml-64">
+<div class:sm:ml-64={!shared}>
 	<Header />
 	<div class="flex flex-row h-full overflow-x-hidden">
 		{#if !shared}
 			<SidebarBot {chatbotid} {user_id} />
 		{/if}
 		<div class="flex flex-col h-screen flex-auto p-2 w-20">
-			<div class="flex justify-end px-2 py-2">
-				<!-- <SelectBots {bots} /> -->
-				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900 " />
-			</div>
-
+			{#if !shared}
+				<div class="flex justify-end px-2 py-2">
+					<!-- <SelectBots {bots} /> -->
+					<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900 " />
+				</div>
+			{/if}
 			<div
 				class="flex flex-auto overflow-x-auto rounded-2xl bg-gray-100 chatbox dark:bg-gray-800 ml-2 mr-2"
 			>

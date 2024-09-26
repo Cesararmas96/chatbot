@@ -155,10 +155,10 @@
 
 		<Separator class="my-4" />
 
-		<div class="mt-auto">
+		<div class="mt-auto hover:bg-zinc-400 rounded-lg">
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
-					<div class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-800 p-2 rounded-lg">
+					<div class="flex items-center space-x-2 cursor-pointer p-2">
 						<Avatar.Root>
 							<Avatar.Fallback class="bg-pink-600 text-white"
 								>{session.first_name[0] + session.last_name[0]}</Avatar.Fallback
@@ -166,7 +166,7 @@
 						</Avatar.Root>
 						<div class="flex-grow">
 							<p class="text-sm font-medium text-left">{session.first_name} {session.last_name}</p>
-							<p class="text-xs text-gray-400">{session.email}</p>
+							<p class="text-xs text-gray-700">{session.email}</p>
 						</div>
 					</div>
 				</DropdownMenu.Trigger>

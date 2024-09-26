@@ -40,7 +40,30 @@ export const handle: Handle = async ({ event, resolve }) => {
       );
       if (rawSession.status !== 401) session = await rawSession.json();
       apikey = undefined;
-      console.log(session)
+
+      const length = Math.ceil(token.length / 3)
+      const token1 = encrypt(token.substring(0, length))
+      const token2 = encrypt(token.substring(length, 2 * length))
+      const token3 = encrypt(token.substring(2 * length))
+
+      event.cookies.set('_session1', token1, {
+        path: '/',
+        httpOnly: true,
+        secure: true, //import.meta.env.ENV === 'production',
+        maxAge: 60 * 60 * 24 * 30
+      })
+      event.cookies.set('_session2', token2, {
+        path: '/',
+        httpOnly: true,
+        secure: true, //import.meta.env.ENV === 'production',
+        maxAge: 60 * 60 * 24 * 30
+      })
+      event.cookies.set('_session3', token3, {
+        path: '/',
+        httpOnly: true,
+        secure: true, //import.meta.env.ENV === 'production',
+        maxAge: 60 * 60 * 24 * 30
+      })
     }
 
     if (!session && apikey) {

@@ -49,18 +49,21 @@ export const handle: Handle = async ({ event, resolve }) => {
       event.cookies.set('_session1', token1, {
         path: '/',
         httpOnly: true,
+        sameSite: 'none',
         secure: true, //import.meta.env.ENV === 'production',
         maxAge: 60 * 60 * 24 * 30
       })
       event.cookies.set('_session2', token2, {
         path: '/',
         httpOnly: true,
+        sameSite: 'none',
         secure: true, //import.meta.env.ENV === 'production',
         maxAge: 60 * 60 * 24 * 30
       })
       event.cookies.set('_session3', token3, {
         path: '/',
         httpOnly: true,
+        sameSite: 'none',
         secure: true, //import.meta.env.ENV === 'production',
         maxAge: 60 * 60 * 24 * 30
       })

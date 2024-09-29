@@ -10,6 +10,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
 	import { Upload, FileAudio, Plus, LogOut, Settings, Search } from 'lucide-svelte'
 	import { enhance } from '$app/forms'
+	import { getApiData } from '$lib/services/getData'
 
 	import { storeUser } from '$lib/stores'
 	export let data: any
@@ -19,29 +20,59 @@
 
 	let inputType = 'file'
 	let searchTerm = ''
-	let processedAudios = [
-		{ id: 'audio-1', status: 'completed', name: 'Interview_001.mp3' },
-		{ id: 'audio-2', status: 'processing', name: 'Lecture_002.wav' },
-		{ id: 'audio-3', status: 'failed', name: 'Podcast_003.ogg' },
-		{ id: 'audio-4', status: 'completed', name: 'Meeting_004.mp3' },
-		{ id: 'audio-5', status: 'processing', name: 'Voicenote_005.wav' }
-	]
+	let jobsList = []
+	let isLoading = false
+	const fetchJobs = async () => {
+		isLoading = true // Set loading state during data fetching
+		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
 
-	let filteredAudios = [...processedAudios]
+		try {
+			const fetchedJobs = await getApiData(
+				apiUrl,
+				'GET',
+				{},
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${session.token}`,
+						'Content-Type': 'application/json'
+					}
+				},
+				null,
+				true
+			)
+
+			// Sorting bots by name
+			jobsList = fetchedJobs.jobs
+			console.log(jobsList)
+		} catch (error) {
+			console.error('There was a problem with the fetch operation:', error)
+		} finally {
+			isLoading = false // Reset loading state after fetching
+		}
+	}
+
+	let filteredAudios = [...jobsList]
 
 	// Reactividad en Svelte, se recalcula automáticamente
-	$: filteredAudios = processedAudios.filter((audio) =>
-		audio.name.toLowerCase().includes(searchTerm.toLowerCase())
+	$: filteredAudios = jobsList.filter((jobs) =>
+		jobs.video_path.toLowerCase().includes(searchTerm.toLowerCase())
 	)
 
-	const handleSubmit = (e) => {
-		e.preventDefault()
-		const newAudioId = `audio-${Date.now()}`
-		processedAudios = [
-			...processedAudios,
-			{ id: newAudioId, status: 'processing', name: `NewAudio_${processedAudios.length + 1}.mp3` }
-		]
-	}
+	console.log(filteredAudios)
+
+	// const handleSubmit = (e) => {
+	// 	e.preventDefault()
+	// 	const newAudioId = `audio-${Date.now()}`
+	// 	jobs = [
+	// 		...jobs,
+	// 		{ id: newAudioId, status: 'processing', name: `NewAudio_${processedAudios.length + 1}.mp3` }
+	// 	]
+	// }
+
+	onMount(() => {
+		fetchJobs()
+	})
 </script>
 
 <div class="flex flex-col md:flex-row h-screen bg-black text-white">
@@ -51,7 +82,7 @@
 			<div class="flex items-center">
 				<a href="/audio" class="flex justify-center items-center">
 					<img src="/troc.png" alt="" class="w-12 h-12" />
-					<h1 class="text-xl font-bold ml-2">Audio</h1>
+					<h1 class="text-xl font-bold ml-2">Processed Video</h1>
 				</a>
 			</div>
 		</div>
@@ -60,7 +91,7 @@
 			href="/audio"
 			class="mb-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
 		>
-			<Plus class="h-4 w-4 mr-2" /> New Processed Audio
+			<Plus class="h-4 w-4 mr-2" /> New Processed Video
 		</Button>
 
 		<div class="relative mb-4">
@@ -75,22 +106,22 @@
 
 		<nav class="space-y-6 flex-grow overflow-hidden">
 			<div>
-				<h2 class="text-sm font-semibold mb-2">Processed Audios</h2>
+				<h2 class="text-sm font-semibold mb-2">List Processed Videos</h2>
 				<ScrollArea
 					class="h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800"
 				>
-					{#each filteredAudios as audio (audio.id)}
-						<a href="/audio/{audio.id}">
+					{#each filteredAudios as audio}
+						<a href="/audio/{audio.task_uid}">
 							<div class="flex items-center p-2 hover:bg-zinc-800 cursor-pointer">
 								<div
-									class="w-2 h-2 rounded-full mr-2 {audio.status === 'completed'
+									class="w-2 h-2 rounded-full mr-2 {audio.status === 'done'
 										? 'bg-green-400'
 										: audio.status === 'processing'
 											? 'bg-yellow-400'
 											: 'bg-red-400'}"
 								></div>
 								<FileAudio class="h-4 w-4 mr-2 text-gray-400" />
-								<span class="text-sm truncate">{audio.name}</span>
+								<span class="text-sm truncate">{audio.video_path.replace('/tmp/', '')}</span>
 							</div>
 						</a>
 					{/each}

@@ -1,33 +1,22 @@
-<script>
+<script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Input } from '$lib/components/ui/input/index.js'
 	import { Label } from '$lib/components/ui/label/index.js'
 	import * as RadioGroup from '$lib/components/ui/radio-group/index.js'
 	import { Upload, Trash, FileAudio, Link, CheckCircle } from 'lucide-svelte'
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { putData } from '$lib/services/getData.js'
 
 	let inputType = 'file'
 	let searchTerm = ''
-	let processedAudios = [
-		{ id: 'audio-1', status: 'completed', name: 'Interview_001.mp3' },
-		{ id: 'audio-2', status: 'processing', name: 'Lecture_002.wav' },
-		{ id: 'audio-3', status: 'failed', name: 'Podcast_003.ogg' },
-		{ id: 'audio-4', status: 'completed', name: 'Meeting_004.mp3' },
-		{ id: 'audio-5', status: 'processing', name: 'Voicenote_005.wav' }
-	]
-
-	let filteredAudios = [...processedAudios]
 	let isDragging = false
 	let selectedFile = null
 	let isLoading = false
 	let isSubmitted = false // Variable para controlar el estado de submit
 	let showAlertDialog = false // Controlar la visibilidad del AlertDialog
-
-	$: filteredAudios = processedAudios.filter((audio) =>
-		audio.name.toLowerCase().includes(searchTerm.toLowerCase())
-	)
-
 	let dropzoneInput
+	let videoUrl = '' // Para almacenar el URL del video
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
@@ -35,10 +24,6 @@
 		if (selectedFile) {
 			setTimeout(() => {
 				const newAudioId = `audio-${Date.now()}`
-				processedAudios = [
-					...processedAudios,
-					{ id: newAudioId, status: 'processing', name: selectedFile.name }
-				]
 				selectedFile = null
 				isLoading = false
 				isSubmitted = true // Actualizar el estado cuando se complete el submit
@@ -46,6 +31,51 @@
 			}, 2000)
 		}
 	}
+
+	const videoSubmit = async (event) => {
+		event.preventDefault()
+		const payload = {
+			translate: 'es' // Agregar el campo de traducción
+		}
+
+		if (inputType === 'file' && selectedFile) {
+			const formData = new FormData()
+			formData.append('file', selectedFile)
+			formData.append('translate', 'es')
+			payload.file = selectedFile // Asegúrate de que se incluya en el payload
+
+			try {
+				const url = `${import.meta.env.VITE_API_URL}/support/api/v1/upload_videos`
+				const setReport = await putData(url, formData, true) // true indica que es multipart/form-data
+				if (setReport) {
+					sendSuccessNotification('Video file submitted successfully')
+				} else {
+					sendErrorNotification('Failed to submit video file')
+				}
+			} catch (error) {
+				console.error(error)
+				sendErrorNotification('An error occurred while submitting the video file')
+			}
+		} else if (inputType === 'url' && videoUrl) {
+			payload.video_url = videoUrl // Asignar el URL al payload
+
+			try {
+				const url = `${import.meta.env.VITE_API_URL}/support/api/v1/upload_videos`
+				const setReport = await putData(url, payload)
+				if (setReport) {
+					sendSuccessNotification('Video URL submitted successfully')
+				} else {
+					sendErrorNotification('Failed to submit video URL')
+				}
+			} catch (error) {
+				console.error(error)
+				sendErrorNotification('An error occurred while submitting the video URL')
+			}
+		} else {
+			sendErrorNotification('No valid input selected.')
+		}
+	}
+
 	const handleFiles = (files) => {
 		if (files.length > 0) {
 			selectedFile = files[0]
@@ -87,12 +117,12 @@
 
 <div class="flex-1 flex flex-col">
 	<div class="flex-1 p-4 bg-zinc-900 overflow-y-auto">
-		<form class="space-y-6" on:submit={handleSubmit}>
+		<form class="space-y-6" on:submit={videoSubmit}>
 			<RadioGroup.Root bind:value={inputType} class="flex space-x-4">
 				<div class="flex items-center space-x-2 cursor-pointer">
 					<RadioGroup.Item value="file" id="file" />
 					<Upload class="w-5 h-5 text-gray-400 cursor-pointer" />
-					<Label for="file" class="cursor-pointer">Upload Audio</Label>
+					<Label for="file" class="cursor-pointer">Upload Video</Label>
 				</div>
 				<div class="flex items-center space-x-2">
 					<RadioGroup.Item value="url" id="url" />
@@ -100,7 +130,6 @@
 					<Label for="url" class="cursor-pointer">Enter URL</Label>
 				</div>
 			</RadioGroup.Root>
-
 			{#if inputType === 'file'}
 				<div
 					class="dropzone {isDragging ? 'dragging' : ''}"
@@ -122,11 +151,11 @@
 						<p class="mb-2 text-sm text-gray-400">
 							<span class="font-semibold">Click to upload</span> or drag and drop
 						</p>
-						<p class="text-xs text-gray-400">MP3, WAV, or OGG (MAX. 10MB)</p>
+						<p class="text-xs text-gray-400">MP4 or AVI (MAX. 500MB)</p>
 					{/if}
 					<input
 						type="file"
-						accept="audio/*"
+						accept="video/*"
 						bind:this={dropzoneInput}
 						class="hidden"
 						on:change={(e) => handleFiles(e.target.files)}
@@ -134,19 +163,26 @@
 					/>
 				</div>
 			{:else}
-				<Input type="url" placeholder="Enter audio URL here" class="bg-zinc-800 border-gray-600" />
+				<Input
+					type="url"
+					placeholder="Enter Video URL here"
+					class="bg-zinc-800 border-gray-600"
+					bind:value={videoUrl}
+				/>
 			{/if}
 
 			{#if !isSubmitted}
 				<Button
 					type="submit"
 					class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-					disabled={!selectedFile || isLoading}
+					disabled={(!selectedFile && inputType === 'file') ||
+						(inputType === 'url' && !videoUrl) ||
+						isLoading}
 				>
 					{#if isLoading}
 						<span>Processing...</span>
 					{:else}
-						<span>Process Audio</span>
+						<span>Process Video</span>
 					{/if}
 				</Button>
 			{/if}

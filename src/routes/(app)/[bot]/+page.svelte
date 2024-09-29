@@ -12,11 +12,11 @@
 	import { fetchChatData } from '$lib/services/chatService'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { DarkMode } from 'flowbite-svelte'
-	import SelectBots from '$lib/components/chat/SelectBots.svelte'
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import Header from '$lib/components/chat/Header.svelte'
 	import WelcomeChat from '$lib/components/chat/WelcomeChat.svelte'
 	import { db } from '$lib/db'
+	import { sharedBot } from '$lib/stores/preferences.js'
 
 	export let data
 
@@ -32,12 +32,15 @@
 	let messages: any[] = []
 	let query = ''
 	let bot = ''
-	let shared = false
+	let shared = $page.url.searchParams.get('shared') === 'true'
 	let showSettings = false
 	let chatInputRef: any
 	let uuid = ''
 	let user_id = user.user_id
 	let chatbotId
+
+	sharedBot.set(shared)
+
 	onMount(() => {
 		bot = $page.params.bot
 		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
@@ -97,8 +100,6 @@
 		query = event.detail.query
 		chatInputRef.submitForm()
 	}
-
-	shared = Boolean($page.url.searchParams.get('shared'))
 </script>
 
 <div class:sm:ml-64={!shared}>

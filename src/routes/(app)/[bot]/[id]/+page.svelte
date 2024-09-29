@@ -13,6 +13,7 @@
 	import { DarkMode } from 'flowbite-svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { page } from '$app/stores'
+	import { sharedBot } from '$lib/stores/preferences.js'
 
 	export let data
 	let isLoading = false
@@ -111,14 +112,20 @@
 </script>
 
 <div class="sm:ml-64">
-	<Header />
+	{#if !$sharedBot}
+		<Header />
+	{/if}
 	<div class="flex flex-row h-full overflow-x-hidden">
-		<SidebarBot {chatbotid} {user_id} />
+		{#if !$sharedBot}
+			<SidebarBot {chatbotid} {user_id} />
+		{/if}
 
 		<div class="flex flex-col h-screen flex-auto p-2 w-20">
-			<div class="flex justify-end px-2 py-2">
-				<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
-			</div>
+			{#if !$sharedBot}
+				<div class="flex justify-end px-2 py-2">
+					<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
+				</div>
+			{/if}
 
 			<ContainerChatBox {isLoading} {messages} {chatbotId} {good} {bad} {handleRegenerate} />
 			<ChatInput bind:query on:submit={handleSubmit} bind:this={chatInputRef} {isLoading} />

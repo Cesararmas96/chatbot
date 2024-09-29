@@ -101,7 +101,13 @@
 			isLoading = false
 		}
 	}
-
+	// Reactividad: Detectar cambios en el ID de la URL
+	$: if (audioId) {
+		// Reiniciar el estado cuando cambie el ID
+		isLoading = true
+		errorMessage = ''
+		fetchAudioData() // Volver a cargar los datos con el nuevo ID
+	}
 	// Llamar a la función cuando el componente se monte
 	onMount(() => {
 		fetchAudioData()

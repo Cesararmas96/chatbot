@@ -8,7 +8,7 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
 	import * as Avatar from '$lib/components/ui/avatar/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
-	import { Upload, FileAudio, Plus, LogOut, Settings, Search } from 'lucide-svelte'
+	import { Upload, FileAudio, Plus, LogOut, Settings, Search, Loader } from 'lucide-svelte'
 	import { enhance } from '$app/forms'
 	import { getApiData } from '$lib/services/getData'
 
@@ -61,15 +61,6 @@
 
 	console.log(filteredAudios)
 
-	// const handleSubmit = (e) => {
-	// 	e.preventDefault()
-	// 	const newAudioId = `audio-${Date.now()}`
-	// 	jobs = [
-	// 		...jobs,
-	// 		{ id: newAudioId, status: 'processing', name: `NewAudio_${processedAudios.length + 1}.mp3` }
-	// 	]
-	// }
-
 	onMount(() => {
 		fetchJobs()
 	})
@@ -108,23 +99,33 @@
 			<div>
 				<h2 class="text-sm font-semibold mb-2">List Processed Videos</h2>
 				<ScrollArea
-					class="h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800"
+					class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800"
 				>
-					{#each filteredAudios as audio}
-						<a href="/audio/{audio.task_uid}">
-							<div class="flex items-center p-2 hover:bg-zinc-800 cursor-pointer">
-								<div
-									class="w-2 h-2 rounded-full mr-2 {audio.status === 'done'
-										? 'bg-green-400'
-										: audio.status === 'processing'
-											? 'bg-yellow-400'
-											: 'bg-red-400'}"
-								></div>
-								<FileAudio class="h-4 w-4 mr-2 text-gray-400" />
-								<span class="text-sm truncate">{audio.video_path.replace('/tmp/', '')}</span>
-							</div>
-						</a>
-					{/each}
+					{#if isLoading}
+						<div class="absolute inset-0 flex justify-center items-center">
+							<Loader class="animate-spin text-white h-8 w-8" />
+						</div>
+					{:else if filteredAudios.length === 0}
+						<p class="absolute inset-0 flex justify-center items-center text-center text-gray-400">
+							No videos found.
+						</p>
+					{:else}
+						{#each filteredAudios as audio}
+							<a href="/audio/{audio.task_uid}">
+								<div class="flex items-center p-2 hover:bg-zinc-800 cursor-pointer">
+									<div
+										class="w-2 h-2 rounded-full mr-2 {audio.status === 'done'
+											? 'bg-green-400'
+											: audio.status === 'processing'
+												? 'bg-yellow-400'
+												: 'bg-red-400'}"
+									></div>
+									<FileAudio class="h-4 w-4 mr-2 text-gray-400" />
+									<span class="text-sm truncate">{audio.video_path.replace('/tmp/', '')}</span>
+								</div>
+							</a>
+						{/each}
+					{/if}
 				</ScrollArea>
 			</div>
 		</nav>

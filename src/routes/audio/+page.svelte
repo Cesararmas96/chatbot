@@ -96,8 +96,32 @@
 	}
 
 	// Función para manejar archivos seleccionados
+	// Función para manejar archivos seleccionados y validar
 	const handleFiles = (files: FileList) => {
-		selectedFile = files.length > 0 ? files[0] : null
+		if (files.length > 0) {
+			const file = files[0]
+
+			// Validar la extensión (MP4 y AVI)
+			const validExtensions = ['video/mp4', 'video/x-msvideo']
+			if (!validExtensions.includes(file.type)) {
+				sendErrorNotification('Only MP4 or AVI files are allowed.')
+				selectedFile = null
+				return
+			}
+
+			// Validar el tamaño del archivo (máximo 500MB)
+			const maxSizeInBytes = 500 * 1024 * 1024 // 500MB
+			if (file.size > maxSizeInBytes) {
+				sendErrorNotification('File size must be less than 500MB.')
+				selectedFile = null
+				return
+			}
+
+			// Si pasa las validaciones, asignar el archivo
+			selectedFile = file
+		} else {
+			selectedFile = null
+		}
 	}
 
 	// Función para manejar el drag-and-drop
@@ -164,7 +188,7 @@
 					{/if}
 					<input
 						type="file"
-						accept="video/*"
+						accept="video/mp4,video/x-msvideo"
 						bind:this={dropzoneInput}
 						class="hidden"
 						on:change={(e) => handleFiles(e.target.files)}

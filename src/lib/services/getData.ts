@@ -240,3 +240,29 @@ export async function deleteData(
   return { ...response };
 }
 
+export async function formData(url: string, payload: Record<string, any> = {}, method = 'PUT') {
+  const headers: Record<string, any> = getAuthHeader()
+ 
+  const formData = new FormData()
+ 
+  for (const key in payload) {
+   formData.append(key, payload[key])
+  }
+ 
+  try {
+   const response = await fetch(getQuerySlug(url), {
+    method,
+    headers: new Headers(headers),
+    body: formData
+   })
+ 
+   if (response.ok) {
+    return { ok: true, message: 'File uploaded successfully' }
+   } else {
+    const err = await response.json()
+    return { ok: false, message: err.message || 'There was an error uploading the file' }
+   }
+  } catch (error) {
+   return { ok: false, message: 'There was an error uploading the file' }
+  }
+ }

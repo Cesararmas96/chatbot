@@ -8,7 +8,7 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
 	import * as Avatar from '$lib/components/ui/avatar/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
-	import { Upload, FileAudio, Plus, LogOut, Settings, Search, Loader } from 'lucide-svelte'
+	import { Upload, FileAudio, Plus, LogOut, Home, Search, Loader } from 'lucide-svelte'
 	import { enhance } from '$app/forms'
 	import { getApiData } from '$lib/services/getData'
 
@@ -121,7 +121,13 @@
 												: 'bg-red-400'}"
 									></div>
 									<FileAudio class="h-4 w-4 mr-2 text-gray-400" />
-									<span class="text-sm truncate">{audio.video_path.replace('/tmp/', '')}</span>
+									<span class="text-sm truncate">
+										{#if audio.video_path.replace('/tmp/', '').length > 23}
+											{audio.video_path.replace('/tmp/', '').slice(0, 23)}...
+										{:else}
+											{audio.video_path.replace('/tmp/', '')}
+										{/if}
+									</span>
 								</div>
 							</a>
 						{/each}
@@ -150,12 +156,12 @@
 
 				<DropdownMenu.Content class="w-56">
 					<DropdownMenu.Group>
-						<DropdownMenu.Item>
-							<Settings class="mr-2 h-4 w-4" />
-							<span>Settings</span>
+						<DropdownMenu.Item href="/bots" class="cursor-pointer">
+							<Home class="mr-2 h-4 w-4" />
+							<span>Home</span>
 						</DropdownMenu.Item>
 
-						<DropdownMenu.Item>
+						<DropdownMenu.Item class="cursor-pointer">
 							<LogOut class="mr-2 h-4 w-4" />
 							<form action="/logout" method="POST" use:enhance>
 								<button type="submit">

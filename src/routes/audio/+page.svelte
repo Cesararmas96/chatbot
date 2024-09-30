@@ -8,6 +8,12 @@
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { putData } from '$lib/services/getData.js'
 
+	import { storeUser } from '$lib/stores'
+	export let data: any
+
+	$storeUser = data.user
+	const session = data.user ? data.user : $storeUser
+
 	let inputType = 'file'
 	let isDragging = false
 	let selectedFile: File | null = null
@@ -16,7 +22,7 @@
 	let showAlertDialog = false
 	let dropzoneInput: HTMLInputElement | null = null
 	let videoUrl = ''
-
+	$: console.log(selectedFile)
 	// Función para manejar el submit del archivo o URL
 	const videoSubmit = async (event: Event) => {
 		event.preventDefault()
@@ -28,15 +34,17 @@
 
 		// Verificar si se está enviando un archivo o una URL
 		if (inputType === 'file' && selectedFile) {
-			const reader = new FileReader()
+			console.log(selectedFile)
+			payload['file'] = selectedFile
+			// const reader = new FileReader()
 
-			// Leer el archivo y enviar los datos como parte del payload
-			reader.onload = async () => {
-				payload.file = reader.result // Añadir el archivo leído al payload (en formato base64)
-				await submitData(payload) // Llamada a la función para enviar los datos
-			}
+			// // Leer el archivo y enviar los datos como parte del payload
+			// reader.onload = async () => {
+			// 	payload.file = reader.result // Añadir el archivo leído al payload (en formato base64)
+			await submitData(payload) // Llamada a la función para enviar los datos
+			// }
 
-			reader.readAsDataURL(selectedFile)
+			// reader.readAsDataURL(selectedFile)
 		} else if (inputType === 'url' && videoUrl) {
 			payload.video_url = videoUrl // Añadir la URL al payload
 			await submitData(payload) // Llamada a la función para enviar los datos
@@ -50,9 +58,24 @@
 	const submitData = async (payload: any) => {
 		const url = `${import.meta.env.VITE_API_URL}/api/v1/upload_videos`
 
+		const formData = new FormData()
+
+		for (const key in payload) {
+			if (payload.hasOwnProperty(key)) {
+				formData.append(key, payload[key])
+			}
+		}
+
 		try {
 			// Enviar los datos al backend usando putData
-			const setReport = await putData(url, payload)
+			console.log(payload)
+			const headers = new Headers({ authorization: `Bearer ${$storeUser?.token}` })
+
+			const setReport = await fetch(url, {
+				method: 'PUT',
+				headers,
+				body: formData
+			})
 
 			// Verificar la respuesta y mostrar notificaciones
 			if (setReport) {

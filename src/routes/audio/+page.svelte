@@ -56,7 +56,7 @@
 
 	// Función para enviar los datos usando putData
 	const submitData = async (payload: any) => {
-		const url = `${import.meta.env.VITE_API_URL}/api/v1/upload_videos`
+		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
 
 		const formData = new FormData()
 

@@ -6,7 +6,7 @@
 	import { Upload, Trash, FileAudio, Link, CheckCircle } from 'lucide-svelte'
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-	import { putData } from '$lib/services/getData.js'
+	import { putData, formData } from '$lib/services/getData.js'
 
 	import { storeUser } from '$lib/stores'
 	export let data: any
@@ -55,37 +55,65 @@
 	}
 
 	// Función para enviar los datos usando putData
+	// original
+	// const submitData = async (payload: any) => {
+	// 	const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
+
+	// 	const formData = new FormData()
+
+	// 	for (const key in payload) {
+	// 		if (payload.hasOwnProperty(key)) {
+	// 			formData.append(key, payload[key])
+	// 		}
+	// 	}
+
+	// 	try {
+	// 		// Enviar los datos al backend usando putData
+	// 		console.log(payload)
+	// 		const headers = new Headers({ authorization: `Bearer ${$storeUser?.token}` })
+
+	// 		const setReport = await fetch(url, {
+	// 			method: 'PUT',
+	// 			headers,
+	// 			body: formData
+	// 		})
+
+	// 		// Verificar la respuesta y mostrar notificaciones
+	// 		if (setReport) {
+	// 			sendSuccessNotification(
+	// 				`${inputType === 'file' ? 'Video file' : 'Video URL'} submitted successfully`
+	// 			)
+	// 			showAlertDialog = true
+	// 			isSubmitted = true
+	// 		} else {
+	// 			sendErrorNotification('Failed to submit')
+	// 		}
+	// 	} catch (error) {
+	// 		console.error(error)
+	// 		sendErrorNotification('An error occurred while submitting')
+	// 	} finally {
+	// 		isLoading = false
+	// 	}
+	// }
+
+	// Función para manejar archivos seleccionados
+
 	const submitData = async (payload: any) => {
 		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
 
-		const formData = new FormData()
-
-		for (const key in payload) {
-			if (payload.hasOwnProperty(key)) {
-				formData.append(key, payload[key])
-			}
-		}
-
 		try {
-			// Enviar los datos al backend usando putData
-			console.log(payload)
-			const headers = new Headers({ authorization: `Bearer ${$storeUser?.token}` })
-
-			const setReport = await fetch(url, {
-				method: 'PUT',
-				headers,
-				body: formData
-			})
+			// Usar la función formData en lugar de hacer fetch manualmente
+			const response = await formData(url, payload, 'PUT')
 
 			// Verificar la respuesta y mostrar notificaciones
-			if (setReport) {
+			if (response.ok) {
 				sendSuccessNotification(
 					`${inputType === 'file' ? 'Video file' : 'Video URL'} submitted successfully`
 				)
 				showAlertDialog = true
 				isSubmitted = true
 			} else {
-				sendErrorNotification('Failed to submit')
+				sendErrorNotification(response.message || 'Failed to submit')
 			}
 		} catch (error) {
 			console.error(error)
@@ -95,8 +123,6 @@
 		}
 	}
 
-	// Función para manejar archivos seleccionados
-	// Función para manejar archivos seleccionados y validar
 	const handleFiles = (files: FileList) => {
 		if (files.length > 0) {
 			const file = files[0]

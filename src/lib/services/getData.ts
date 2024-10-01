@@ -250,7 +250,7 @@ export async function formData(url: string, payload: Record<string, any> = {}, m
   }
  
   try {
-   const response = await fetch(getQuerySlug(url), {
+   const response = await fetch(url, {
     method,
     headers: new Headers(headers),
     body: formData

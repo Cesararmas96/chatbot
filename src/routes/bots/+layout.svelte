@@ -264,13 +264,13 @@
 									>
 										<div class="flex items-center space-x-2">
 											<FileAudio class="w-5 h-5" />
-											<span>Audio</span>
+											<span>Video</span>
 										</div>
 									</Accordion.Trigger>
 									<Accordion.Content>
 										<div class="pl-4 hover:bg-gray-200 cursor-pointer">
-											<a href="/audio" class="flex items-center hover:text-foreground p-2"
-												>Processed Audio</a
+											<a href="/video" class="flex items-center hover:text-foreground p-2"
+												>Processed video</a
 											>
 										</div>
 									</Accordion.Content>

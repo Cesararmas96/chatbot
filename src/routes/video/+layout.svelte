@@ -71,7 +71,7 @@
 	<div class="w-full md:w-64 bg-zinc-900 p-4 flex flex-col">
 		<div class="flex items-center justify-between mb-4">
 			<div class="flex items-center">
-				<a href="/audio" class="flex justify-center items-center">
+				<a href="/video" class="flex justify-center items-center">
 					<img src="/troc.png" alt="" class="w-12 h-12" />
 					<h1 class="text-xl font-bold ml-2">Processed Video</h1>
 				</a>
@@ -79,7 +79,7 @@
 		</div>
 
 		<Button
-			href="/audio"
+			href="/video"
 			class="mb-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
 		>
 			<Plus class="h-4 w-4 mr-2" /> New Processed Video
@@ -111,7 +111,7 @@
 						</p>
 					{:else}
 						{#each filteredAudios as audio}
-							<a href="/audio/{audio.task_uid}">
+							<a href="/video/{audio.task_uid}">
 								<div class="flex items-center p-2 hover:bg-zinc-800 cursor-pointer">
 									<div
 										class="w-2 h-2 rounded-full mr-2 {audio.status === 'done'

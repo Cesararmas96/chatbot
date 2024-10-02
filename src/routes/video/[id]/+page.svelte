@@ -249,7 +249,7 @@
 						and try again.
 					</p>
 					<div class="flex justify-center">
-						<a href="/audio">
+						<a href="/video">
 							<Button variant="outline">
 								<FileAudio class="w-4 h-4 mr-2" />
 								Back to Home

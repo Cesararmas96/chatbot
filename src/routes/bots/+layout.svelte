@@ -143,7 +143,7 @@
 						</Accordion.Trigger>
 						<Accordion.Content>
 							<div class="pl-4 hover:bg-gray-200 cursor-pointer">
-								<a href="/audio" class="flex items-center hover:text-foreground p-2"
+								<a href="/video" class="flex items-center hover:text-foreground p-2"
 									>Video Processed</a
 								>
 							</div>

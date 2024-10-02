@@ -258,7 +258,7 @@
 								</Accordion.Item>
 
 								<!-- Sección de Audio -->
-								<Accordion.Item value="audio">
+								<Accordion.Item value="video">
 									<Accordion.Trigger
 										class="p-4 flex justify-between items-center hover:bg-gray-300 hover:no-underline"
 									>

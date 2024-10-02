@@ -112,6 +112,11 @@
 				)
 				showAlertDialog = true
 				isSubmitted = true
+				selectedFile = null
+				videoUrl = ''
+				if (dropzoneInput) {
+					dropzoneInput.value = ''
+				}
 			} else {
 				sendErrorNotification(response.message || 'Failed to submit')
 			}

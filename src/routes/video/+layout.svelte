@@ -151,11 +151,13 @@
 							<a href="/video/{audio.task_uid}">
 								<div class="flex items-center p-2 hover:bg-zinc-800 cursor-pointer">
 									<div
-										class="w-2 h-2 rounded-full mr-2 {audio.status === 'done'
-											? 'bg-green-400'
-											: audio.status === 'processing'
-												? 'bg-yellow-400'
-												: 'bg-red-400'}"
+										class="w-2 h-2 rounded-full mr-2 {audio.error 
+											? 'bg-red-400' 
+											: audio.status === 'done'
+												? 'bg-green-400' 
+												: audio.status === 'processing' 
+													? 'bg-yellow-400' 
+													: 'bg-red-400'}"
 									></div>
 									<FileAudio class="h-4 w-4 mr-2 text-gray-400" />
 									<span class="text-sm truncate">

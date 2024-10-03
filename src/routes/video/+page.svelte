@@ -19,7 +19,7 @@
 	let selectedFile: File | null = null
 	let isLoading = false
 	let isSubmitted = false
-	let showAlertDialog = false
+	// let showAlertDialog = false
 	let dropzoneInput: HTMLInputElement | null = null
 	let videoUrl = ''
 	$: console.log(selectedFile)
@@ -110,7 +110,7 @@
 				sendSuccessNotification(
 					`${inputType === 'file' ? 'Video file' : 'Video URL'} submitted successfully`
 				)
-				showAlertDialog = true
+				// showAlertDialog = true
 				isSubmitted = true
 				selectedFile = null
 				videoUrl = ''
@@ -168,7 +168,7 @@
 	}
 	// Función para cerrar el diálogo
 	const handleContinue = () => {
-		showAlertDialog = false
+		// showAlertDialog = false
 		isSubmitted = false
 	}
 </script>
@@ -254,7 +254,7 @@
 		</form>
 
 		<!-- Diálogo de éxito -->
-		{#if showAlertDialog}
+		<!-- {#if showAlertDialog}
 			<AlertDialog.Root open={showAlertDialog}>
 				<AlertDialog.Content>
 					<AlertDialog.Header>
@@ -271,7 +271,7 @@
 					</AlertDialog.Footer>
 				</AlertDialog.Content>
 			</AlertDialog.Root>
-		{/if}
+		{/if} -->
 	</div>
 </div>
 

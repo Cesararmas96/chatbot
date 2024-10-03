@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { marked, options } from 'marked'
 	import { onMount } from 'svelte'
 	import { Input } from '$lib/components/ui/input/index.js'
 	import { Button } from '$lib/components/ui/button/index.js'
@@ -309,7 +310,8 @@
 					<Card.Title>Summary</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<p>{audioFile.summary}</p>
+					<p> {@html marked(audioFile.summary)}</p>
+
 					<div class="mt-4">
 						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.summary)}>
 							<Copy class="h-4 w-4 mr-1" /> Copy

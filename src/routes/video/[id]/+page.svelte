@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { marked, options } from 'marked'
-	import { onMount } from 'svelte'
-	import { Input } from '$lib/components/ui/input/index.js'
-	import { Button } from '$lib/components/ui/button/index.js'
-	import { Textarea } from '$lib/components/ui/textarea/index.js'
-	import * as Card from '$lib/components/ui/card'
-	import { Separator } from '$lib/components/ui/separator/index.js'
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
-	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar'
-	import { Badge } from '$lib/components/ui/badge'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
+	import { marked } from 'marked';
+	import { onMount } from 'svelte';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Textarea } from '$lib/components/ui/textarea/index.js';
+	import * as Card from '$lib/components/ui/card';
+	import { Separator } from '$lib/components/ui/separator/index.js';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
+	import { Badge } from '$lib/components/ui/badge';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import {
 		Download,
 		Copy,
@@ -20,22 +20,22 @@
 		FileIcon,
 		AlertCircle,
 		VideoIcon
-	} from 'lucide-svelte'
-	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-	import { getApiData } from '$lib/services/getData'
-	import { page } from '$app/stores'
+	} from 'lucide-svelte';
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast';
+	import { getApiData } from '$lib/services/getData';
+	import { page } from '$app/stores';
 
-	import { storeUser } from '$lib/stores'
-	import { Footer } from 'flowbite-svelte'
-	export let data: any
+	import { storeUser } from '$lib/stores';
+	import { Footer } from 'flowbite-svelte';
+	export let data: any;
 
-	$storeUser = data.user
-	const session = data.user ? data.user : $storeUser
+	$storeUser = data.user;
+	const session = data.user ? data.user : $storeUser;
 
 	let audioFile = {
 		status: '',
 		video_path: '',
-
+		error: '',
 		video: [
 			{
 				url: '',
@@ -49,18 +49,18 @@
 				summary_file: ''
 			}
 		]
-	}
+	};
 
-	let isLoading = true
-	let errorMessage = ''
+	let isLoading = true;
+	let errorMessage = '';
 
-	//Obtener el Id del parametro de la Url
-	$: audioId = $page.params.id
+	// Obtener el Id del parámetro de la URL
+	$: audioId = $page.params.id;
 
-	console.log(audioId)
+	console.log(audioId);
 
 	const fetchAudioData = async () => {
-		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos/${audioId}`
+		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos/${audioId}`;
 
 		try {
 			const fetchedAudio = await getApiData(
@@ -76,43 +76,42 @@
 				},
 				null,
 				true
-			)
+			);
 
-			console.log(fetchedAudio)
+			console.log(fetchedAudio);
 
 			if (fetchedAudio) {
 				// Asignar los datos recibidos al objeto audioFile
 				audioFile = {
-					name: fetchedAudio.video_path || 'Unknown Name',
-					summary: fetchedAudio.video[0].summary || 'No available',
-					vtt: fetchedAudio.video[0].vtt || 'No  available',
-					summary_file: fetchedAudio.video[0].summary_file || 'No  available',
-					transcript: fetchedAudio.video[0].transcript || 'No  available',
-					filename: fetchedAudio.video[0].filename || 'No  available',
-					status: fetchedAudio.status || 'pending'
-				}
+					...audioFile,
+					status: fetchedAudio.status || 'pending',
+					video_path: fetchedAudio.video_path || 'Unknown Name',
+					error: fetchedAudio.error || '',
+					video: fetchedAudio.video || []
+				};
 			} else {
 				// Si no se encuentra el audio, asignar un mensaje de error
-				errorMessage = `Audio with ID ${audioId} not found.`
+				errorMessage = `Audio with ID ${audioId} not found.`;
 			}
 		} catch (error) {
-			console.error('Error fetching audio:', error)
-			errorMessage = 'An error occurred while fetching the audio data.'
+			console.error('Error fetching audio:', error);
+			errorMessage = 'An error occurred while fetching the audio data.';
 		} finally {
-			isLoading = false
+			isLoading = false;
 		}
-	}
+	};
+
 	// Reactividad: Detectar cambios en el ID de la URL
 	$: if (audioId) {
-		// Reiniciar el estado cuando cambie el ID
-		isLoading = true
-		errorMessage = ''
-		fetchAudioData() // Volver a cargar los datos con el nuevo ID
+		isLoading = true;
+		errorMessage = '';
+		fetchAudioData(); // Volver a cargar los datos con el nuevo ID
 	}
+
 	// Llamar a la función cuando el componente se monte
 	onMount(() => {
-		fetchAudioData()
-	})
+		fetchAudioData();
+	});
 
 	const handleDownloadVTT = async (vttUrl) => {
 		try {
@@ -237,9 +236,7 @@
 		<div class="flex items-center justify-center h-[100%]">
 			<Card.Root class="w-full max-w-md">
 				<Card.Header>
-					<Card.Title
-						class="flex items-center justify-center text-2xl font-bold text-red-600 dark:text-red-400"
-					>
+					<Card.Title class="flex items-center justify-center text-2xl font-bold text-red-600 dark:text-red-400">
 						<AlertCircle class="w-8 h-8 mr-2" />
 						Audio Not Found
 					</Card.Title>
@@ -260,19 +257,50 @@
 				</Card.Content>
 			</Card.Root>
 		</div>
-	{:else}
+	{:else if audioFile.status === 'done' && audioFile.error}
+		<!-- Caso cuando el estado es 'done' pero hay un error -->
+		<div class="flex items-center justify-center h-[100%]">
+			<Card.Root class="w-full max-w-md">
+				<Card.Header>
+					<Card.Title class="flex items-center justify-center text-2xl font-bold text-red-600 dark:text-red-400">
+						<AlertCircle class="w-8 h-8 mr-2" />
+						Error Processing Audio
+					</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					<p class="text-center text-gray-600 dark:text-gray-300 mb-6">
+						There was an error processing the audio file: {audioFile.error}.
+					</p>
+				</Card.Content>
+			</Card.Root>
+		</div>
+	{:else if audioFile.status === 'processing'}
+		<!-- Caso cuando el estado es 'processing' -->
+		<div class="flex items-center justify-center h-[100%]">
+			<Card.Root class="w-full max-w-md">
+				<Card.Header>
+					<Card.Title class="flex items-center justify-center text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+						<AlertCircle class="w-8 h-8 mr-2" />
+						Audio is currently being processed
+					</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					<p class="text-center text-gray-600 dark:text-gray-300 mb-6">
+						The audio file is still being processed. Please check back later.
+					</p>
+				</Card.Content>
+			</Card.Root>
+		</div>
+	{:else if audioFile.status === 'done'}
+		<!-- Caso normal cuando el estado es 'done' y no hay errores -->
 		<div>
 			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-bold">{audioFile.name.replace('/tmp/', '')}</h2>
+				<h2 class="text-2xl font-bold">{audioFile.video_path.replace('/tmp/', '')}</h2>
 				<Badge
-					class={audioFile.status === 'done'
-						? 'bg-green-400'
-						: audioFile.status === 'processing'
-							? 'bg-yellow-400'
-							: 'bg-red-400'}
-					variant={audioFile.status === 'done' ? 'success' : 'warning'}
+					class="bg-green-400"
+					variant="success"
 				>
-					{audioFile.status === 'done' ? 'Done' : 'Processing'}
+					Done
 				</Badge>
 			</div>
 
@@ -281,23 +309,18 @@
 					<Card.Title>Source File</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<!-- Reproductor de video -->
-					{#if audioFile.filename.endsWith('.mp4') || audioFile.filename.endsWith('.avi')}
+					{#if audioFile.video[0]?.filename.endsWith('.mp4') || audioFile.video[0]?.filename.endsWith('.avi')}
 						<video controls class="w-[300px] rounded-md">
-							<source src={audioFile.filename} type="video/mp4" />
+							<source src={audioFile.video[0].filename} type="video/mp4" />
 							Sorry, your browser doesn't support embedded videos.
 						</video>
 					{/if}
 
 					<div class="mt-4">
-						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.filename)}>
+						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video[0].filename)}>
 							<Copy class="h-4 w-4 mr-1" /> Copy Link
 						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							on:click={() => handleDownloadFilename(audioFile.filename)}
-						>
+						<Button variant="outline" size="sm" on:click={() => handleDownloadFilename(audioFile.video[0].filename)}>
 							<VideoIcon class="mr-2 h-4 w-4" />
 							Download File
 						</Button>
@@ -310,16 +333,15 @@
 					<Card.Title>Summary</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<p> {@html marked(audioFile.summary)}</p>
-
+					<p>{@html marked(audioFile.video[0]?.summary)}</p>
 					<div class="mt-4">
-						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.summary)}>
+						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video[0]?.summary)}>
 							<Copy class="h-4 w-4 mr-1" /> Copy
 						</Button>
 						<Button
 							variant="outline"
 							size="sm"
-							on:click={() => handleDownloadSummaryFile(audioFile.summary_file)}
+							on:click={() => handleDownloadSummaryFile(audioFile.video[0]?.summary_file)}
 						>
 							<FileTextIcon class="mr-2 h-4 w-4" />
 							Download
@@ -328,23 +350,17 @@
 				</Card.Content>
 			</Card.Root>
 
-			<Card.Root class="mt-6 mb-6  border-gray-700">
+			<Card.Root class="mt-6 mb-6 border-gray-700">
 				<Card.Header>
 					<Card.Title>Download Options</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div class="flex flex-wrap gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							on:click={() => handleDownloadTranscript(audioFile.transcript)}
-						>
-							<FileTextIcon class="mr-2 h-4 w-4" />
-							Download Transcript
+						<Button variant="outline" size="sm" on:click={() => handleDownloadTranscript(audioFile.video[0]?.transcript)}>
+							<FileTextIcon class="mr-2 h-4 w-4" /> Download Transcript
 						</Button>
-						<Button variant="outline" size="sm" on:click={() => handleDownloadVTT(audioFile.vtt)}>
-							<FileIcon class="mr-2 h-4 w-4" />
-							Download VTT
+						<Button variant="outline" size="sm" on:click={() => handleDownloadVTT(audioFile.video[0]?.vtt)}>
+							<FileIcon class="mr-2 h-4 w-4" /> Download VTT
 						</Button>
 					</div>
 				</Card.Content>
@@ -354,7 +370,6 @@
 </div>
 
 <style>
-	/* Styling for the loader */
 	.loader {
 		border: 4px solid rgba(255, 255, 255, 0.3);
 		border-radius: 50%;

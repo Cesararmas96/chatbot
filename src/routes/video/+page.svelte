@@ -23,110 +23,60 @@
 	let dropzoneInput: HTMLInputElement | null = null
 	let videoUrl = ''
 	$: console.log(selectedFile)
+
+
 	// Función para manejar el submit del archivo o URL
 	const videoSubmit = async (event: Event) => {
-		event.preventDefault()
+		event.preventDefault();
+		isLoading = true;  // Deshabilitar el botón antes del envío
+		try {
+			// Crear el payload para el submit
+			const payload: any = {
+				translate: 'es' // Campo obligatorio para ambos tipos de envío
+			};
 
-		// Crear el payload para el submit
-		const payload: any = {
-			translate: 'es' // Campo obligatorio para ambos tipos de envío
+			// Verificar si se está enviando un archivo o una URL
+			if (inputType === 'file' && selectedFile) {
+				payload['file'] = selectedFile;
+				await submitData(payload); // Llamada a la función para enviar los datos
+			} else if (inputType === 'url' && videoUrl) {
+				payload.video_url = videoUrl; // Añadir la URL al payload
+				await submitData(payload); // Llamada a la función para enviar los datos
+			} else {
+				sendErrorNotification('No valid input selected.');
+			}
+		} catch (error) {
+			sendErrorNotification('An error occurred during submission');
+		} finally {
+			isLoading = false;  // Rehabilitar el botón después de finalizar el envío
 		}
+	};
 
-		// Verificar si se está enviando un archivo o una URL
-		if (inputType === 'file' && selectedFile) {
-			console.log(selectedFile)
-			payload['file'] = selectedFile
-			// const reader = new FileReader()
-
-			// // Leer el archivo y enviar los datos como parte del payload
-			// reader.onload = async () => {
-			// 	payload.file = reader.result // Añadir el archivo leído al payload (en formato base64)
-			await submitData(payload) // Llamada a la función para enviar los datos
-			// }
-
-			// reader.readAsDataURL(selectedFile)
-		} else if (inputType === 'url' && videoUrl) {
-			payload.video_url = videoUrl // Añadir la URL al payload
-			await submitData(payload) // Llamada a la función para enviar los datos
-		} else {
-			sendErrorNotification('No valid input selected.')
-			isLoading = false
-		}
-	}
-
-	// Función para enviar los datos usando putData
-	// original
-	// const submitData = async (payload: any) => {
-	// 	const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
-
-	// 	const formData = new FormData()
-
-	// 	for (const key in payload) {
-	// 		if (payload.hasOwnProperty(key)) {
-	// 			formData.append(key, payload[key])
-	// 		}
-	// 	}
-
-	// 	try {
-	// 		// Enviar los datos al backend usando putData
-	// 		console.log(payload)
-	// 		const headers = new Headers({ authorization: `Bearer ${$storeUser?.token}` })
-
-	// 		const setReport = await fetch(url, {
-	// 			method: 'PUT',
-	// 			headers,
-	// 			body: formData
-	// 		})
-
-	// 		// Verificar la respuesta y mostrar notificaciones
-	// 		if (setReport) {
-	// 			sendSuccessNotification(
-	// 				`${inputType === 'file' ? 'Video file' : 'Video URL'} submitted successfully`
-	// 			)
-	// 			showAlertDialog = true
-	// 			isSubmitted = true
-	// 		} else {
-	// 			sendErrorNotification('Failed to submit')
-	// 		}
-	// 	} catch (error) {
-	// 		console.error(error)
-	// 		sendErrorNotification('An error occurred while submitting')
-	// 	} finally {
-	// 		isLoading = false
-	// 	}
-	// }
 
 	// Función para manejar archivos seleccionados
 
 	const submitData = async (payload: any) => {
-		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
-
+		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`;
 		try {
 			// Usar la función formData en lugar de hacer fetch manualmente
-			const response = await formData(url, payload, 'PUT')
-
-			// Verificar la respuesta y mostrar notificaciones
+			const response = await formData(url, payload, 'PUT');
 			if (response.ok) {
 				sendSuccessNotification(
 					`${inputType === 'file' ? 'Video file' : 'Video URL'} submitted successfully`
-				)
-				// showAlertDialog = true
-				isSubmitted = true
-				selectedFile = null
-				videoUrl = ''
+				);
+				isSubmitted = true;
+				selectedFile = null;
+				videoUrl = '';
 				if (dropzoneInput) {
-					dropzoneInput.value = ''
+					dropzoneInput.value = '';
 				}
 			} else {
-				sendErrorNotification(response.message || 'Failed to submit')
+				sendErrorNotification(response.message || 'Failed to submit');
 			}
 		} catch (error) {
-			console.error(error)
-			sendErrorNotification('An error occurred while submitting')
-		} finally {
-			isLoading = false
+			sendErrorNotification('An error occurred while submitting');
 		}
-	}
+	};
 
 	const handleFiles = (files: FileList) => {
 		if (files.length > 0) {
@@ -236,21 +186,17 @@
 			{/if}
 
 			<!-- Botón de submit -->
-			{#if !isSubmitted}
-				<Button
-					type="submit"
-					class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-					disabled={isLoading ||
-						(inputType === 'file' && !selectedFile) ||
-						(inputType === 'url' && !videoUrl)}
-				>
-					{#if isLoading}
-						<span>Processing...</span>
-					{:else}
-						<span>Process Video</span>
-					{/if}
-				</Button>
+			<Button
+			type="submit"
+			class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+			disabled={isLoading || (inputType === 'file' && !selectedFile) || (inputType === 'url' && !videoUrl) || isSubmitted}
+		>
+			{#if isLoading}
+				<span>Processing...</span>
+			{:else}
+				<span>Process Video</span>
 			{/if}
+		</Button>
 		</form>
 
 		<!-- Diálogo de éxito -->

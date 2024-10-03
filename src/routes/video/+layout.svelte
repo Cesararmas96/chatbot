@@ -11,7 +11,7 @@
 	import { Upload, FileAudio, Plus, LogOut, Home, Search, Loader } from 'lucide-svelte'
 	import { enhance } from '$app/forms'
 	import { getApiData } from '$lib/services/getData'
-
+	import { jobsListStore } from '$lib/stores/jobsStore.ts';
 	import { storeUser } from '$lib/stores'
 	export let data: any
 
@@ -20,50 +20,87 @@
 
 	let inputType = 'file'
 	let searchTerm = ''
-	let jobsList = []
+	// let jobsList = []
 	let isLoading = false
-	const fetchJobs = async () => {
-		isLoading = true // Set loading state during data fetching
-		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
+	// const fetchJobs = async () => {
+	// 	isLoading = true // Set loading state during data fetching
+	// 	const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
 
+	// 	try {
+	// 		const fetchedJobs = await getApiData(
+	// 			apiUrl,
+	// 			'GET',
+	// 			{},
+	// 			{},
+	// 			{
+	// 				headers: {
+	// 					Authorization: `Bearer ${session.token}`,
+	// 					'Content-Type': 'application/json'
+	// 				}
+	// 			},
+	// 			null,
+	// 			true
+	// 		)
+
+	// 		// Sorting bots by name
+	// 		jobsList = fetchedJobs.jobs
+	// 		console.log(jobsList)
+	// 	} catch (error) {
+	// 		console.error('There was a problem with the fetch operation:', error)
+	// 	} finally {
+	// 		isLoading = false // Reset loading state after fetching
+	// 	}
+	// }
+
+	// Puedes suscribirte al store para obtener la lista de trabajos (videos)
+		let jobsList = [];
+
+		// Suscribirse al store para obtener la lista de trabajos (videos)
+	const unsubscribe = jobsListStore.subscribe((value) => {
+		jobsList = value;
+		filteredAudios = [...jobsList];
+	});
+
+	// let filteredAudios = [...jobsList]
+
+	// Reactividad en Svelte, se recalcula automáticamente
+	// $: filteredAudios = jobsList.filter((jobs) =>
+	// 	jobs.video_path.toLowerCase().includes(searchTerm.toLowerCase())
+	// )
+
+	$: filteredAudios = jobsList.filter((job) => job.video_path.toLowerCase().includes(searchTerm.toLowerCase()));
+
+
+	console.log(filteredAudios)
+
+	const fetchJobs = async () => {
+		isLoading = true;
 		try {
 			const fetchedJobs = await getApiData(
-				apiUrl,
+				`${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`,
 				'GET',
 				{},
 				{},
 				{
 					headers: {
 						Authorization: `Bearer ${session.token}`,
-						'Content-Type': 'application/json'
-					}
-				},
-				null,
-				true
-			)
-
-			// Sorting bots by name
-			jobsList = fetchedJobs.jobs
-			console.log(jobsList)
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+			jobsListStore.set(fetchedJobs.jobs); // Guardamos los trabajos en el store
 		} catch (error) {
-			console.error('There was a problem with the fetch operation:', error)
+			console.error('Error fetching jobs:', error);
 		} finally {
-			isLoading = false // Reset loading state after fetching
+			isLoading = false;
 		}
-	}
-
-	let filteredAudios = [...jobsList]
-
-	// Reactividad en Svelte, se recalcula automáticamente
-	$: filteredAudios = jobsList.filter((jobs) =>
-		jobs.video_path.toLowerCase().includes(searchTerm.toLowerCase())
-	)
-
-	console.log(filteredAudios)
+	};
 
 	onMount(() => {
 		fetchJobs()
 	})
+
+	
 </script>
 
 <div class="flex flex-col md:flex-row h-screen bg-black text-white">

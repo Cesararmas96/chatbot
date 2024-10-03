@@ -7,8 +7,10 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { putData, formData } from '$lib/services/getData.js'
-
+	import { jobsListStore } from '$lib/stores/jobsStore';
 	import { storeUser } from '$lib/stores'
+	import { getApiData } from '$lib/services/getData'
+
 	export let data: any
 
 	$storeUser = data.user
@@ -22,12 +24,15 @@
 	// let showAlertDialog = false
 	let dropzoneInput: HTMLInputElement | null = null
 	let videoUrl = ''
-	$: console.log(selectedFile)
+
+	$: console.log('Selected file:', selectedFile); // Log para verificar el archivo seleccionado
+	$: console.log('Is loading:', isLoading); // Log para verificar el estado de carga
 
 
 	// Función para manejar el submit del archivo o URL
 	const videoSubmit = async (event: Event) => {
 		event.preventDefault();
+		console.log('Submit triggered'); 
 		isLoading = true;  // Deshabilitar el botón antes del envío
 		try {
 			// Crear el payload para el submit
@@ -38,14 +43,17 @@
 			// Verificar si se está enviando un archivo o una URL
 			if (inputType === 'file' && selectedFile) {
 				payload['file'] = selectedFile;
+				console.log('Submitting file:', selectedFile);
 				await submitData(payload); // Llamada a la función para enviar los datos
 			} else if (inputType === 'url' && videoUrl) {
 				payload.video_url = videoUrl; // Añadir la URL al payload
+				console.log('Submitting URL:', videoUrl);
 				await submitData(payload); // Llamada a la función para enviar los datos
 			} else {
 				sendErrorNotification('No valid input selected.');
 			}
 		} catch (error) {
+			console.error('Error during submission:', error);
 			sendErrorNotification('An error occurred during submission');
 		} finally {
 			isLoading = false;  // Rehabilitar el botón después de finalizar el envío
@@ -55,26 +63,56 @@
 
 	// Función para manejar archivos seleccionados
 
+	// Función para manejar el submit de los datos
 	const submitData = async (payload: any) => {
 		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`;
 		try {
-			// Usar la función formData en lugar de hacer fetch manualmente
 			const response = await formData(url, payload, 'PUT');
 			if (response.ok) {
 				sendSuccessNotification(
 					`${inputType === 'file' ? 'Video file' : 'Video URL'} submitted successfully`
 				);
+
 				isSubmitted = true;
 				selectedFile = null;
 				videoUrl = '';
 				if (dropzoneInput) {
 					dropzoneInput.value = '';
 				}
+
+				console.log('Fetching updated jobs after submit'); // Log para verificar que se va a obtener la lista actualizada
+				await fetchJobs(); // Llamada a la función para obtener la lista de trabajos
 			} else {
+				console.error('Error in response:', response); // Verificar errores en la respuesta
 				sendErrorNotification(response.message || 'Failed to submit');
 			}
 		} catch (error) {
+			console.error('Error during data submission:', error);
 			sendErrorNotification('An error occurred while submitting');
+		}
+	};
+
+// Función para obtener trabajos actualizados
+const fetchJobs = async () => {
+		console.log('Fetching jobs'); // Verificar que la función se ejecuta
+		try {
+			const fetchedJobs = await getApiData(
+				`${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`,
+				'GET',
+				{},
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${session.token}`,
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+			console.log('Fetched jobs:', fetchedJobs.jobs); // Verificar que los trabajos se obtienen correctamente
+			jobsListStore.set(fetchedJobs.jobs); // Actualizar el store
+			console.log('Jobs list updated in store:', fetchedJobs.jobs); // Verificar que el store se actualiza
+		} catch (error) {
+			console.error('Error fetching jobs:', error); // Verificar si hay errores en la obtención de trabajos
 		}
 	};
 
@@ -199,25 +237,6 @@
 		</Button>
 		</form>
 
-		<!-- Diálogo de éxito -->
-		<!-- {#if showAlertDialog}
-			<AlertDialog.Root open={showAlertDialog}>
-				<AlertDialog.Content>
-					<AlertDialog.Header>
-						<CheckCircle class="w-16 h-16 text-green-500 mx-auto" />
-						<AlertDialog.Title class="text-xl font-semibold text-center"
-							>Video Submitted Successfully!</AlertDialog.Title
-						>
-						<AlertDialog.Description class="text-center text-gray-400"
-							>Your video has been sent for processing.</AlertDialog.Description
-						>
-					</AlertDialog.Header>
-					<AlertDialog.Footer>
-						<AlertDialog.Action on:click={handleContinue}>Continue</AlertDialog.Action>
-					</AlertDialog.Footer>
-				</AlertDialog.Content>
-			</AlertDialog.Root>
-		{/if} -->
 	</div>
 </div>
 

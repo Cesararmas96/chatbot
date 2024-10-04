@@ -19,7 +19,8 @@
 		FileAudio,
 		FileIcon,
 		AlertCircle,
-		VideoIcon
+		VideoIcon,
+		Headphones
 	} from 'lucide-svelte';
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast';
 	import { getApiData } from '$lib/services/getData';
@@ -36,25 +37,23 @@
 		status: '',
 		video_path: '',
 		error: '',
-		video: [
-			{
-				url: '',
-				source: '',
-				filename: '',
-				type: '',
-				source_type: '',
-				transcript: '',
-				summary: '',
-				vtt: '',
-				summary_file: ''
-			}
-		]
+		video: {
+			url: '',
+			source: '',
+			filename: '',
+			type: '',
+			source_type: '',
+			transcript: '',
+			summary: '',
+			vtt: '',
+			summary_file: '',
+			audio: ''
+		}
 	};
 
 	let isLoading = true;
 	let errorMessage = '';
 
-	// Obtener el Id del parámetro de la URL
 	$: audioId = $page.params.id;
 
 	console.log(audioId);
@@ -87,7 +86,7 @@
 					status: fetchedAudio.status || 'pending',
 					video_path: fetchedAudio.video_path || 'Unknown Name',
 					error: fetchedAudio.error || '',
-					video: fetchedAudio.video || []
+					video: fetchedAudio.video || {}
 				};
 			} else {
 				// Si no se encuentra el audio, asignar un mensaje de error
@@ -101,132 +100,145 @@
 		}
 	};
 
-	// Reactividad: Detectar cambios en el ID de la URL
 	$: if (audioId) {
 		isLoading = true;
 		errorMessage = '';
 		fetchAudioData(); // Volver a cargar los datos con el nuevo ID
 	}
 
-	// Llamar a la función cuando el componente se monte
 	onMount(() => {
 		fetchAudioData();
 	});
 
 	const handleDownloadVTT = async (vttUrl) => {
 		try {
-			const response = await fetch(vttUrl) // Hacer una solicitud fetch a la URL del VTT
-			if (!response.ok) {
-				throw new Error('Network response was not ok')
-			}
-			const blob = await response.blob() // Convertir la respuesta a un Blob (archivo)
-
-			// Crear un enlace de descarga temporal
-			const element = document.createElement('a')
-			const url = URL.createObjectURL(blob) // Crear una URL para el Blob
-			element.href = url
-			element.download = audioFile.name.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.vtt' // Nombre sugerido para el archivo descargado
-			document.body.appendChild(element)
-			element.click() // Simular el clic
-			document.body.removeChild(element) // Eliminar el enlace después de descargar
-
-			// Liberar la URL creada
-			URL.revokeObjectURL(url)
+			const response = await fetch(vttUrl);
+			if (!response.ok) throw new Error('Network response was not ok');
+			const blob = await response.blob();
+			const element = document.createElement('a');
+			const url = URL.createObjectURL(blob);
+			element.href = url;
+			element.download = audioFile.video.filename.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.vtt';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+			URL.revokeObjectURL(url);
 		} catch (error) {
-			console.error('Error downloading VTT file:', error)
-			sendErrorNotification('Failed to download VTT file.')
+			console.error('Error downloading VTT file:', error);
+			sendErrorNotification('Failed to download VTT file.');
 		}
-	}
+	};
 
 	const handleDownloadSummaryFile = async (summary_file) => {
 		try {
-			const response = await fetch(summary_file) // Hacer una solicitud fetch a la URL del VTT
-			if (!response.ok) {
-				throw new Error('Network response was not ok')
-			}
-			const blob = await response.blob() // Convertir la respuesta a un Blob (archivo)
-
-			// Crear un enlace de descarga temporal
-			const element = document.createElement('a')
-			const url = URL.createObjectURL(blob) // Crear una URL para el Blob
-			element.href = url
-			element.download =
-				audioFile.name.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.summary' // Nombre sugerido para el archivo descargado
-			document.body.appendChild(element)
-			element.click() // Simular el clic
-			document.body.removeChild(element) // Eliminar el enlace después de descargar
-
-			// Liberar la URL creada
-			URL.revokeObjectURL(url)
+			const response = await fetch(summary_file);
+			if (!response.ok) throw new Error('Network response was not ok');
+			const blob = await response.blob();
+			const element = document.createElement('a');
+			const url = URL.createObjectURL(blob);
+			element.href = url;
+			element.download = audioFile.video.filename.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.summary';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+			URL.revokeObjectURL(url);
 		} catch (error) {
-			console.error('Error downloading summary file:', error)
-			sendErrorNotification('Failed to download summary file.')
+			console.error('Error downloading summary file:', error);
+			sendErrorNotification('Failed to download summary file.');
 		}
-	}
+	};
 
 	const handleDownloadTranscript = async (transcript) => {
 		try {
-			const response = await fetch(transcript) // Hacer una solicitud fetch a la URL del VTT
-			if (!response.ok) {
-				throw new Error('Network response was not ok')
-			}
-			const blob = await response.blob() // Convertir la respuesta a un Blob (archivo)
-
-			// Crear un enlace de descarga temporal
-			const element = document.createElement('a')
-			const url = URL.createObjectURL(blob) // Crear una URL para el Blob
-			element.href = url
-			element.download = audioFile.name.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.txt' // Nombre sugerido para el archivo descargado
-			document.body.appendChild(element)
-			element.click() // Simular el clic
-			document.body.removeChild(element) // Eliminar el enlace después de descargar
-
-			// Liberar la URL creada
-			URL.revokeObjectURL(url)
+			const response = await fetch(transcript);
+			if (!response.ok) throw new Error('Network response was not ok');
+			const blob = await response.blob();
+			const element = document.createElement('a');
+			const url = URL.createObjectURL(blob);
+			element.href = url;
+			element.download = audioFile.video.filename.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.txt';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+			URL.revokeObjectURL(url);
 		} catch (error) {
-			console.error('Error downloading transcript file:', error)
-			sendErrorNotification('Failed to download transcript file.')
+			console.error('Error downloading transcript file:', error);
+			sendErrorNotification('Failed to download transcript file.');
 		}
-	}
+	};
 
 	const handleDownloadFilename = async (filename) => {
 		try {
-			const response = await fetch(filename) // Hacer una solicitud fetch a la URL del VTT
-			if (!response.ok) {
-				throw new Error('Network response was not ok')
-			}
-			const blob = await response.blob() // Convertir la respuesta a un Blob (archivo)
-
-			// Crear un enlace de descarga temporal
-			const element = document.createElement('a')
-			const url = URL.createObjectURL(blob) // Crear una URL para el Blob
-			element.href = url
-			element.download = audioFile.name.replace('/tmp/', '') // Nombre sugerido para el archivo descargado
-			document.body.appendChild(element)
-			element.click() // Simular el clic
-			document.body.removeChild(element) // Eliminar el enlace después de descargar
-
-			// Liberar la URL creada
-			URL.revokeObjectURL(url)
+			const response = await fetch(filename);
+			if (!response.ok) throw new Error('Network response was not ok');
+			const blob = await response.blob();
+			const element = document.createElement('a');
+			const url = URL.createObjectURL(blob);
+			element.href = url;
+			element.download = audioFile.video.filename.replace('/tmp/', '');
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+			URL.revokeObjectURL(url);
 		} catch (error) {
-			console.error('Error downloading filename:', error)
-			sendErrorNotification('Failed to download filename .')
+			console.error('Error downloading filename:', error);
+			sendErrorNotification('Failed to download filename.');
 		}
-	}
+	};
+
+	const handleDownloadAudio = async (audio) => {
+		try {
+			const response = await fetch(audio);
+			if (!response.ok) throw new Error('Network response was not ok');
+			const blob = await response.blob();
+			const element = document.createElement('a');
+			const url = URL.createObjectURL(blob);
+			element.href = url;
+			element.download = audioFile.video.filename.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.mp3';
+
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Error downloading audio:', error);
+			sendErrorNotification('Failed to download audio.');
+		}
+	};
+
+	const handleDownloadVideo = async (video) => {
+		try {
+			const response = await fetch(video);
+			if (!response.ok) throw new Error('Network response was not ok');
+			const blob = await response.blob();
+			const element = document.createElement('a');
+			const url = URL.createObjectURL(blob);
+			element.href = url;
+			element.download = audioFile.video.filename.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.mp4';
+
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Error downloading video:', error);
+			sendErrorNotification('Failed to download video.');
+		}
+	};
+
 
 	const handleCopy = (content) => {
 		navigator.clipboard
 			.writeText(content)
 			.then(() => {
-				sendSuccessNotification('Content copied to clipboard!')
+				sendSuccessNotification('Content copied to clipboard!');
 			})
 			.catch((err) => {
-				sendErrorNotification('Copy Failed: ', err)
-			})
-	}
+				sendErrorNotification('Copy Failed: ', err);
+			});
+	};
 </script>
 
-<!-- Aquí renderizas el contenido basado en el estado de carga y si hay errores -->
 <div class="flex-1 flex flex-col p-4 bg-zinc-900 overflow-y-auto">
 	{#if isLoading}
 		<div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
@@ -258,7 +270,6 @@
 			</Card.Root>
 		</div>
 	{:else if audioFile.status === 'done' && audioFile.error}
-		<!-- Caso cuando el estado es 'done' pero hay un error -->
 		<div class="flex items-center justify-center h-[100%]">
 			<Card.Root class="w-full max-w-md">
 				<Card.Header>
@@ -275,7 +286,6 @@
 			</Card.Root>
 		</div>
 	{:else if audioFile.status === 'processing'}
-		<!-- Caso cuando el estado es 'processing' -->
 		<div class="flex items-center justify-center h-[100%]">
 			<Card.Root class="w-full max-w-md">
 				<Card.Header>
@@ -292,14 +302,10 @@
 			</Card.Root>
 		</div>
 	{:else if audioFile.status === 'done'}
-		<!-- Caso normal cuando el estado es 'done' y no hay errores -->
 		<div>
 			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-bold">{audioFile.video_path.replace('/tmp/', '')}</h2>
-				<Badge
-					class="bg-green-400"
-					variant="success"
-				>
+				<h2 class="text-2xl font-bold">{audioFile.video_path.replace('/var/tmp/', '')}</h2>
+				<Badge class="bg-green-400" variant="success">
 					Done
 				</Badge>
 			</div>
@@ -309,20 +315,22 @@
 					<Card.Title>Source File</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					{#if audioFile.video[0]?.filename.endsWith('.mp4') || audioFile.video[0]?.filename.endsWith('.avi')}
+					{#if audioFile.video.video.endsWith('.mp4') || audioFile.video.video.endsWith('.avi')}
+					<!-- {audioFile.video.video}  -->
 						<video controls class="w-[300px] rounded-md">
-							<source src={audioFile.video[0].filename} type="video/mp4" />
+							<source src={audioFile.video.video} type="video/mp4" />
 							Sorry, your browser doesn't support embedded videos.
 						</video>
 					{/if}
 
 					<div class="mt-4">
-						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video[0].filename)}>
+						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video.filename)}>
 							<Copy class="h-4 w-4 mr-1" /> Copy Link
 						</Button>
-						<Button variant="outline" size="sm" on:click={() => handleDownloadFilename(audioFile.video[0].filename)}>
+						<Button variant="outline" size="sm" on:click={() => handleDownloadVideo(audioFile.video.video)}>
 							<VideoIcon class="mr-2 h-4 w-4" />
-							Download File
+							Download Video
+							
 						</Button>
 					</div>
 				</Card.Content>
@@ -333,16 +341,12 @@
 					<Card.Title>Summary</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<p>{@html marked(audioFile.video[0]?.summary)}</p>
+					<p>{@html marked(audioFile.video.summary)}</p>
 					<div class="mt-4">
-						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video[0]?.summary)}>
+						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video.summary)}>
 							<Copy class="h-4 w-4 mr-1" /> Copy
 						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							on:click={() => handleDownloadSummaryFile(audioFile.video[0]?.summary_file)}
-						>
+						<Button variant="outline" size="sm" on:click={() => handleDownloadSummaryFile(audioFile.video.summary_file)}>
 							<FileTextIcon class="mr-2 h-4 w-4" />
 							Download
 						</Button>
@@ -356,11 +360,15 @@
 				</Card.Header>
 				<Card.Content>
 					<div class="flex flex-wrap gap-2">
-						<Button variant="outline" size="sm" on:click={() => handleDownloadTranscript(audioFile.video[0]?.transcript)}>
+						<Button variant="outline" size="sm" on:click={() => handleDownloadTranscript(audioFile.video.transcript)}>
 							<FileTextIcon class="mr-2 h-4 w-4" /> Download Transcript
 						</Button>
-						<Button variant="outline" size="sm" on:click={() => handleDownloadVTT(audioFile.video[0]?.vtt)}>
+						<Button variant="outline" size="sm" on:click={() => handleDownloadVTT(audioFile.video.vtt)}>
 							<FileIcon class="mr-2 h-4 w-4" /> Download VTT
+						</Button>
+
+						<Button variant="outline" size="sm" on:click={() => handleDownloadAudio(audioFile.video.audio)}>
+							<Headphones class="mr-2 h-4 w-4" /> Download Audio
 						</Button>
 					</div>
 				</Card.Content>

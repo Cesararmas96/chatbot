@@ -7,9 +7,10 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { putData, formData } from '$lib/services/getData.js'
-	import { jobsListStore } from '$lib/stores/jobsStore';
+	import { jobsListStore } from '$lib/stores/jobsStore'
 	import { storeUser } from '$lib/stores'
 	import { getApiData } from '$lib/services/getData'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 
 	export let data: any
 
@@ -25,97 +26,102 @@
 	let dropzoneInput: HTMLInputElement | null = null
 	let videoUrl = ''
 
-	$: console.log('Selected file:', selectedFile); // Log para verificar el archivo seleccionado
-	$: console.log('Is loading:', isLoading); // Log para verificar el estado de carga
-
+	$: console.log('Selected file:', selectedFile) // Log para verificar el archivo seleccionado
+	$: console.log('Is loading:', isLoading) // Log para verificar el estado de carga
 
 	// Función para manejar el submit del archivo o URL
 	const videoSubmit = async (event: Event) => {
-		event.preventDefault();
-		console.log('Submit triggered'); 
-		isLoading = true;  // Deshabilitar el botón antes del envío
+		event.preventDefault()
+		console.log('Submit triggered')
+		isLoading = true // Deshabilitar el botón antes del envío
 		try {
 			// Crear el payload para el submit
 			const payload: any = {
 				translate: 'es' // Campo obligatorio para ambos tipos de envío
-			};
+			}
 
 			// Verificar si se está enviando un archivo o una URL
 			if (inputType === 'file' && selectedFile) {
-				payload['file'] = selectedFile;
-				console.log('Submitting file:', selectedFile);
-				await submitData(payload); // Llamada a la función para enviar los datos
+				payload['file'] = selectedFile
+				console.log('Submitting file:', selectedFile)
+				await submitData(payload) // Llamada a la función para enviar los datos
 			} else if (inputType === 'url' && videoUrl) {
-				payload.video_url = videoUrl; // Añadir la URL al payload
-				console.log('Submitting URL:', videoUrl);
-				await submitData(payload); // Llamada a la función para enviar los datos
+				payload.video_url = videoUrl // Añadir la URL al payload
+				console.log('Submitting URL:', videoUrl)
+				await submitData(payload) // Llamada a la función para enviar los datos
 			} else {
-				sendErrorNotification('No valid input selected.');
+				sendErrorNotification('No valid input selected.')
 			}
 		} catch (error) {
-			console.error('Error during submission:', error);
-			sendErrorNotification('An error occurred during submission');
+			console.error('Error during submission:', error)
+			sendErrorNotification('An error occurred during submission')
 		} finally {
-			isLoading = false;  // Rehabilitar el botón después de finalizar el envío
+			isLoading = false // Rehabilitar el botón después de finalizar el envío
 		}
-	};
-
+	}
 
 	// Función para manejar archivos seleccionados
 
 	// Función para manejar el submit de los datos
 	const submitData = async (payload: any) => {
-		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`;
+		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
 		try {
-			const response = await formData(url, payload, 'PUT');
+			const response = await formData(url, payload, 'PUT')
 			if (response.ok) {
 				sendSuccessNotification(
 					`${inputType === 'file' ? 'Video file' : 'Video URL'} submitted successfully`
-				);
+				)
 
-				isSubmitted = true;
-				selectedFile = null;
-				videoUrl = '';
+				isSubmitted = true
+				selectedFile = null
+				videoUrl = ''
 				if (dropzoneInput) {
-					dropzoneInput.value = '';
+					dropzoneInput.value = ''
 				}
 
-				console.log('Fetching updated jobs after submit'); // Log para verificar que se va a obtener la lista actualizada
-				await fetchJobs(); // Llamada a la función para obtener la lista de trabajos
+				console.log('Fetching updated jobs after submit') // Log para verificar que se va a obtener la lista actualizada
+				await fetchJobs() // Llamada a la función para obtener la lista de trabajos
 			} else {
-				console.error('Error in response:', response); // Verificar errores en la respuesta
-				sendErrorNotification(response.message || 'Failed to submit');
+				console.error('Error in response:', response) // Verificar errores en la respuesta
+				sendErrorNotification(response.message || 'Failed to submit')
 			}
 		} catch (error) {
-			console.error('Error during data submission:', error);
-			sendErrorNotification('An error occurred while submitting');
+			console.error('Error during data submission:', error)
+			sendErrorNotification('An error occurred while submitting')
 		}
-	};
+	}
 
-// Función para obtener trabajos actualizados
-const fetchJobs = async () => {
-		console.log('Fetching jobs'); // Verificar que la función se ejecuta
+	// Función para obtener trabajos actualizados
+	const fetchJobs = async () => {
+		isLoading = true
 		try {
 			const fetchedJobs = await getApiData(
-				`${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`,
+				'https://ai.trocdigital.net/api/v1/upload_videos',
 				'GET',
 				{},
 				{},
 				{
 					headers: {
 						Authorization: `Bearer ${session.token}`,
-						'Content-Type': 'application/json',
-					},
+						'Content-Type': 'application/json'
+					}
 				}
-			);
-			console.log('Fetched jobs:', fetchedJobs.jobs); // Verificar que los trabajos se obtienen correctamente
-			jobsListStore.set(fetchedJobs.jobs); // Actualizar el store
-			console.log('Jobs list updated in store:', fetchedJobs.jobs); // Verificar que el store se actualiza
+			)
+			jobsListStore.set(fetchedJobs.jobs) // Guardamos los trabajos en el store
 		} catch (error) {
-			console.error('Error fetching jobs:', error); // Verificar si hay errores en la obtención de trabajos
-		}
-	};
+			let errorMessage = 'Error fetching jobs' // Mensaje por defecto
+			if (error.response && error.response.status === 500) {
+				errorMessage = `Error 500: Internal Server Error while fetching jobs`
+			} else if (error.message) {
+				errorMessage = `Error: ${error.message}` // Captura el mensaje general de error
+			}
 
+			sendErrorNotification(errorMessage) // Envía el mensaje de error al toast
+			console.error(errorMessage) // Muestra el mensaje en la consola
+		} finally {
+			isLoading = false
+		}
+	}
 	const handleFiles = (files: FileList) => {
 		if (files.length > 0) {
 			const file = files[0]
@@ -225,18 +231,20 @@ const fetchJobs = async () => {
 
 			<!-- Botón de submit -->
 			<Button
-			type="submit"
-			class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-			disabled={isLoading || (inputType === 'file' && !selectedFile) || (inputType === 'url' && !videoUrl) || isSubmitted}
-		>
-			{#if isLoading}
-				<span>Processing...</span>
-			{:else}
-				<span>Process Video</span>
-			{/if}
-		</Button>
+				type="submit"
+				class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+				disabled={isLoading ||
+					(inputType === 'file' && !selectedFile) ||
+					(inputType === 'url' && !videoUrl) ||
+					isSubmitted}
+			>
+				{#if isLoading}
+					<span>Processing...</span>
+				{:else}
+					<span>Process Video</span>
+				{/if}
+			</Button>
 		</form>
-
 	</div>
 </div>
 

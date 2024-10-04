@@ -11,8 +11,10 @@
 	import { Upload, FileAudio, Plus, LogOut, Home, Search, Loader } from 'lucide-svelte'
 	import { enhance } from '$app/forms'
 	import { getApiData } from '$lib/services/getData'
-	import { jobsListStore } from '$lib/stores/jobsStore.ts';
+	import { jobsListStore } from '$lib/stores/jobsStore.ts'
 	import { storeUser } from '$lib/stores'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+
 	export let data: any
 
 	$storeUser = data.user
@@ -53,13 +55,13 @@
 	// }
 
 	// Puedes suscribirte al store para obtener la lista de trabajos (videos)
-		let jobsList = [];
+	let jobsList = []
 
-		// Suscribirse al store para obtener la lista de trabajos (videos)
+	// Suscribirse al store para obtener la lista de trabajos (videos)
 	const unsubscribe = jobsListStore.subscribe((value) => {
-		jobsList = value;
-		filteredAudios = [...jobsList];
-	});
+		jobsList = value
+		filteredAudios = [...jobsList]
+	})
 
 	// let filteredAudios = [...jobsList]
 
@@ -68,39 +70,46 @@
 	// 	jobs.video_path.toLowerCase().includes(searchTerm.toLowerCase())
 	// )
 
-	$: filteredAudios = jobsList.filter((job) => job.video_path.toLowerCase().includes(searchTerm.toLowerCase()));
-
+	$: filteredAudios = jobsList.filter((job) =>
+		job.video_path.toLowerCase().includes(searchTerm.toLowerCase())
+	)
 
 	console.log(filteredAudios)
 
 	const fetchJobs = async () => {
-		isLoading = true;
+		isLoading = true
 		try {
 			const fetchedJobs = await getApiData(
-				`${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`,
+				'https://ai.trocdigital.net/api/v1/upload_videos',
 				'GET',
 				{},
 				{},
 				{
 					headers: {
 						Authorization: `Bearer ${session.token}`,
-						'Content-Type': 'application/json',
-					},
+						'Content-Type': 'application/json'
+					}
 				}
-			);
-			jobsListStore.set(fetchedJobs.jobs); // Guardamos los trabajos en el store
+			)
+			jobsListStore.set(fetchedJobs.jobs) // Guardamos los trabajos en el store
 		} catch (error) {
-			console.error('Error fetching jobs:', error);
+			let errorMessage = 'Error fetching jobs' // Mensaje por defecto
+			if (error.response && error.response.status === 500) {
+				errorMessage = `Error 500: Internal Server Error while fetching jobs`
+			} else if (error.message) {
+				errorMessage = `Error: ${error.message}` // Captura el mensaje general de error
+			}
+
+			sendErrorNotification(errorMessage) // Envía el mensaje de error al toast
+			console.error(errorMessage) // Muestra el mensaje en la consola
 		} finally {
-			isLoading = false;
+			isLoading = false
 		}
-	};
+	}
 
 	onMount(() => {
 		fetchJobs()
 	})
-
-	
 </script>
 
 <div class="flex flex-col md:flex-row h-screen bg-black text-white">
@@ -134,7 +143,7 @@
 
 		<nav class="space-y-6 flex-grow overflow-hidden">
 			<div>
-				<h2 class="text-sm font-semibold mb-2">List Processed Videos</h2>
+				<h2 class="text-sm font-semibold mb-2">List Video Processor</h2>
 				<ScrollArea
 					class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800"
 				>
@@ -151,12 +160,12 @@
 							<a href="/video/{audio.task_uid}">
 								<div class="flex items-center p-2 hover:bg-zinc-800 cursor-pointer">
 									<div
-										class="w-2 h-2 rounded-full mr-2 {audio.error 
-											? 'bg-red-400' 
+										class="w-2 h-2 rounded-full mr-2 {audio.error
+											? 'bg-red-400'
 											: audio.status === 'done'
-												? 'bg-green-400' 
-												: audio.status === 'processing' 
-													? 'bg-yellow-400' 
+												? 'bg-green-400'
+												: audio.status === 'processing'
+													? 'bg-yellow-400'
 													: 'bg-red-400'}"
 									></div>
 									<FileAudio class="h-4 w-4 mr-2 text-gray-400" />

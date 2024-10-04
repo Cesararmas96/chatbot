@@ -316,12 +316,11 @@
 				</Card.Header>
 				<Card.Content>
 					{#if audioFile.video.video.endsWith('.mp4') || audioFile.video.video.endsWith('.avi')}
-					<!-- {audioFile.video.video}  -->
-						<video controls class="w-[300px] rounded-md">
-							<source src={audioFile.video.video} type="video/mp4" />
-							Sorry, your browser doesn't support embedded videos.
-						</video>
-					{/if}
+					<video controls class="w-[300px] rounded-md">
+						<source src={audioFile.video.video} type={audioFile.video.video.endsWith('.mp4') ? 'video/mp4' : 'video/x-msvideo'} />
+						Sorry, your browser doesn't support embedded videos.
+					</video>
+				{/if}
 
 					<div class="mt-4">
 						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video.filename)}>

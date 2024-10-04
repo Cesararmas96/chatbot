@@ -16,7 +16,8 @@ export enum ApiChatBot {
   copilot = "Copilot",
   askbuddy = "AskBuddy",
   analytzbot = "AnalytzBot",
-  navigator = "Navigator"
+  navigator = "Navigator",
+  hrbot= "HR-BOT"
 }
 
 export enum NameChatBot {
@@ -31,7 +32,8 @@ export enum NameChatBot {
   copilot = "Copilot",
   askbuddy = "AskBuddy",
   analytzbot = "AnalytzBot",
-  navigator = "Navigator"
+  navigator = "Navigator",
+  hrbot= "HR-BOT"
 }
 
 

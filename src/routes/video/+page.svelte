@@ -187,6 +187,14 @@
 				</div>
 			</RadioGroup.Root>
 
+			<RadioGroup.Root>
+			<div class="flex items-center space-x-2">
+				<RadioGroup.Item value="images" id="images" />
+				<!-- <Images class="w-5 h-5 text-gray-400 cursor-pointer" /> -->
+				<Label for="url" class="cursor-pointer">Create images frames from video</Label>
+			</div>
+			</RadioGroup.Root>
+
 			<!-- Área de carga de archivos -->
 			{#if inputType === 'file'}
 				<div

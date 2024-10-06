@@ -281,7 +281,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							on:click={() => handleCopy(audioFile.video.filename)}
+							on:click={() => handleCopy(audioFile.video.video)}
 						>
 							<Copy class="h-4 w-4 mr-1" /> Copy Link
 						</Button>

@@ -29,6 +29,15 @@
 
 	import { storeUser } from '$lib/stores'
 	import { Footer } from 'flowbite-svelte'
+
+  import { 
+        Lightbox,
+        LightboxGallery,
+        GalleryThumbnail,
+        GalleryImage
+    } from 'svelte-lightbox'
+		let lightboxProgrammaticController
+
 	export let data: any
 
 	$storeUser = data.user
@@ -268,7 +277,7 @@
 				</Card.Header>
 				<Card.Content>
 					{#if audioFile.video.video.endsWith('.mp4') || audioFile.video.video.endsWith('.avi')}
-						<video controls class="w-[300px] rounded-md">
+						<video controls class="w-[350px] rounded-md">
 							<source
 								src={audioFile.video.video}
 								type={audioFile.video.video.endsWith('.mp4') ? 'video/mp4' : 'video/x-msvideo'}
@@ -321,24 +330,31 @@
 				</Card.Content>
 			</Card.Root>
 
+	
+
 			<Card.Root class="mt-6 border-gray-700">
 				<Card.Header class="flex">
 					<Card.Title>Gallery</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<ScrollArea orientation="both">
+					<ScrollArea orientation="horizontal" class=" whitespace-nowrap">
 						{#if audioFile.video.frames && audioFile.video.frames.length > 0}
-							<div class="flex space-x-4">
+							<div class="flex  w-max space-x-4 p-4  rounded-md border">
 								{#each audioFile.video.frames as framesImg}
+								<Lightbox description="{framesImg}">
+								<figure class="shrink-0">
 									<div class="overflow-hidden rounded-md">
 										<img
 											src={`${import.meta.env.VITE_API_AI_URL}/gcs/files/${framesImg}`}
 											alt={framesImg}
-											width="390"
-											height="330"
-											class="portrait object-cover transition-all hover:scale-105"
+											width="350"
+											height="250"
+											class="portrait object-cover transition-all hover:scale-105 img-fluid"
 										/>
+										
 									</div>
+								</figure>
+							</Lightbox>
 								{/each}
 							</div>
 						{:else}
@@ -347,6 +363,7 @@
 					</ScrollArea>
 				</Card.Content>
 			</Card.Root>
+			
 
 			<Card.Root class="mt-6 mb-6 border-gray-700">
 				<Card.Header>

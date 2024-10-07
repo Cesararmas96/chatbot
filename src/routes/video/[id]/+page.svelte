@@ -30,13 +30,8 @@
 	import { storeUser } from '$lib/stores'
 	import { Footer } from 'flowbite-svelte'
 
-  import { 
-        Lightbox,
-        LightboxGallery,
-        GalleryThumbnail,
-        GalleryImage
-    } from 'svelte-lightbox'
-		let lightboxProgrammaticController
+	import { Lightbox, LightboxGallery, GalleryThumbnail, GalleryImage } from 'svelte-lightbox'
+	let lightboxProgrammaticController
 
 	export let data: any
 
@@ -57,7 +52,8 @@
 			summary: '',
 			vtt: '',
 			summary_file: '',
-			audio: ''
+			audio: '',
+			zip: ''
 		}
 	}
 
@@ -115,6 +111,25 @@
 	$: if (audioId) {
 		isLoading = true
 		errorMessage = ''
+		audioFile = {
+			status: '',
+			video_path: '',
+			error: '',
+			video: {
+				url: '',
+				source: '',
+				filename: '',
+				type: '',
+				source_type: '',
+				transcript: '',
+				summary: '',
+				vtt: '',
+				summary_file: '',
+				audio: '',
+				zip: ''
+			}
+		} // Reinicia audioFile antes de la nueva llamada
+
 		fetchAudioData() // Volver a cargar los datos con el nuevo ID
 	}
 
@@ -287,11 +302,7 @@
 					{/if}
 
 					<div class="mt-4">
-						<Button
-							variant="outline"
-							size="sm"
-							on:click={() => handleCopy(audioFile.video.video)}
-						>
+						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video.video)}>
 							<Copy class="h-4 w-4 mr-1" /> Copy Link
 						</Button>
 						<Button variant="outline" size="sm" on:click={handleDownloadVideo}>
@@ -330,8 +341,6 @@
 				</Card.Content>
 			</Card.Root>
 
-	
-
 			<Card.Root class="mt-6 border-gray-700">
 				<Card.Header class="flex">
 					<Card.Title>Gallery</Card.Title>
@@ -339,22 +348,21 @@
 				<Card.Content>
 					<ScrollArea orientation="horizontal" class=" whitespace-nowrap">
 						{#if audioFile.video.frames && audioFile.video.frames.length > 0}
-							<div class="flex  w-max space-x-4 p-4  rounded-md border">
+							<div class="flex w-max space-x-4 p-4 rounded-md border">
 								{#each audioFile.video.frames as framesImg}
-								<Lightbox description="{framesImg}">
-								<figure class="shrink-0">
-									<div class="overflow-hidden rounded-md">
-										<img
-											src={`${import.meta.env.VITE_API_AI_URL}/gcs/files/${framesImg}`}
-											alt={framesImg}
-											width="350"
-											height="250"
-											class="portrait object-cover transition-all hover:scale-105 img-fluid"
-										/>
-										
-									</div>
-								</figure>
-							</Lightbox>
+									<Lightbox description={framesImg}>
+										<figure class="shrink-0">
+											<div class="overflow-hidden rounded-md">
+												<img
+													src={`${import.meta.env.VITE_API_AI_URL}/gcs/files/${framesImg}`}
+													alt={framesImg}
+													width="350"
+													height="250"
+													class="portrait object-cover transition-all hover:scale-105 img-fluid"
+												/>
+											</div>
+										</figure>
+									</Lightbox>
 								{/each}
 							</div>
 						{:else}
@@ -363,7 +371,6 @@
 					</ScrollArea>
 				</Card.Content>
 			</Card.Root>
-			
 
 			<Card.Root class="mt-6 mb-6 border-gray-700">
 				<Card.Header>

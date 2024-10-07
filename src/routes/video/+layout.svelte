@@ -8,7 +8,7 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
 	import * as Avatar from '$lib/components/ui/avatar/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
-	import { Upload, FileAudio, Plus, LogOut, Home, Search, Loader } from 'lucide-svelte'
+	import { Upload, FileAudio, Plus, LogOut, Home, Search, Loader, Menu } from 'lucide-svelte'
 	import { enhance } from '$app/forms'
 	import { getApiData } from '$lib/services/getData'
 	import { jobsListStore } from '$lib/stores/jobsStore.ts'
@@ -22,59 +22,17 @@
 
 	let inputType = 'file'
 	let searchTerm = ''
-	// let jobsList = []
 	let isLoading = false
-	// const fetchJobs = async () => {
-	// 	isLoading = true // Set loading state during data fetching
-	// 	const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
-
-	// 	try {
-	// 		const fetchedJobs = await getApiData(
-	// 			apiUrl,
-	// 			'GET',
-	// 			{},
-	// 			{},
-	// 			{
-	// 				headers: {
-	// 					Authorization: `Bearer ${session.token}`,
-	// 					'Content-Type': 'application/json'
-	// 				}
-	// 			},
-	// 			null,
-	// 			true
-	// 		)
-
-	// 		// Sorting bots by name
-	// 		jobsList = fetchedJobs.jobs
-	// 		console.log(jobsList)
-	// 	} catch (error) {
-	// 		console.error('There was a problem with the fetch operation:', error)
-	// 	} finally {
-	// 		isLoading = false // Reset loading state after fetching
-	// 	}
-	// }
-
-	// Puedes suscribirte al store para obtener la lista de trabajos (videos)
 	let jobsList = []
 
-	// Suscribirse al store para obtener la lista de trabajos (videos)
 	const unsubscribe = jobsListStore.subscribe((value) => {
 		jobsList = value
 		filteredAudios = [...jobsList]
 	})
 
-	// let filteredAudios = [...jobsList]
-
-	// Reactividad en Svelte, se recalcula automáticamente
-	// $: filteredAudios = jobsList.filter((jobs) =>
-	// 	jobs.video_path.toLowerCase().includes(searchTerm.toLowerCase())
-	// )
-
 	$: filteredAudios = jobsList.filter((job) =>
 		job.video_path.toLowerCase().includes(searchTerm.toLowerCase())
 	)
-
-	console.log(filteredAudios)
 
 	const fetchJobs = async () => {
 		isLoading = true
@@ -91,17 +49,17 @@
 					}
 				}
 			)
-			jobsListStore.set(fetchedJobs.jobs) // Guardamos los trabajos en el store
+			jobsListStore.set(fetchedJobs.jobs)
 		} catch (error) {
-			let errorMessage = 'Error fetching jobs' // Mensaje por defecto
+			let errorMessage = 'Error fetching jobs'
 			if (error.response && error.response.status === 500) {
 				errorMessage = `Error 500: Internal Server Error while fetching jobs`
 			} else if (error.message) {
-				errorMessage = `Error: ${error.message}` // Captura el mensaje general de error
+				errorMessage = `Error: ${error.message}`
 			}
 
-			sendErrorNotification(errorMessage) // Envía el mensaje de error al toast
-			console.error(errorMessage) // Muestra el mensaje en la consola
+			sendErrorNotification(errorMessage)
+			console.error(errorMessage)
 		} finally {
 			isLoading = false
 		}
@@ -110,17 +68,44 @@
 	onMount(() => {
 		fetchJobs()
 	})
+
+	// Estado para manejar si el sidebar está visible
+	let isSidebarOpen = false
+
+	// Función para alternar la visibilidad del sidebar
+	const toggleSidebar = () => {
+		isSidebarOpen = !isSidebarOpen
+	}
 </script>
 
+<!-- Contenedor general -->
 <div class="flex flex-col md:flex-row h-screen bg-black text-white">
+	<!-- Botón para mostrar/ocultar el sidebar en versión móvil -->
+	<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
+		<a href="/video" class="flex items-center">
+			<img src="/troc.png" alt="" class="w-12 h-12" />
+			<h1 class="text-xl font-bold ml-2">Processed Video</h1>
+		</a>
+		<Button on:click={toggleSidebar} class="bg-zinc-800 p-2">
+			<Menu class="h-6 w-6 text-white" />
+		</Button>
+	</div>
+
 	<!-- Sidebar -->
-	<div class="w-full md:w-64 bg-zinc-900 p-4 flex flex-col">
+	<div
+		class={`w-full md:w-64 bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
+	>
 		<div class="flex items-center justify-between mb-4">
-			<div class="flex items-center">
+			<div class="flex items-center w-full">
 				<a href="/video" class="flex justify-center items-center">
 					<img src="/troc.png" alt="" class="w-12 h-12" />
 					<h1 class="text-xl font-bold ml-2">Processed Video</h1>
 				</a>
+
+				<!-- Botón alineado a la derecha -->
+				<Button on:click={toggleSidebar} class="bg-zinc-800 p-2 md:hidden ml-auto">
+					<Menu class="h-6 w-6 text-white" />
+				</Button>
 			</div>
 		</div>
 

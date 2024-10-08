@@ -90,11 +90,27 @@
 					status: fetchedAudio.status || 'pending',
 					video_path: fetchedAudio.video_path || 'Unknown Name',
 					error: fetchedAudio.error || '',
-					video: {
-						...audioFile.video, // Mantener los datos actuales
-						...fetchedAudio.video, // Reemplazar con los nuevos datos si existen
-						frames: fetchedAudio.video.frames || [] // Proveer un arreglo vacío si no hay frames
-					}
+					video: fetchedAudio.video
+						? {
+								// Verifica si fetchedAudio.video existe antes de acceder a sus propiedades
+								...audioFile.video, // Mantener los datos actuales
+								...fetchedAudio.video, // Reemplazar con los nuevos datos si existen
+								frames: fetchedAudio.video.frames || [] // Proveer un arreglo vacío si no hay frames
+							}
+						: {
+								// Si no existe fetchedAudio.video, provee un objeto vacío con los campos esperados
+								url: '',
+								source: '',
+								filename: '',
+								type: '',
+								source_type: '',
+								transcript: '',
+								summary: '',
+								vtt: '',
+								summary_file: '',
+								audio: '',
+								zip: ''
+							}
 				}
 			} else {
 				// Si no se encuentra el audio, asignar un mensaje de error
@@ -165,37 +181,37 @@
 
 	const handleDownloadTranscript = () => {
 		const transcriptUrl = audioFile.video.transcript
-		const fileName = audioFile.video_path.replace('/var/tmp/', '').replace(/\.(mp4|avi)$/, '')
+		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
 		handleDownloadFile(transcriptUrl, fileName, 'txt')
 	}
 
 	const handleDownloadVTT = () => {
 		const vttUrl = audioFile.video.vtt
-		const fileName = audioFile.video_path.replace('/var/tmp/', '').replace(/\.(mp4|avi)$/, '')
+		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
 		handleDownloadFile(vttUrl, fileName, 'vtt')
 	}
 
 	const handleDownloadSummary = () => {
 		const summaryUrl = audioFile.video.summary_file
-		const fileName = audioFile.video_path.replace('/var/tmp/', '').replace(/\.(mp4|avi)$/, '')
+		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
 		handleDownloadFile(summaryUrl, fileName, 'summary')
 	}
 
 	const handleDownloadAudio = () => {
 		const audioUrl = audioFile.video.audio
-		const fileName = audioFile.video_path.replace('/var/tmp/', '').replace(/\.(mp4|avi)$/, '')
+		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
 		handleDownloadFile(audioUrl, fileName, 'mp3')
 	}
 
 	const handleDownloadZip = () => {
 		const audioZip = audioFile.video.zip
-		const fileName = audioFile.video_path.replace('/var/tmp/', '').replace(/\.(mp4|avi)$/, '')
+		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
 		handleDownloadFile(audioZip, fileName, 'zip')
 	}
 
 	const handleDownloadVideo = () => {
 		const audioVideo = audioFile.video.video
-		const fileName = audioFile.video_path.replace('/var/tmp/', '').replace(/\.(mp4|avi)$/, '')
+		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
 		handleDownloadFile(audioVideo, fileName, 'mp4')
 	}
 
@@ -248,9 +264,9 @@
 			<Card.Root class="w-full max-w-md">
 				<Card.Header>
 					<Card.Title
-						class="flex items-center justify-center text-2xl font-bold text-red-600 dark:text-red-400"
+						class="flex flex-col justify-center items-center  text-2xl font-bold text-red-600 dark:text-red-400"
 					>
-						<AlertCircle class="w-8 h-8 mr-2" />
+						<AlertCircle class=" w-12 h-12 mr-2" />
 						Error Processing Audio
 					</Card.Title>
 				</Card.Header>
@@ -266,10 +282,10 @@
 			<Card.Root class="w-full max-w-md">
 				<Card.Header>
 					<Card.Title
-						class="flex items-center justify-center text-2xl font-bold text-yellow-600 dark:text-yellow-400"
+						class="flex flex-col justify-center items-center  text-2xl font-bold text-yellow-600 dark:text-yellow-400"
 					>
-						<AlertCircle class="w-8 h-8 mr-2" />
-						Audio is currently being processed
+						<AlertCircle class=" w-12 h-12 mr-2" />
+						<h2 class="text-center mt-2">Audio is currently being processed</h2>
 					</Card.Title>
 				</Card.Header>
 				<Card.Content>
@@ -282,7 +298,7 @@
 	{:else if audioFile.status === 'done'}
 		<div>
 			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-bold">{audioFile.video_path.replace('/var/tmp/', '')}</h2>
+				<h2 class="text-2xl font-bold">{audioFile.video_path.replace('/tmp/', '')}</h2>
 				<Badge class="bg-green-400" variant="success">Done</Badge>
 			</div>
 
@@ -297,6 +313,15 @@
 								src={audioFile.video.video}
 								type={audioFile.video.video.endsWith('.mp4') ? 'video/mp4' : 'video/x-msvideo'}
 							/>
+							{#if audioFile.video.vtt}
+								<track
+									kind="captions"
+									src={audioFile.video.vtt}
+									srclang="en"
+									label="English"
+									default
+								/>
+							{/if}
 							Sorry, your browser doesn't support embedded videos.
 						</video>
 					{/if}

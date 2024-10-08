@@ -77,7 +77,7 @@
 	}
 
 	const submitData = async (payload: any) => {
-		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videossss`
+		const url = `${import.meta.env.VITE_API_AI_URL}/api/v1/upload_videos`
 		try {
 			const response = await formData(url, payload, 'PUT')
 			if (response.ok) {

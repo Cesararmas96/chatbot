@@ -344,7 +344,7 @@
 				</Card.Header>
 				<Card.Content>
 					{#if audioFile.video.summary}
-						<p>{@html marked(audioFile.video.summary)}</p>
+						<div class="summary">{@html marked(audioFile.video.summary)}</div>
 						<div class="mt-4">
 							<Button
 								variant="outline"

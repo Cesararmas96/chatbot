@@ -375,6 +375,20 @@ input:checked+.slider:before {
   animation: spin 1s linear infinite;
 }
 
+
+
+.summary h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px 0 !important;
+}
+
+.summary ul {
+  list-style: disc;
+  margin: 10px 0;
+  padding: 0 0 0 20px;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

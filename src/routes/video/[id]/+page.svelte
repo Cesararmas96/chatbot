@@ -280,6 +280,20 @@
 			console.error('Error creating ZIP file:', error)
 		}
 	}
+
+	let currentPage = 1 // Página actual
+	const itemsPerPage = 30 // 6 columnas x 5 filas = 30 imágenes por página
+	// Función para obtener las imágenes de la página actual
+	const getCurrentPageItems = () => {
+		const start = (currentPage - 1) * itemsPerPage
+		const end = start + itemsPerPage
+		return audioFile.video.frames.slice(start, end)
+	}
+
+	// Función para cambiar de página
+	const changePage = (page) => {
+		currentPage = page
+	}
 </script>
 
 <div class="flex-1 flex flex-col p-4 bg-zinc-900 overflow-y-auto">
@@ -416,32 +430,34 @@
 					<Card.Title>Gallery</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div class="mb-5 flex justify-end">
-						<Button variant="outline" size="sm" on:click={toggleShowCheckboxes}>
-							<SquareCheckBig class="mr-2 h-4 w-4" />
-							{showCheckboxes ? 'Cancel Selection' : 'Select Photos'}
-						</Button>
+					<div class="gallery-container">
+						<!-- Mostrar mensaje si no hay imágenes disponibles -->
+						{#if getCurrentPageItems().length === 0}
+							<p>No frames available for this video.</p>
+						{:else}
+							<div class="mb-5 flex justify-end">
+								<!-- Botón para activar los checkboxes -->
+								<Button variant="outline" size="sm" on:click={toggleShowCheckboxes}>
+									{showCheckboxes ? 'Cancel Selection' : 'Select Photos'}
+								</Button>
 
-						<!-- Si los checkboxes están visibles, mostrar el botón de descarga -->
-						{#if showCheckboxes}
-							<Button
-								class="ml-2"
-								variant="outline"
-								size="sm"
-								on:click={downloadSelectedFramesAsZip}
-							>
-								<ImageDown class="mr-2 h-4 w-4" />
-								Download Selected
-							</Button>
-						{/if}
-					</div>
-					<ScrollArea orientation="horizontal" class="whitespace-nowrap">
-						{#if audioFile.video.frames && audioFile.video.frames.length > 0}
-							<!-- Botón para activar los checkboxes -->
+								<!-- Si los checkboxes están visibles, mostrar el botón de descarga -->
+								{#if showCheckboxes}
+									<Button
+										class="ml-2"
+										variant="outline"
+										size="sm"
+										on:click={downloadSelectedFramesAsZip}
+									>
+										Download Selected
+									</Button>
+								{/if}
+							</div>
 
-							<div class="flex w-max space-x-4 p-4 rounded-md border">
-								{#each audioFile.video.frames as framesImg}
-									<div>
+							<!-- Galería con CSS Grid de 5 columnas -->
+							<div class="grid-container">
+								{#each getCurrentPageItems() as framesImg}
+									<div class="image-item">
 										<!-- Solo mostrar checkboxes si se ha activado la selección -->
 										{#if showCheckboxes}
 											<input
@@ -457,9 +473,9 @@
 													<img
 														src={`${import.meta.env.VITE_API_AI_URL}/gcs/files/${framesImg}`}
 														alt={framesImg}
+														class="gallery-image"
 														width="350"
 														height="250"
-														class="portrait object-cover transition-all hover:scale-105 img-fluid"
 													/>
 												</div>
 											</figure>
@@ -467,10 +483,23 @@
 									</div>
 								{/each}
 							</div>
-						{:else}
-							<p>No frames available for this video.</p>
+
+							<!-- Paginación -->
+							<div class="pagination">
+								{#if currentPage > 1}
+									<Button variant="outline" size="sm" on:click={() => changePage(currentPage - 1)}>
+										Previous
+									</Button>
+								{/if}
+
+								{#if getCurrentPageItems().length === itemsPerPage}
+									<Button variant="outline" size="sm" on:click={() => changePage(currentPage + 1)}>
+										Next
+									</Button>
+								{/if}
+							</div>
 						{/if}
-					</ScrollArea>
+					</div>
 				</Card.Content>
 			</Card.Root>
 			<Card.Root class="mt-6 mb-6 border-gray-700">
@@ -530,5 +559,39 @@
 		100% {
 			transform: rotate(360deg);
 		}
+	}
+
+	.grid-container {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr); /* Cinco columnas de igual tamaño */
+		gap: 16px; /* Espacio entre las imágenes */
+	}
+
+	.image-item {
+		position: relative; /* Para posicionar el checkbox si es necesario */
+	}
+
+	.checkboxGallery {
+		position: absolute;
+		top: 8px;
+		left: 8px;
+		z-index: 10;
+	}
+
+	/* .gallery-image {
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+		transition: transform 0.3s ease;
+	} */
+
+	.gallery-image:hover {
+		transform: scale(1.05); /* Efecto de hover */
+	}
+
+	.pagination {
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
 	}
 </style>

@@ -21,7 +21,9 @@
 		AlertCircle,
 		VideoIcon,
 		Headphones,
-		FolderArchive
+		FolderArchive,
+		SquareCheckBig,
+		ImageDown
 	} from 'lucide-svelte'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { getApiData } from '$lib/services/getData'
@@ -31,6 +33,10 @@
 	import { Footer } from 'flowbite-svelte'
 
 	import { Lightbox, LightboxGallery, GalleryThumbnail, GalleryImage } from 'svelte-lightbox'
+
+	import JSZip from 'jszip' // Importa JSZip
+	import saveAs from 'file-saver' // Importa FileSaver para la descarga
+
 	let lightboxProgrammaticController
 
 	export let data: any
@@ -225,6 +231,55 @@
 				sendErrorNotification('Copy Failed: ', err)
 			})
 	}
+
+	let selectedFrames = new Set()
+	let showCheckboxes = false
+
+	// Añadir o quitar un frame seleccionado
+	const toggleFrameSelection = (frame) => {
+		if (selectedFrames.has(frame)) {
+			selectedFrames.delete(frame)
+		} else {
+			selectedFrames.add(frame)
+		}
+	}
+
+	const toggleShowCheckboxes = () => {
+		showCheckboxes = !showCheckboxes
+	}
+
+	// Descargar imágenes seleccionadas como un archivo ZIP
+	const downloadSelectedFramesAsZip = async () => {
+		if (selectedFrames.size === 0) {
+			console.log('No frames selected.')
+			return // No hay frames seleccionados
+		}
+
+		const zip = new JSZip()
+		const folder = zip.folder('frames')
+
+		// Convertir Set a Array para usar con Promise.all
+		const framesArray = Array.from(selectedFrames)
+
+		try {
+			// Realizar todas las solicitudes fetch en paralelo usando Promise.all
+			const fetchPromises = framesArray.map(async (frame) => {
+				const response = await fetch(`${import.meta.env.VITE_API_AI_URL}/gcs/files/${frame}`)
+				if (!response.ok) throw new Error(`Failed to fetch ${frame}`)
+				const blob = await response.blob()
+				folder.file(frame.split('/').pop(), blob) // Guardar la imagen en el ZIP
+			})
+
+			// Esperar que todas las promesas de fetch se resuelvan
+			await Promise.all(fetchPromises)
+
+			// Generar el archivo ZIP
+			const content = await zip.generateAsync({ type: 'blob' })
+			saveAs(content, 'selected-frames.zip') // Descarga el archivo ZIP
+		} catch (error) {
+			console.error('Error creating ZIP file:', error)
+		}
+	}
 </script>
 
 <div class="flex-1 flex flex-col p-4 bg-zinc-900 overflow-y-auto">
@@ -325,16 +380,6 @@
 							Sorry, your browser doesn't support embedded videos.
 						</video>
 					{/if}
-
-					<div class="mt-4">
-						<Button variant="outline" size="sm" on:click={() => handleCopy(audioFile.video.video)}>
-							<Copy class="h-4 w-4 mr-1" /> Copy Link
-						</Button>
-						<Button variant="outline" size="sm" on:click={handleDownloadVideo}>
-							<VideoIcon class="mr-2 h-4 w-4" />
-							Download Video
-						</Button>
-					</div>
 				</Card.Content>
 			</Card.Root>
 
@@ -371,23 +416,55 @@
 					<Card.Title>Gallery</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<ScrollArea orientation="horizontal" class=" whitespace-nowrap">
+					<div class="mb-5 flex justify-end">
+						<Button variant="outline" size="sm" on:click={toggleShowCheckboxes}>
+							<SquareCheckBig class="mr-2 h-4 w-4" />
+							{showCheckboxes ? 'Cancel Selection' : 'Select Photos'}
+						</Button>
+
+						<!-- Si los checkboxes están visibles, mostrar el botón de descarga -->
+						{#if showCheckboxes}
+							<Button
+								class="ml-2"
+								variant="outline"
+								size="sm"
+								on:click={downloadSelectedFramesAsZip}
+							>
+								<ImageDown class="mr-2 h-4 w-4" />
+								Download Selected
+							</Button>
+						{/if}
+					</div>
+					<ScrollArea orientation="horizontal" class="whitespace-nowrap">
 						{#if audioFile.video.frames && audioFile.video.frames.length > 0}
+							<!-- Botón para activar los checkboxes -->
+
 							<div class="flex w-max space-x-4 p-4 rounded-md border">
 								{#each audioFile.video.frames as framesImg}
-									<Lightbox description={framesImg}>
-										<figure class="shrink-0">
-											<div class="overflow-hidden rounded-md">
-												<img
-													src={`${import.meta.env.VITE_API_AI_URL}/gcs/files/${framesImg}`}
-													alt={framesImg}
-													width="350"
-													height="250"
-													class="portrait object-cover transition-all hover:scale-105 img-fluid"
-												/>
-											</div>
-										</figure>
-									</Lightbox>
+									<div>
+										<!-- Solo mostrar checkboxes si se ha activado la selección -->
+										{#if showCheckboxes}
+											<input
+												type="checkbox"
+												id={framesImg}
+												on:change={() => toggleFrameSelection(framesImg)}
+												class="checkboxGallery"
+											/>
+										{/if}
+										<Lightbox description={framesImg}>
+											<figure class="shrink-0">
+												<div class="overflow-hidden rounded-md">
+													<img
+														src={`${import.meta.env.VITE_API_AI_URL}/gcs/files/${framesImg}`}
+														alt={framesImg}
+														width="350"
+														height="250"
+														class="portrait object-cover transition-all hover:scale-105 img-fluid"
+													/>
+												</div>
+											</figure>
+										</Lightbox>
+									</div>
 								{/each}
 							</div>
 						{:else}
@@ -396,7 +473,6 @@
 					</ScrollArea>
 				</Card.Content>
 			</Card.Root>
-
 			<Card.Root class="mt-6 mb-6 border-gray-700">
 				<Card.Header>
 					<Card.Title>Download Options</Card.Title>
@@ -423,7 +499,7 @@
 
 						{#if audioFile.video.zip}
 							<Button variant="outline" size="sm" on:click={handleDownloadZip}>
-								<FolderArchive class="mr-2 h-4 w-4" /> Zip
+								<FolderArchive class="mr-2 h-4 w-4" /> Gallery
 							</Button>
 						{/if}
 					</div>
@@ -441,6 +517,10 @@
 		width: 40px;
 		height: 40px;
 		animation: spin 1s linear infinite;
+	}
+
+	.checkboxGallery {
+		/* width: 20px; */
 	}
 
 	@keyframes spin {

@@ -87,8 +87,8 @@
 				isSubmitted = true
 				selectedFile = null
 				videoUrl = ''
-				createImagesFromVideo = false // Resetear el estado del switch
-				numSeconds = 0 // Resetear el valor del slider
+				//createImagesFromVideo = false // Resetear el estado del switch
+				//numSeconds = 0 // Resetear el valor del slider
 				if (dropzoneInput) {
 					dropzoneInput.value = ''
 				}
@@ -239,7 +239,7 @@
 							</Tabs.Root>
 
 							<!-- Checkbox para crear imágenes desde el video -->
-							<div class="flex items-center space-x-2">
+							<!-- <div class="flex items-center space-x-2">
 								<Switch
 									id="createImages"
 									aria-readonly
@@ -249,14 +249,14 @@
 								<Label for="createImages" class="cursor-pointer"
 									>Create images frames from video</Label
 								>
-							</div>
+							</div> -->
 
 							<!-- Slider para ingresar los segundos entre frames -->
-							{#if createImagesFromVideo}
+							<!-- {#if createImagesFromVideo}
 								<div class="space-y-2">
 									<Label for="seconds-between-frames">Seconds between frames</Label>
 									<div class="flex items-center space-x-4">
-										<!-- Slider para seleccionar los segundos entre frames -->
+								
 										<Slider
 											id="seconds-between-frames"
 											min={1}
@@ -267,7 +267,7 @@
 											class="flex-grow"
 										/>
 
-										<!-- Input numérico que refleja el valor del slider -->
+									
 										<Input
 											type="number"
 											bind:value={numSeconds}
@@ -278,7 +278,7 @@
 										/>
 									</div>
 								</div>
-							{/if}
+							{/if} -->
 
 							<!-- Botón de submit -->
 							<Button

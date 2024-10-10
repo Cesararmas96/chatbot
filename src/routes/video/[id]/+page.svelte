@@ -367,7 +367,7 @@
 	{:else if audioFile.status === 'done'}
 		<div>
 			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-bold">{audioFile.video_path.replace('/tmp/', '')}</h2>
+				<h2 class="text-2xl font-bold">{audioFile.video_path.replace('/var/tmp/', '')}</h2>
 				<Badge class="bg-green-400" variant="success">Done</Badge>
 			</div>
 

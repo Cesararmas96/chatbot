@@ -155,10 +155,10 @@
 									></div>
 									<FileAudio class="h-4 w-4 mr-2 text-gray-400" />
 									<span class="text-sm truncate">
-										{#if audio.video_path.replace('/tmp/', '').length > 23}
-											{audio.video_path.replace('/tmp/', '').slice(0, 23)}...
+										{#if audio.video_path.replace('/var/tmp/', '').length > 23}
+											{audio.video_path.replace('/var/tmp/', '').slice(0, 23)}...
 										{:else}
-											{audio.video_path.replace('/tmp/', '')}
+											{audio.video_path.replace('/var/tmp/', '')}
 										{/if}
 									</span>
 								</div>

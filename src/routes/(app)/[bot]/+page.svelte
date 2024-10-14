@@ -18,6 +18,24 @@
 	import { db } from '$lib/db'
 	import { sharedBot } from '$lib/stores/preferences.js'
 
+	import { Input } from '$lib/components/ui/input/index.js'
+	import * as Card from '$lib/components/ui/card/index.js'
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
+	import * as Avatar from '$lib/components/ui/avatar/index.js'
+	import { Button } from '$lib/components/ui/button/index.js'
+	import {
+		Home,
+		LogOut,
+		MoreVertical,
+		MessageSquare,
+		Trash2,
+		Plus,
+		Search,
+		Mic,
+		ChevronUp,
+		Menu
+	} from 'lucide-svelte'
+
 	export let data
 
 	const { user, bots, promptLibrary, good, bad, chatbotid } = data
@@ -100,9 +118,17 @@
 		query = event.detail.query
 		chatInputRef.submitForm()
 	}
+
+	// Estado para manejar si el sidebar está visible
+	let isSidebarOpen = false
+
+	// Función para alternar la visibilidad del sidebar
+	const toggleSidebar = () => {
+		isSidebarOpen = !isSidebarOpen
+	}
 </script>
 
-<div class:sm:ml-64={!shared}>
+<!-- <div class:sm:ml-64={!shared}>
 	<Header />
 	<div class="flex flex-row h-full overflow-x-hidden">
 		{#if !shared}
@@ -111,7 +137,7 @@
 		<div class="flex flex-col h-screen flex-auto p-2 w-20">
 			{#if !shared}
 				<div class="flex justify-end px-2 py-2">
-					<!-- <SelectBots {bots} /> -->
+					<SelectBots {bots} />
 					<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900 " />
 				</div>
 			{/if}
@@ -130,5 +156,85 @@
 
 			<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
 		</div>
+	</div>
+</div> -->
+<div class="flex flex-col md:flex-row h-screen bg-black text-white">
+	<!-- Mobile header with button to toggle sidebar -->
+	<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
+		<a href="/video" class="flex items-center">
+			<img src="/troc.png" alt="" class="w-12 h-12" />
+			<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
+		</a>
+		<Button on:click={toggleSidebar} class="bg-zinc-800 p-2">
+			<Menu class="h-6 w-6 text-white" />
+		</Button>
+	</div>
+
+	<!-- Sidebar section -->
+	<SidebarBot {chatbotid} {user_id} {isSidebarOpen} {toggleSidebar} />
+
+	<!-- Main content section -->
+	<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
+		<Card.Root class="flex flex-col flex-1">
+			<Card.Content class="flex-1 flex flex-col justify-between">
+				<div class="flex-1 flex flex-col items-center justify-center">
+					<div class="w-full max-w-2xl">
+						<header class="text-center mb-8">
+							<div class="flex items-center justify-center gap-3 mb-2">
+								<Avatar.Root class="h-10 w-10">
+									<Avatar.Image src="/placeholder-avatar.jpg" alt="AI" />
+									<Avatar.Fallback>AI</Avatar.Fallback>
+								</Avatar.Root>
+								<h1 class="text-2xl font-bold">OpenAI / GPT 4</h1>
+							</div>
+							<p class="text-xl text-gray-400">How can I help you today?</p>
+						</header>
+						<div class="mb-8">
+							<h2 class="text-sm font-semibold text-gray-400 mb-3 text-center">Suggested</h2>
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+								{#each promptLibrary as item}
+									<Card.Root
+										class="bg-[#1E1E1E] border-gray-800 hover:bg-[#2A2A2A] transition-colors"
+									>
+										<Card.Content class="p-4 flex items-center justify-between">
+											<div>
+												<h3 class="font-semibold">{item.title}</h3>
+											</div>
+										</Card.Content>
+									</Card.Root>
+								{/each}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="p-6">
+					<div class="max-w-2xl mx-auto">
+						<div class="relative">
+							<form class="flex items-center">
+								<Button type="button" size="icon" variant="ghost" class="absolute left-4">
+									<Plus class="h-4 w-4" />
+								</Button>
+								<Input
+									name="message"
+									placeholder="Send a message"
+									class="w-full bg-[#1E1E1E] border-gray-800 pl-12 pr-20"
+								/>
+								<div class="absolute right-4 flex items-center gap-2">
+									<Button type="button" size="icon" variant="ghost">
+										<Mic class="h-4 w-4" />
+									</Button>
+									<Button type="submit" size="icon" variant="ghost">
+										<ChevronUp class="h-4 w-4" />
+									</Button>
+								</div>
+							</form>
+							<p class="text-xs text-gray-500 mt-2 text-center">
+								Chatbots can make mistakes. Verify important information.
+							</p>
+						</div>
+					</div>
+				</div>
+			</Card.Content>
+		</Card.Root>
 	</div>
 </div>

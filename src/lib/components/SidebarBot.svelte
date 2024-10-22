@@ -198,12 +198,12 @@
 					</li>
 				{/if}
 				<li
-					class="group flex items-center text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg ml-2"
+					class="group flex items-center w-full text-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
 				>
 					<a
 						target="_self"
 						href={`${newUrl}${data.pageId}`}
-						class="flex justify-between items-center p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
+						class="flex justify-between items-center w-full p-2 text-white rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group hover:text-black"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"

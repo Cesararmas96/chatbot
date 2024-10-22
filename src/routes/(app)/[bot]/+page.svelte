@@ -110,7 +110,27 @@
 </script>
 
 <div class:sm:ml-64={!shared}>
-	<Header />
+	<!-- <Header /> -->
+	<button
+		id="toggle-drawer-button"
+		type="button"
+		class="p-2 sm:hidden text-gray-500 hover:text-gray-900 dark:hover:text-white focus:outline-none"
+	>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			class="w-6 h-6"
+			fill="none"
+			viewBox="0 0 24 24"
+			stroke="currentColor"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M4 6h16M4 12h16m-7 6h7"
+			/>
+		</svg>
+	</button>
 	<div class="flex flex-row h-full overflow-x-hidden">
 		{#if !shared}
 			<SidebarBot {chatbotid} {user_id} />

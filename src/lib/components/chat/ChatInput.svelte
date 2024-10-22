@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount, afterUpdate } from 'svelte'
-	import { Plus, Mic, ChevronUp, SendHorizontal } from 'lucide-svelte'
+	import { SendHorizontal } from 'lucide-svelte'
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Input } from '$lib/components/ui/input/index.js'
 
@@ -13,26 +13,21 @@
 	const handleSubmit = (event: Event) => {
 		event.preventDefault()
 		dispatch('submit')
-		setFocus()
 	}
 
-	onMount(() => {
-		setFocus()
-	})
+	// function setFocus() {
+	// 	if (answerInput && !isLoading) {
+	// 		answerInput.focus()
+	// 	}
+	// }
 
-	function setFocus() {
-		if (answerInput && !isLoading) {
-			answerInput.focus()
-		}
-	}
+	// export function submitForm() {
+	// 	dispatch('submit')
+	// }
 
-	export function submitForm() {
-		dispatch('submit')
-	}
-
-	afterUpdate(() => {
-		setFocus() // Asegura el foco después de cualquier actualización
-	})
+	// afterUpdate(() => {
+	// 	setFocus() // Asegura el foco después de cualquier actualización
+	// })
 </script>
 
 <!-- <form on:submit={handleSubmit} class="mr-2 ml-2">
@@ -82,7 +77,7 @@
 
 <form class="flex items-center" on:submit={handleSubmit}>
 	<!-- <Plus class="h-4 w-4" /> -->
-	<Input
+	<!-- <Input
 		disabled={isLoading}
 		bind:this={answerInput}
 		bind:value={query}
@@ -90,10 +85,19 @@
 		name="message"
 		placeholder="Send a message"
 		class="w-full bg-[#1E1E1E] border-gray-800  pr-20"
+	/> -->
+
+	<Input
+		name="message"
+		placeholder="Send a message"
+		class="w-full bg-[#1E1E1E] border-gray-800  pr-20"
+		disabled={isLoading}
+		bind:this={answerInput}
+		autofocus
 	/>
 	<div class="absolute right-4 flex items-center gap-2">
-		<Button type="submit" size="icon" variant="ghost" disabled={isLoading}>
+		<button type="submit" size="icon" variant="ghost" disabled={isLoading}>
 			<SendHorizontal class="h-4 w-4" />
-		</Button>
+		</button>
 	</div>
 </form>

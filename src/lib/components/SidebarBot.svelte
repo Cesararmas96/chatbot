@@ -14,6 +14,8 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
 	import { Separator } from '$lib/components/ui/separator/index.js'
 
+	import LoaderCustom from './common/LoaderCustom.svelte'
+
 	import {
 		Home,
 		LogOut,
@@ -29,10 +31,11 @@
 	let searchTerm = ''
 
 	export let chatbotid
-	export let user_id
-
+	export let session
 	export let isSidebarOpen // Recibir el estado de isSidebarOpen
 	export let toggleSidebar // Recibir la función toggleSidebar
+
+	let user_id = session.user_id
 
 	let isLoading = false
 
@@ -143,13 +146,13 @@
 		return false
 	}
 
-	// Estado para manejar si el sidebar está visible
-	// let isSidebarOpen = false
+	// Acceder a la URL actual usando la store `page`
+	let currentPath = $page.url.pathname // Obtiene la ruta actual sin el dominio
 
-	// Función para alternar la visibilidad del sidebar
-	// const toggleSidebar = () => {
-	// 	isSidebarOpen = !isSidebarOpen
-	// }
+	// Función para navegar dinámicamente
+	function navigateToPage(pageId) {
+		goto(`${currentPath}/${pageId}`)
+	}
 </script>
 
 <div
@@ -192,9 +195,7 @@
 				class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800"
 			>
 				{#if isLoading}
-					<div class="absolute inset-0 flex justify-center items-center">
-						<Loader class="animate-spin text-white h-8 w-8" />
-					</div>
+					<LoaderCustom />
 				{:else if filteredPageData.length == 0}
 					<p class="absolute inset-0 flex justify-center items-center text-center text-gray-400">
 						No chat found.
@@ -207,7 +208,7 @@
 						<div class="hover:bg-gray-800 rounded-lg flex items-center justify-between group">
 							<a
 								target="_self"
-								href={`${newUrl}${data.pageId}`}
+								href={`${currentPath}/${data.pageId}`}
 								class="flex items-center w-full text-white dark:text-white group"
 							>
 								<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
@@ -247,11 +248,13 @@
 			<DropdownMenu.Trigger>
 				<div class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-800 p-2 rounded-lg">
 					<Avatar.Root>
-						<Avatar.Fallback class="bg-gray-600">CA</Avatar.Fallback>
+						<Avatar.Fallback class="bg-gray-600"
+							>{session.first_name[0]}{session.last_name[0]}</Avatar.Fallback
+						>
 					</Avatar.Root>
 					<div class="flex-grow">
-						<p class="text-sm font-medium text-left">Cesar Armas</p>
-						<p class="text-xs text-gray-400">caal2096@gmail.com</p>
+						<p class="text-sm font-medium text-left">{session.first_name} {session.last_name}</p>
+						<p class="text-xs text-gray-400">{session.email}</p>
 					</div>
 				</div>
 			</DropdownMenu.Trigger>

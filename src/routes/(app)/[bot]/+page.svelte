@@ -1,75 +1,105 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { page } from '$app/stores'
-	import { goto } from '$app/navigation'
-	import { v4 as uuidv4 } from 'uuid'
-	import { storeUser } from '$lib/stores/session.js'
-	import { storeBots } from '$lib/stores/bots'
-	import { storePromptLibrary } from '$lib/stores/promptlibrary'
-	import { storeGood } from '$lib/stores/good'
-	import { storeBad } from '$lib/stores/bad'
-	import { storeChatbotid } from '$lib/stores/chatbotid'
-	import { fetchChatData } from '$lib/services/chatService'
-	import ChatInput from '$lib/components/chat/ChatInput.svelte'
-	import { DarkMode } from 'flowbite-svelte'
+	import { page } from '$app/stores' // Para obtener el nombre del bot desde la URL
+	import { getApiData } from '$lib/services/getData.js'
+	import { storeUser } from '$lib/stores'
+
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
-	import Header from '$lib/components/chat/Header.svelte'
-	import WelcomeChat from '$lib/components/chat/WelcomeChat.svelte'
-	import { db } from '$lib/db'
-	import { sharedBot } from '$lib/stores/preferences.js'
-
+	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import CardLibrary from '$lib/components/chat/CardLibrary.svelte'
-
-	import { Input } from '$lib/components/ui/input/index.js'
 	import * as Card from '$lib/components/ui/card/index.js'
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
-	import * as Avatar from '$lib/components/ui/avatar/index.js'
+
 	import { Button } from '$lib/components/ui/button/index.js'
-	import {
-		Home,
-		LogOut,
-		MoreVertical,
-		MessageSquare,
-		Trash2,
-		Plus,
-		Search,
-		Mic,
-		ChevronUp,
-		Menu
-	} from 'lucide-svelte'
+	import { Menu } from 'lucide-svelte'
+	import LoaderCustom from '$lib/components/common/LoaderCustom.svelte'
 
-	export let data
-
-	const { user, bots, promptLibrary, good, bad, chatbotid } = data
-	storeUser.set(user)
-	storeBots.set(bots)
-	storePromptLibrary.set(promptLibrary)
-	storeGood.set(good)
-	storeBad.set(bad)
-	storeChatbotid.set(chatbotid)
-
-	let isLoading = false
-	let messages: any[] = []
+	let botData = null
+	let errorMessage = ''
+	let isLoading = true
+	let botName = ''
 	let query = ''
-	let bot = ''
-	let shared = $page.url.searchParams.get('shared') === 'true'
-	let showSettings = false
 	let chatInputRef: any
 	let uuid = ''
-	let user_id = user.user_id
-	let chatbotId
 
-	sharedBot.set(shared)
+	$: botName = $page.params.bot?.toLowerCase() // Obtenemos el parámetro `bot` en minúsculas
 
-	onMount(() => {
-		bot = $page.params.bot
-		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
-		if (currentBot) {
-			chatbotId = currentBot.chatbot_id
-		} else {
-			console.error('Bot not found')
+	export let data: any
+
+	$storeUser = data.user
+	const session = data.user ? data.user : $storeUser
+
+	console.log(session)
+
+	onMount(async () => {
+		if (!botName) {
+			errorMessage = 'Bot name is missing in the URL'
+			isLoading = false
+			return
+		}
+
+		// Hacer una llamada a la API para obtener la lista de todos los bots
+		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
+
+		try {
+			const botsList = await getApiData(
+				apiUrl,
+				'GET',
+				{},
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${session.token}`,
+						'Content-Type': 'application/json'
+					}
+				},
+				null,
+				true
+			)
+
+			// Buscar una coincidencia exacta con el botName
+			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
+
+			if (matchedBot) {
+				// Ahora que encontramos el bot correcto, hacer la llamada final a la API usando el nombre exacto
+				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
+				const data = await getApiData(
+					botApiUrl,
+					'GET',
+					{},
+					{},
+					{
+						headers: {
+							Authorization: `Bearer ${session.token}`,
+							'Content-Type': 'application/json'
+						}
+					},
+					null,
+					true
+				)
+
+				if (data) {
+					botData = data[0] // Asignar datos del bot
+				} else {
+					errorMessage = `Bot with name ${botName} not found.`
+				}
+			} else {
+				errorMessage = `Bot with name ${botName} not found.`
+			}
+		} catch (error) {
+			errorMessage = 'An error occurred while fetching the bot data.'
+			console.error('Error fetching bot data:', error)
+		} finally {
+			isLoading = false
 		}
 	})
+
+	// Estado para manejar si el sidebar está visible
+	let isSidebarOpen = false
+
+	// Función para alternar la visibilidad del sidebar
+	const toggleSidebar = () => {
+		isSidebarOpen = !isSidebarOpen
+	}
 
 	const handleFetchData = async (lastQuery = '') => {
 		isLoading = true
@@ -120,98 +150,77 @@
 		query = event.detail.query
 		chatInputRef.submitForm()
 	}
-
-	// Estado para manejar si el sidebar está visible
-	let isSidebarOpen = false
-
-	// Función para alternar la visibilidad del sidebar
-	const toggleSidebar = () => {
-		isSidebarOpen = !isSidebarOpen
-	}
 </script>
 
-<!-- <div class:sm:ml-64={!shared}>
-	<Header />
-	<div class="flex flex-row h-full overflow-x-hidden">
-		{#if !shared}
-			<SidebarBot {chatbotid} {user_id} />
-		{/if}
-		<div class="flex flex-col h-screen flex-auto p-2 w-20">
-			{#if !shared}
-				<div class="flex justify-end px-2 py-2">
-					<SelectBots {bots} />
-					<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900 " />
-				</div>
-			{/if}
-			<div
-				class="flex flex-auto overflow-x-auto rounded-2xl bg-gray-100 chatbox dark:bg-gray-800 ml-2 mr-2"
-			>
-				<div class="flex flex-auto flex-col lg:justify-center">
-					<div class="flex justify-center mt-2">
-						<img src="/images/bots/{bot}.png" class="w-32 md:w-36" alt="{bot}-logo" />
-					</div>
-					<div class="">
-						<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />
-					</div>
-				</div>
-			</div>
+{#if isLoading}
+	<LoaderCustom />
+{:else if errorMessage}
+	<p class="error">{errorMessage}</p>
+{:else if botData && botData.chatbot_id}
+	<div class="flex flex-col md:flex-row h-screen bg-black text-white">
+		<!-- Mobile header with button to toggle sidebar -->
+		<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
+			<a href="/home" class="flex items-center">
+				<img src="/troc.png" alt="" class="w-12 h-12" />
+				<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
+			</a>
+			<Button on:click={toggleSidebar} class="bg-zinc-800 p-2">
+				<Menu class="h-6 w-6 text-white" />
+			</Button>
+		</div>
 
-			<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
+		<!-- Sidebar section -->
+		<SidebarBot chatbotid={botData.id} {isSidebarOpen} {toggleSidebar} {session} />
+
+		<!-- Main content section -->
+		<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
+			<Card.Root class="flex flex-col flex-1">
+				<Card.Content class="flex-1 flex flex-col justify-between">
+					<div class="flex-1 flex flex-col items-center justify-center">
+						<div class="w-full max-w-2xl">
+							<header class="text-center mb-8">
+								<div class="flex items-center justify-center gap-3 mb-2">
+									<img
+										src="/images/bots/{botData.name}.png"
+										class="w-24 md:w-20"
+										alt="{botData.name}-logo"
+									/>
+
+									<h1 class="text-2xl font-bold">{botData.name}</h1>
+								</div>
+								<p class="text-xl text-gray-400">How can I help you today?</p>
+							</header>
+							<div class="mb-8">
+								<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+									{#if botData.chatbot_id}
+										<CardLibrary {session} chatbotId={botData.chatbot_id} />
+									{:else}
+										<p>Error: chatbotId is missing</p>
+									{/if}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="p-6">
+						<div class="max-w-2xl mx-auto">
+							<div class="relative">
+								<ChatInput {isLoading} />
+
+								<!-- <ChatInput
+									{isLoading}
+									bind:query
+									on:submit={handleSubmit}
+									bind:this={chatInputRef}
+								/> -->
+
+								<p class="text-xs text-gray-500 mt-2 text-center">
+									Chatbots can make mistakes. Verify important information.
+								</p>
+							</div>
+						</div>
+					</div>
+				</Card.Content>
+			</Card.Root>
 		</div>
 	</div>
-</div> -->
-
-<div class="flex flex-col md:flex-row h-screen bg-black text-white">
-	<!-- Mobile header with button to toggle sidebar -->
-	<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
-		<a href="/home" class="flex items-center">
-			<img src="/troc.png" alt="" class="w-12 h-12" />
-			<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
-		</a>
-		<Button on:click={toggleSidebar} class="bg-zinc-800 p-2">
-			<Menu class="h-6 w-6 text-white" />
-		</Button>
-	</div>
-
-	<!-- Sidebar section -->
-	<SidebarBot {chatbotid} {user_id} {isSidebarOpen} {toggleSidebar} />
-
-	<!-- Main content section -->
-	<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
-		<Card.Root class="flex flex-col flex-1">
-			<Card.Content class="flex-1 flex flex-col justify-between">
-				<div class="flex-1 flex flex-col items-center justify-center">
-					<div class="w-full max-w-2xl">
-						<header class="text-center mb-8">
-							<div class="flex items-center justify-center gap-3 mb-2">
-								<img src="/images/bots/{bot}.png" class="w-24 md:w-20" alt="{bot}-logo" />
-
-								<h1 class="text-2xl font-bold">AskBrett</h1>
-							</div>
-							<p class="text-xl text-gray-400">How can I help you today?</p>
-						</header>
-						<div class="mb-8">
-							<h2 class="text-sm font-semibold text-gray-400 mb-3 text-center">Suggested</h2>
-							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-								{#each promptLibrary as item}
-									<CardLibrary {item} />
-								{/each}
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="p-6">
-					<div class="max-w-2xl mx-auto">
-						<div class="relative">
-							<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
-
-							<p class="text-xs text-gray-500 mt-2 text-center">
-								Chatbots can make mistakes. Verify important information.
-							</p>
-						</div>
-					</div>
-				</div>
-			</Card.Content>
-		</Card.Root>
-	</div>
-</div>
+{/if}

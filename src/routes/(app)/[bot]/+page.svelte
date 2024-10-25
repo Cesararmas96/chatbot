@@ -204,7 +204,7 @@
 					<div class="p-6">
 						<div class="max-w-2xl mx-auto">
 							<div class="relative">
-								<ChatInput {isLoading} />
+								<!-- <ChatInput {isLoading} /> -->
 
 								<!-- <ChatInput
 									{isLoading}

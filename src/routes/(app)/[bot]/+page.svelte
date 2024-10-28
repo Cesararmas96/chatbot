@@ -12,6 +12,7 @@
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Menu } from 'lucide-svelte'
 	import LoaderCustom from '$lib/components/common/LoaderCustom.svelte'
+	import { fetchChatData } from '$lib/services/chatService'
 
 	let botData = null
 	let errorMessage = ''
@@ -20,6 +21,7 @@
 	let query = ''
 	let chatInputRef: any
 	let uuid = ''
+	let messages = [] // Para almacenar el historial de mensajes
 
 	$: botName = $page.params.bot?.toLowerCase() // Obtenemos el parámetro `bot` en minúsculas
 
@@ -56,11 +58,8 @@
 				true
 			)
 
-			// Buscar una coincidencia exacta con el botName
 			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
-
 			if (matchedBot) {
-				// Ahora que encontramos el bot correcto, hacer la llamada final a la API usando el nombre exacto
 				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
 				const data = await getApiData(
 					botApiUrl,
@@ -76,9 +75,8 @@
 					null,
 					true
 				)
-
 				if (data) {
-					botData = data[0] // Asignar datos del bot
+					botData = data[0]
 				} else {
 					errorMessage = `Bot with name ${botName} not found.`
 				}
@@ -212,6 +210,8 @@
 									on:submit={handleSubmit}
 									bind:this={chatInputRef}
 								/> -->
+
+								<ChatInput {isLoading} on:submit={handleSubmit} bind:this={chatInputRef} />
 
 								<p class="text-xs text-gray-500 mt-2 text-center">
 									Chatbots can make mistakes. Verify important information.

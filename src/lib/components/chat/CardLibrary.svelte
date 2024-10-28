@@ -75,7 +75,7 @@
 {:else if prompts.length > 0}
 	{#each prompts as prompt (prompt.prompt_id)}
 		<button on:click={() => handleItemClick(prompt.query)}>
-			<Card.Root class="bg-[#1E1E1E] border-gray-800 hover:bg-[#2A2A2A] transition-colors">
+			<Card.Root class=" border-gray-800 hover:bg-[#858585] transition-colors">
 				<Card.Content class="p-4 flex flex-col items-center justify-between">
 					<Lightbulb class="mb-2" />
 					<h3 class="font-semibold">{prompt.title}</h3>

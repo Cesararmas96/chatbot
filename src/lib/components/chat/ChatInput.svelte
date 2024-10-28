@@ -17,7 +17,7 @@
 	<Input
 		name="message"
 		placeholder="Send a message"
-		class="w-full bg-[#1E1E1E] border-gray-800 pr-20"
+		class="w-full border-gray-800 pr-20"
 		disabled={isLoading}
 		bind:value={query}
 		autofocus

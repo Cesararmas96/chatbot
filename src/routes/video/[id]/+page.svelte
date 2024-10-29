@@ -251,7 +251,7 @@
 	// Descargar imágenes seleccionadas como un archivo ZIP
 	const downloadSelectedFramesAsZip = async () => {
 		if (selectedFrames.size === 0) {
-			console.log('No frames selected.')
+			sendErrorNotification('No frames selected.')
 			return // No hay frames seleccionados
 		}
 
@@ -277,7 +277,7 @@
 			const content = await zip.generateAsync({ type: 'blob' })
 			saveAs(content, 'selected-frames.zip') // Descarga el archivo ZIP
 		} catch (error) {
-			console.error('Error creating ZIP file:', error)
+			sendErrorNotification('Error creating ZIP file:', error)
 		}
 	}
 

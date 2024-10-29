@@ -7,9 +7,11 @@
 	const dispatch = createEventDispatcher()
 	let query = ''
 
+	// Modificamos el handleSubmit para incluir el query en el evento
 	const handleSubmit = (event: Event) => {
 		event.preventDefault()
-		dispatch('submit', { query })
+		dispatch('submit', { query }) // Asegura que query se pase en el evento
+		query = '' // Limpiar el input después de enviar
 	}
 </script>
 

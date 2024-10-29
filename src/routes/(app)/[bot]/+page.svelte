@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { page } from '$app/stores' // Para obtener el nombre del bot desde la URL
+	import { page } from '$app/stores'
+	import { v4 as uuidv4 } from 'uuid'
+	import { goto } from '$app/navigation'
 	import { getApiData } from '$lib/services/getData.js'
+	import { fetchChatData } from '$lib/services/chatService'
 	import { storeUser } from '$lib/stores'
-
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import CardLibrary from '$lib/components/chat/CardLibrary.svelte'
+	import LoaderCustom from '$lib/components/common/LoaderCustom.svelte'
 	import * as Card from '$lib/components/ui/card/index.js'
-
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Menu } from 'lucide-svelte'
-	import LoaderCustom from '$lib/components/common/LoaderCustom.svelte'
-	import { fetchChatData } from '$lib/services/chatService'
-
 	let botData = null
 	let errorMessage = ''
 	let isLoading = true
@@ -21,16 +20,14 @@
 	let query = ''
 	let chatInputRef: any
 	let uuid = ''
-	let messages = [] // Para almacenar el historial de mensajes
+	let messages = []
 
-	$: botName = $page.params.bot?.toLowerCase() // Obtenemos el parámetro `bot` en minúsculas
+	$: botName = $page.params.bot?.toLowerCase()
 
 	export let data: any
 
 	$storeUser = data.user
 	const session = data.user ? data.user : $storeUser
-
-	console.log(session)
 
 	onMount(async () => {
 		if (!botName) {
@@ -39,9 +36,7 @@
 			return
 		}
 
-		// Hacer una llamada a la API para obtener la lista de todos los bots
 		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
-
 		try {
 			const botsList = await getApiData(
 				apiUrl,
@@ -53,11 +48,8 @@
 						Authorization: `Bearer ${session.token}`,
 						'Content-Type': 'application/json'
 					}
-				},
-				null,
-				true
+				}
 			)
-
 			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
 			if (matchedBot) {
 				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
@@ -71,30 +63,23 @@
 							Authorization: `Bearer ${session.token}`,
 							'Content-Type': 'application/json'
 						}
-					},
-					null,
-					true
+					}
 				)
-				if (data) {
-					botData = data[0]
-				} else {
-					errorMessage = `Bot with name ${botName} not found.`
-				}
+				botData = data ? data[0] : null
+				errorMessage = botData ? '' : `Bot with name ${botName} not found.`
 			} else {
 				errorMessage = `Bot with name ${botName} not found.`
 			}
 		} catch (error) {
-			errorMessage = 'An error occurred while fetching the bot data.'
-			console.error('Error fetching bot data:', error)
+			errorMessage = 'Error fetching bot data.'
+			console.error(error)
 		} finally {
 			isLoading = false
 		}
 	})
 
-	// Estado para manejar si el sidebar está visible
 	let isSidebarOpen = false
 
-	// Función para alternar la visibilidad del sidebar
 	const toggleSidebar = () => {
 		isSidebarOpen = !isSidebarOpen
 	}
@@ -103,50 +88,42 @@
 		isLoading = true
 		try {
 			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
-				bot,
+				botName,
 				query || lastQuery
 			)
 			const newMessage = {
 				text: response,
-				query: query,
-				answer: answer,
-				chat_history: chat_history,
-				sid: sid,
-				user_id: user_id,
-				chatbot_id: chatbotId,
-				at: at
+				query,
+				answer,
+				chat_history,
+				sid,
+				user_id: session.user_id,
+				chatbot_id: botData.chatbot_id,
+				at
 			}
 			messages = [...messages, newMessage]
 			query = ''
 
 			if (!uuid) {
 				uuid = uuidv4()
-				// Guardar los datos en IndexedDB con el nuevo pageId
-				const pageUrl = `/${bot}/${uuid}`
-				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
+				const pageUrl = `/${botName}/${uuid}`
 				localStorage.setItem('messages', JSON.stringify(messages))
 				goto(pageUrl)
 			} else {
-				// Actualizar los mensajes en IndexedDB para la página actual
 				const pageUrl = $page.url.pathname
-				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
 				localStorage.setItem('messages', JSON.stringify(messages))
 			}
 		} catch (error) {
-			console.error('There was a problem with the fetch operation:', error)
+			console.error('Fetch operation failed:', error)
 		} finally {
 			isLoading = false
 		}
 	}
 
-	const handleSubmit = async (event: CustomEvent) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
+		query = event.detail.query // Obtiene el query del evento de ChatInput
 		await handleFetchData()
-	}
-
-	function handleSelectQuery(event: CustomEvent<{ query: string }>) {
-		query = event.detail.query
-		chatInputRef.submitForm()
 	}
 </script>
 
@@ -202,15 +179,6 @@
 					<div class="p-6">
 						<div class="max-w-2xl mx-auto">
 							<div class="relative">
-								<!-- <ChatInput {isLoading} /> -->
-
-								<!-- <ChatInput
-									{isLoading}
-									bind:query
-									on:submit={handleSubmit}
-									bind:this={chatInputRef}
-								/> -->
-
 								<ChatInput {isLoading} on:submit={handleSubmit} bind:this={chatInputRef} />
 
 								<p class="text-xs text-gray-500 mt-2 text-center">

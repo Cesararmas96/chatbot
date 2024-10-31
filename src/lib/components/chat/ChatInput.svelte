@@ -1,21 +1,23 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte'
-	import { SendHorizontal } from 'lucide-svelte'
+	import { SendHorizontal, Loader } from 'lucide-svelte'
 	import { Input } from '$lib/components/ui/input/index.js'
 
-	export let isLoading = false
+	export let isLoading = false // Estado de carga desde el padre
 	const dispatch = createEventDispatcher()
 	let query = ''
 
-	// Modificamos el handleSubmit para incluir el query en el evento
+	// Manejador de envío de formulario con prevención de recarga
 	const handleSubmit = (event: Event) => {
-		event.preventDefault()
-		dispatch('submit', { query }) // Asegura que query se pase en el evento
-		query = '' // Limpiar el input después de enviar
+		event.preventDefault() // Prevenir el comportamiento de recarga
+		if (!isLoading && query.trim() !== '') {
+			// Solo dispara el evento si hay texto en el input
+			dispatch('submit', { query }) // Enviar el query actual al padre
+		}
 	}
 </script>
 
-<form class="flex items-center" on:submit={handleSubmit}>
+<form class="flex items-center" on:submit|preventDefault={handleSubmit}>
 	<Input
 		name="message"
 		placeholder="Send a message"
@@ -25,8 +27,20 @@
 		autofocus
 	/>
 	<div class="absolute right-4 flex items-center gap-2">
-		<button type="submit" size="icon" variant="ghost" disabled={isLoading}>
-			<SendHorizontal class="h-4 w-4" />
-		</button>
+		{#if isLoading}
+			<!-- Mostrar Loader mientras isLoading es true -->
+			<Loader class="h-4 w-4 animate-spin" />
+		{:else}
+			<!-- Botón de tipo button para controlar el submit sin recargas -->
+			<button
+				type="button"
+				size="icon"
+				variant="ghost"
+				on:click={handleSubmit}
+				disabled={isLoading}
+			>
+				<SendHorizontal class="h-4 w-4" />
+			</button>
+		{/if}
 	</div>
 </form>

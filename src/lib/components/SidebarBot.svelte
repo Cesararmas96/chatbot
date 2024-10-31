@@ -15,6 +15,7 @@
 	import { Separator } from '$lib/components/ui/separator/index.js'
 
 	import LoaderCustom from './common/LoaderCustom.svelte'
+	import { sendSuccessNotification } from '$lib/stores/toast'
 
 	import {
 		Home,
@@ -29,99 +30,71 @@
 	} from 'lucide-svelte'
 
 	let searchTerm = ''
-
 	export let chatbotid
 	export let session
-	export let isSidebarOpen // Recibir el estado de isSidebarOpen
-	export let toggleSidebar // Recibir la función toggleSidebar
+	export let isSidebarOpen
+	export let toggleSidebar
 
 	let user_id = session.user_id
-
 	let isLoading = false
+	let botName = $page.params.bot
 
-	// Definir la base de datos Dexie
+	// Configuración de la base de datos Dexie
 	const db = new Dexie('ChatDB')
 	db.version(1).stores({
 		users: '++id, &userId, name',
 		bots: '++id, &botId, userId',
-		messages: '++id, pageId, text, query, answer, chat_history, sid'
+		messages: '++id, pageId, text, query, answer, chat_history, sid, chatbot_id, user_id'
 	})
 
-	let botName = $page.params.bot
-	const bot = $page.params.bot
-	let hidden2 = false
 	let pageData = []
 
-	// Función para buscar los mensajes asociados con el bot y usuario
+	// Función para obtener mensajes asociados a un chatbot y usuario
 	async function fetchPageIds(chatbotid, user_id) {
 		isLoading = true
 		try {
-			const messages = await db.messages.toArray()
-			const pageDataArray = messages.filter(
+			const allMessages = await db.messages.toArray()
+			console.log('Todos los mensajes en IndexedDB:', allMessages)
+
+			const pageDataArray = allMessages.filter(
 				(message) => message.chatbot_id === chatbotid && message.user_id === user_id
 			)
+			console.log('Mensajes filtrados:', pageDataArray)
+
+			if (pageDataArray.length === 0) {
+				console.warn('No se encontraron mensajes que coincidan con el filtro')
+			}
 
 			pageData = Array.from(new Map(pageDataArray.map((item) => [item.pageId, item])).values())
+			console.log('pageData:', pageData)
 		} catch (error) {
 			console.error('Error fetching pageIds:', error)
 		} finally {
-			isLoading = false // Termina la carga
+			isLoading = false
 		}
 	}
 
-	// Filtrar los resultados en base al término de búsqueda
+	// Filtrar resultados según el término de búsqueda
 	$: filteredPageData = pageData.filter((data) =>
 		data.query.toLowerCase().includes(searchTerm.toLowerCase())
 	)
 
-	// Montar el componente y obtener los pageIds
 	onMount(() => {
 		fetchPageIds(chatbotid, user_id)
-
-		const button = document.getElementById('toggle-drawer-button')
-		if (button) button.addEventListener('click', toggleDrawer)
-
-		const closeButton = document.getElementById('close-drawer-button')
-		if (closeButton) closeButton.addEventListener('click', closeDrawer)
 	})
-
-	// Toggle sidebar visibility
-	const toggleDrawer = () => {
-		hidden2 = !hidden2
-		const sidebar = document.getElementById('default-sidebar')
-		if (sidebar) {
-			sidebar.classList.toggle('-translate-x-full')
-			sidebar.classList.toggle('translate-x-0')
-		}
-	}
-
-	// Función para cerrar el sidebar
-	const closeDrawer = () => {
-		hidden2 = true
-		const sidebar = document.getElementById('default-sidebar')
-		if (sidebar) {
-			sidebar.classList.add('-translate-x-full')
-			sidebar.classList.remove('translate-x-0')
-		}
-	}
 
 	// Función para eliminar un pageId
 	async function deletePageId(pageId: string) {
 		try {
-			// Elimina los mensajes asociados con el pageId
 			await db.messages.where('pageId').equals(pageId).delete()
 			sendSuccessNotification('Chat deleted successfully')
-
-			// Actualiza la lista de pageIds
 			await fetchPageIds(chatbotid, user_id)
 		} catch (error) {
 			console.error('Error deleting pageId:', error)
 		}
 	}
 
-	const currentUrl = $page.url
-	const newUrl = `${currentUrl.origin}`
-
+	// Formatear fechas para mostrar en el sidebar
 	function formatDate(created_at) {
 		const today = moment().startOf('day')
 		const yesterday = moment().subtract(1, 'days').startOf('day')
@@ -146,12 +119,9 @@
 		return false
 	}
 
-	// Acceder a la URL actual usando la store `page`
-	let currentPath = $page.url.pathname // Obtiene la ruta actual sin el dominio
-
-	// Función para navegar dinámicamente
+	// Navegación a la página específica de chat
 	function navigateToPage(pageId) {
-		goto(`${currentPath}/${pageId}`)
+		goto(`/${botName}/${pageId}`)
 	}
 </script>
 
@@ -164,20 +134,18 @@
 				<img src="/troc.png" alt="" class="w-12 h-12" />
 				<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
 			</a>
-
-			<!-- Botón alineado a la derecha -->
 			<Button on:click={toggleSidebar} class="bg-zinc-800 p-2 md:hidden ml-auto">
 				<Menu class="h-6 w-6 text-white" />
 			</Button>
 		</div>
 	</div>
 
-	<Button class=" mb-4 bg-white text-gray-900 hover:bg-gray-200">
+	<Button class="mb-4 bg-white text-gray-900 hover:bg-gray-200">
 		<Plus class="mr-2 h-4 w-4" />
 		New Chat
 	</Button>
 
-	<div class=" mb-4">
+	<div class="mb-4">
 		<div class="relative">
 			<Search class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
 			<Input
@@ -207,8 +175,7 @@
 						{/if}
 						<div class="hover:bg-gray-800 rounded-lg flex items-center justify-between group">
 							<a
-								target="_self"
-								href={`${currentPath}/${data.pageId}`}
+								href={`/${botName}/${data.pageId}`}
 								class="flex items-center w-full text-white dark:text-white group"
 							>
 								<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
@@ -248,9 +215,9 @@
 			<DropdownMenu.Trigger>
 				<div class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-800 p-2 rounded-lg">
 					<Avatar.Root>
-						<Avatar.Fallback class="bg-gray-600"
-							>{session.first_name[0]}{session.last_name[0]}</Avatar.Fallback
-						>
+						<Avatar.Fallback class="bg-gray-600">
+							{session.first_name[0]}{session.last_name[0]}
+						</Avatar.Fallback>
 					</Avatar.Root>
 					<div class="flex-grow">
 						<p class="text-sm font-medium text-left">{session.first_name} {session.last_name}</p>
@@ -258,14 +225,12 @@
 					</div>
 				</div>
 			</DropdownMenu.Trigger>
-
 			<DropdownMenu.Content class="w-56">
 				<DropdownMenu.Group>
 					<DropdownMenu.Item href="/bots" class="cursor-pointer">
 						<Home class="mr-2 h-4 w-4" />
 						<span>Home</span>
 					</DropdownMenu.Item>
-
 					<DropdownMenu.Item class="cursor-pointer">
 						<LogOut class="mr-2 h-4 w-4" />
 						<form action="/logout" method="POST" use:enhance>

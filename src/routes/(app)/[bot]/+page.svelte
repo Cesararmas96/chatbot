@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte'
 	import { page } from '$app/stores'
 	import { v4 as uuidv4 } from 'uuid'
-	import { goto } from '$app/navigation' // Importación de goto
+	import { goto } from '$app/navigation'
 	import { getApiData } from '$lib/services/getData.js'
 	import { fetchChatData } from '$lib/services/chatService'
 	import { sendErrorNotification } from '$lib/stores/toast'
@@ -14,11 +14,12 @@
 	import * as Card from '$lib/components/ui/card/index.js'
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Menu } from 'lucide-svelte'
+	import { db } from '$lib/db' // Importa tu base de datos IndexedDB
 
 	let botData = null
 	let errorMessage = ''
-	let isLoading = false
-	let initialLoad = true
+	let isLoading = false // Estado de carga
+	let initialLoad = true // Estado de carga inicial de la página
 	let botName = ''
 	let query = ''
 	let chatInputRef: any
@@ -109,20 +110,22 @@
 			messages = [...messages, newMessage]
 			query = '' // Limpiar el input solo si la respuesta es exitosa
 
-			// Si es el primer mensaje, genera un UUID, guarda los mensajes y redirige
+			// Guardar el primer mensaje en IndexedDB y redirigir
 			if (!uuid) {
-				uuid = uuidv4() // Generar el UUID para identificar el chat
+				uuid = uuidv4()
+				const pageUrl = `/${botName}/${uuid}`
+				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
+				console.log('Mensajes guardados en IndexedDB:', messages)
 				localStorage.setItem('messages', JSON.stringify(messages))
-
-				// Redirige a la página de conversación completa
-				await goto(`/${botName}/${uuid}`)
+				await goto(pageUrl) // Redirigir a la nueva página
 			} else {
-				// Si ya estamos en una conversación, actualiza los mensajes en localStorage
+				const pageUrl = $page.url.pathname
+				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
 				localStorage.setItem('messages', JSON.stringify(messages))
 			}
 		} catch (error) {
 			console.error('Fetch operation failed:', error)
-			sendErrorNotification('Error: Unable to fetch data. Please try again.') // Notificación de error
+			sendErrorNotification('Error: Unable to fetch data. Please try again.')
 		} finally {
 			isLoading = false
 		}
@@ -135,83 +138,36 @@
 	}
 </script>
 
+<!-- Mostrar la UI -->
 {#if initialLoad}
-	<!-- Solo mostrar LoaderCustom durante la carga inicial -->
 	<LoaderCustom />
 {:else if errorMessage}
 	<p class="error">{errorMessage}</p>
 {:else if botData && botData.chatbot_id}
 	<div class="flex flex-col md:flex-row h-screen bg-black text-white">
-		<!-- Mobile header with button to toggle sidebar -->
-		<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
-			<a href="/home" class="flex items-center">
-				<img src="/troc.png" alt="" class="w-12 h-12" />
-				<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
-			</a>
-			<Button on:click={toggleSidebar} class="bg-zinc-800 p-2">
-				<Menu class="h-6 w-6 text-white" />
-			</Button>
-		</div>
-
-		<!-- Sidebar section -->
-		<SidebarBot chatbotid={botData.id} {isSidebarOpen} {toggleSidebar} {session} />
-
-		<!-- Main content section -->
+		<!-- Sidebar y secciones de UI -->
+		<SidebarBot chatbotid={botData.chatbot_id} {isSidebarOpen} {toggleSidebar} {session} />
 		<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
 			<Card.Root class="flex flex-col flex-1">
 				<Card.Content class="flex-1 flex flex-col justify-between">
 					<div class="flex-1 flex flex-col items-center justify-center">
 						<div class="w-full max-w-2xl">
 							<header class="text-center mb-8">
-								<div class="flex items-center justify-center gap-3 mb-2">
-									<img
-										src="/images/bots/{botData.name}.png"
-										class="w-24 md:w-20"
-										alt="{botData.name}-logo"
-									/>
-									<h1 class="text-2xl font-bold">{botData.name}</h1>
-								</div>
+								<h1 class="text-2xl font-bold">{botData.name}</h1>
 								<p class="text-xl text-gray-400">How can I help you today?</p>
 							</header>
-							<div class="mb-8">
-								<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-									{#if botData.chatbot_id}
-										<CardLibrary {session} chatbotId={botData.chatbot_id} />
-									{:else}
-										<p>Error: chatbotId is missing</p>
-									{/if}
-								</div>
-							</div>
+							<CardLibrary {session} chatbotId={botData.chatbot_id} />
 						</div>
 					</div>
 					<div class="p-6">
 						<div class="max-w-2xl mx-auto">
 							<div class="relative">
-								{#if !chatStarted}
-									<!-- Input para enviar consulta -->
-									<ChatInput
-										{isLoading}
-										on:submit={handleSubmit}
-										bind:this={chatInputRef}
-										bind:query
-									/>
-								{:else}
-									<!-- Vista de conversación sin recarga -->
-									<div class="chatbox">
-										{#each messages as message}
-											<div class="message">
-												<p><strong>User:</strong> {message.query}</p>
-												<p><strong>Bot:</strong> {message.text}</p>
-											</div>
-										{/each}
-										<ChatInput
-											{isLoading}
-											on:submit={handleSubmit}
-											bind:this={chatInputRef}
-											bind:query
-										/>
-									</div>
-								{/if}
+								<ChatInput
+									{isLoading}
+									on:submit={handleSubmit}
+									bind:this={chatInputRef}
+									bind:query
+								/>
 								<p class="text-xs text-gray-500 mt-2 text-center">
 									Chatbots can make mistakes. Verify important information.
 								</p>

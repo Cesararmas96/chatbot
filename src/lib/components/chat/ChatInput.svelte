@@ -5,15 +5,17 @@
 
 	export let isLoading = false // Estado de carga desde el padre
 	const dispatch = createEventDispatcher()
-	let query = ''
+	export let query = ''
 
-	// Manejador de envío de formulario con prevención de recarga
-	const handleSubmit = (event: Event) => {
-		event.preventDefault() // Prevenir el comportamiento de recarga
+	export function submitQuery() {
 		if (!isLoading && query.trim() !== '') {
-			// Solo dispara el evento si hay texto en el input
-			dispatch('submit', { query }) // Enviar el query actual al padre
+			dispatch('submit', { query })
 		}
+	}
+
+	const handleSubmit = (event: Event) => {
+		event.preventDefault()
+		submitQuery()
 	}
 </script>
 
@@ -21,7 +23,7 @@
 	<Input
 		name="message"
 		placeholder="Send a message"
-		class="w-full border-gray-800 pr-20 text-black"
+		class="w-full bg-gray-800 border-gray-700 text-white  pr-20 "
 		disabled={isLoading}
 		bind:value={query}
 		autofocus
@@ -38,8 +40,9 @@
 				variant="ghost"
 				on:click={handleSubmit}
 				disabled={isLoading}
+				class=" h-8 w-8 bg-purple-600 hover:bg-purple-700 transition-colors rounded-sm flex justify-center items-center"
 			>
-				<SendHorizontal class="h-4 w-4" />
+				<SendHorizontal class="h-4 w-4 text-white" />
 			</button>
 		{/if}
 	</div>

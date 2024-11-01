@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import { page } from '$app/stores'
 	import { v4 as uuidv4 } from 'uuid'
 	import { goto } from '$app/navigation'
@@ -132,16 +132,33 @@
 		query = event.detail.query
 		await handleFetchData()
 	}
+
+	const handleSelectQuery = async (event) => {
+		query = event.detail.query // Actualiza el query
+		await tick() // Espera a que Svelte actualice el DOM y los bindings
+
+		if (chatInputRef) {
+			chatInputRef.submitQuery() // Llama al método público para enviar el formulario
+		}
+	}
 </script>
 
 <div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
-	<Card.Root class="flex flex-col flex-1">
+	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-gray-800">
 		<Card.Content class="flex-1 flex flex-col justify-between">
 			<div class="flex-1 flex flex-col items-center justify-center">
 				<div class="w-full max-w-2xl">
 					<header class="text-center mb-8">
 						{#if botData}
-							<h1 class="text-2xl font-bold">{botData.name}</h1>
+							<div class="flex justify-center mt-2">
+								<img
+									src="/images/bots/{botData.name}.png"
+									class="w-32 md:w-36"
+									alt="{botData.name}-logo"
+								/>
+							</div>
+
+							<h1 class="text-2xl font-bold text-white">{botData.name}</h1>
 						{:else if initialLoad}
 							<p class="text-gray-400">Loading bot data...</p>
 						{:else}
@@ -150,7 +167,22 @@
 						<p class="text-xl text-gray-400">How can I help you today?</p>
 					</header>
 					{#if botData}
-						<CardLibrary {session} chatbotId={botData.chatbot_id} />
+						<div class="flex-1 p-6 flex flex-col items-center justify-center w-full max-w-2xl">
+							<div
+								class="overflow-y-auto w-full
+                max-h-[calc(100vh-550px)]
+                md:max-h-[calc(100vh-400px)]
+                lg:max-h-[calc(100vh-470px)] custom-scrollbar"
+							>
+								<!-- Agrega un scroll con altura máxima -->
+								<CardLibrary
+									{session}
+									chatbotId={botData.chatbot_id}
+									on:selectQuery={handleSelectQuery}
+									class="w-full"
+								/>
+							</div>
+						</div>
 					{/if}
 				</div>
 			</div>
@@ -167,3 +199,24 @@
 		</Card.Content>
 	</Card.Root>
 </div>
+
+<style>
+	/* Estilos para la barra de scroll */
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 0px; /* Ancho de la barra */
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: #1f2937; /* Color de fondo de la pista */
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		background-color: #4b5563; /* Color del pulgar (thumb) */
+		border-radius: 4px; /* Esquinas redondeadas */
+		border: 2px solid #1f2937; /* Espacio alrededor del pulgar */
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+		background-color: #6b7280; /* Color al pasar el mouse */
+	}
+</style>

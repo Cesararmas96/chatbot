@@ -6,13 +6,11 @@
 	import * as Card from '$lib/components/ui/card/index.js'
 
 	import { getApiData } from '$lib/services/getData.js'
-	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { sendErrorNotification } from '$lib/stores/toast'
 	import LoaderCustom from '../common/LoaderCustom.svelte'
 
 	export let chatbotId
 	export let session
-
-	console.log(session.token)
 
 	let isLoading = true
 	let errorMessage = ''
@@ -23,7 +21,6 @@
 	function handleItemClick(query: string) {
 		dispatch('selectQuery', { query })
 	}
-
 	// Función que busca los datos del prompt library
 	const fetchLibrary = async () => {
 		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/prompt_library?chatbot_id=${chatbotId}`
@@ -67,24 +64,24 @@
 	})
 </script>
 
-<!-- Mensaje de carga -->
 {#if isLoading}
 	<LoaderCustom />
-
-	<!-- Mostrar prompts -->
 {:else if prompts.length > 0}
-	{#each prompts as prompt (prompt.prompt_id)}
-		<button on:click={() => handleItemClick(prompt.query)}>
-			<Card.Root class=" border-gray-800 hover:bg-[#858585] transition-colors">
-				<Card.Content class="p-4 flex flex-col items-center justify-between">
-					<Lightbulb class="mb-2" />
-					<h3 class="font-semibold">{prompt.title}</h3>
-				</Card.Content>
-			</Card.Root>
-		</button>
-	{/each}
-
-	<!-- Si no hay prompts disponibles -->
+	<div class="grid gap-4 max-w-2xl mx-auto">
+		{#each prompts as prompt (prompt.prompt_id)}
+			<button
+				on:click={() => handleItemClick(prompt.query)}
+				class="group flex items-center gap-3 p-3 md:p-4 rounded-xl border text-white bg-gray-700 hover:text-white border-gray-800 hover:bg-gray-900 transition-all duration-200 text-left w-full"
+			>
+				<div
+					class="w-8 h-8 rounded-lg bg-purple-600/10 flex items-center justify-center group-hover:bg-purple-600/20 transition-colors"
+				>
+					<Lightbulb class="w-4 h-4 text-purple-400" />
+				</div>
+				<span class="flex-1 text-sm md:text-base">{prompt.title}</span>
+			</button>
+		{/each}
+	</div>
 {:else}
-	no
+	<p>No prompts available</p>
 {/if}

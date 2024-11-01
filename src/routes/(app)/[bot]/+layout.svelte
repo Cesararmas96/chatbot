@@ -306,7 +306,7 @@
 							{/if}
 							<div class="hover:bg-gray-800 rounded-lg flex items-center justify-between group">
 								<a
-									href={`/${botName}/${data.pageId}`}
+									href={`${data.pageId}`}
 									class="flex items-center w-full text-white dark:text-white group"
 								>
 									<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">

@@ -168,7 +168,9 @@
 			console.log('fetchPageIds finalizado.')
 		}
 	}
-
+	$: filteredPageData = pageData.filter((data) =>
+		data.query.toLowerCase().includes(searchTerm.toLowerCase())
+	)
 	async function deletePageId(pageId: string) {
 		console.log('Intentando eliminar el pageId:', pageId, 'con chatbotid:', chatbotid)
 		try {

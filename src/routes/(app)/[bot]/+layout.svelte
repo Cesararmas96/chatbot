@@ -1,1 +1,382 @@
-<slot />
+<script lang="ts">
+	import { onMount } from 'svelte'
+	import moment from 'moment'
+	import Dexie from 'dexie'
+	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
+	import { Button } from '$lib/components/ui/button/index.js'
+	import { Input } from '$lib/components/ui/input/index.js'
+	import { Label } from '$lib/components/ui/label/index.js'
+	import * as Avatar from '$lib/components/ui/avatar/index.js'
+	import * as RadioGroup from '$lib/components/ui/radio-group/index.js'
+	import { Separator } from '$lib/components/ui/separator/index.js'
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
+	import {
+		Upload,
+		FileAudio,
+		Plus,
+		LogOut,
+		Home,
+		Search,
+		Loader,
+		Menu,
+		MoreVertical,
+		MessageSquare,
+		Trash2
+	} from 'lucide-svelte'
+
+	import { enhance } from '$app/forms'
+	import { getApiData } from '$lib/services/getData'
+	import { jobsListStore } from '$lib/stores/jobsStore.ts'
+	import { storeUser } from '$lib/stores'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import LoaderCustom from '$lib/components/common/LoaderCustom.svelte'
+	export let data: any
+
+	$storeUser = data.user
+	const session = data.user ? data.user : $storeUser
+
+	let inputType = 'file'
+	let searchTerm = ''
+	let jobsList = []
+	let chatbotid
+	let user_id = session.user_id
+	let isLoading = false
+	let botName = $page.params.bot
+	let filteredPageData = [] // Asegúrate de declarar esta variable
+	let pageData = []
+	let errorMessage = ''
+	let botData = null
+	let initialLoad = true
+
+	// Configuración de la base de datos Dexie
+	const db = new Dexie('ChatDB')
+	db.version(1).stores({
+		users: '++id, &userId, name',
+		bots: '++id, &botId, userId',
+		messages: '++id, pageId, text, query, answer, chat_history, sid, chatbot_id, user_id'
+	})
+
+	onMount(async () => {
+		console.log('Iniciando onMount...')
+		if (!botName) {
+			errorMessage = 'Bot name is missing in the URL'
+			console.error('Error: Bot name is missing in the URL')
+			initialLoad = false
+			return
+		}
+
+		console.log('Nombre del bot desde la URL:', botName)
+
+		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
+		console.log('URL de la API para obtener bots:', apiUrl)
+
+		try {
+			const botsList = await getApiData(
+				apiUrl,
+				'GET',
+				{},
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${session.token}`,
+						'Content-Type': 'application/json'
+					}
+				}
+			)
+			console.log('Respuesta de la lista de bots:', botsList)
+
+			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
+			console.log('Bot encontrado:', matchedBot)
+
+			if (matchedBot) {
+				// chatbotid = matchedBot.id
+				// console.log('chatbotid asignado:', chatbotid)
+
+				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
+				console.log('URL de la API para obtener datos específicos del bot:', botApiUrl)
+
+				const data = await getApiData(
+					botApiUrl,
+					'GET',
+					{},
+					{},
+					{
+						headers: {
+							Authorization: `Bearer ${session.token}`,
+							'Content-Type': 'application/json'
+						}
+					}
+				)
+				console.log('Datos del bot individual:', data)
+				botData = data ? data[0] : null
+				errorMessage = botData ? '' : `Bot con nombre ${botName} no encontrado.`
+				console.log('botData asignado:', botData)
+				if (botData) {
+					chatbotid = botData.chatbot_id // Asigna chatbotid desde botData.chatbot_id
+					console.log('chatbotid actualizado desde botData:', chatbotid)
+				}
+			} else {
+				errorMessage = `Bot con nombre ${botName} no encontrado.`
+				console.warn(errorMessage)
+			}
+		} catch (error) {
+			errorMessage = 'Error al obtener datos del bot.'
+			console.error('Error en la llamada a la API:', error)
+		} finally {
+			initialLoad = false
+			console.log('Carga inicial finalizada.')
+		}
+
+		if (chatbotid) {
+			console.log('Llamando a fetchPageIds...')
+			await fetchPageIds(chatbotid, user_id)
+		} else {
+			console.warn('chatbotid no está definido. No se llamará a fetchPageIds.')
+		}
+	})
+
+	async function fetchPageIds(chatbotid: string, user_id: string) {
+		console.log('Llamada a fetchPageIds con chatbotid:', chatbotid, 'y user_id:', user_id)
+		isLoading = true
+		try {
+			const allMessages = await db.messages.toArray()
+			console.log('Todos los mensajes en IndexedDB:', allMessages)
+
+			const pageDataArray = allMessages.filter(
+				(message) => message.chatbot_id === chatbotid && message.user_id === user_id
+			)
+			console.log('Mensajes filtrados:', pageDataArray)
+
+			if (pageDataArray.length === 0) {
+				console.warn('No se encontraron mensajes que coincidan con el filtro')
+			}
+
+			pageData = Array.from(new Map(pageDataArray.map((item) => [item.pageId, item])).values())
+			console.log('Datos de las páginas después de filtrar:', pageData)
+
+			// Actualizar filteredPageData al terminar de obtener los datos
+			filteredPageData = pageData.filter((data) =>
+				data.query.toLowerCase().includes(searchTerm.toLowerCase())
+			)
+			console.log('filteredPageData actualizado:', filteredPageData)
+		} catch (error) {
+			console.error('Error al obtener pageIds:', error)
+		} finally {
+			isLoading = false
+			console.log('fetchPageIds finalizado.')
+		}
+	}
+
+	async function deletePageId(pageId: string) {
+		console.log('Intentando eliminar el pageId:', pageId, 'con chatbotid:', chatbotid)
+		try {
+			if (!chatbotid) {
+				console.warn('El chatbot ID no está definido.')
+				return
+			}
+			await db.messages
+				.where('pageId')
+				.equals(pageId)
+				.and((msg) => msg.chatbot_id === chatbotid)
+				.delete()
+			console.log(`PageId ${pageId} eliminado correctamente.`)
+			sendSuccessNotification('Chat eliminado exitosamente')
+			console.log('Llamando a fetchPageIds después de eliminar.')
+			await fetchPageIds(chatbotid, user_id)
+		} catch (error) {
+			console.error('Error al eliminar el pageId:', error)
+		}
+	}
+
+	function formatDate(created_at) {
+		console.log('Formateando la fecha:', created_at)
+		const today = moment().startOf('day')
+		const yesterday = moment().subtract(1, 'days').startOf('day')
+
+		if (moment(created_at).isSame(today, 'day')) {
+			return 'Today'
+		} else if (moment(created_at).isSame(yesterday, 'day')) {
+			return 'Yesterday'
+		} else {
+			return moment(created_at).format('DD MMM YYYY')
+		}
+	}
+
+	let lastDate = ''
+
+	function isDifferentDate(date) {
+		console.log('Verificando si la fecha es diferente:', date)
+		const formattedDate = formatDate(date)
+		console.log('Fecha formateada:', formattedDate, 'última fecha conocida:', lastDate)
+		if (formattedDate !== lastDate) {
+			lastDate = formattedDate
+			return true
+		}
+		return false
+	}
+
+	function navigateToPage(pageId) {
+		console.log('Navegando a la página con pageId:', pageId, 'y chatbotid:', chatbotid)
+		if (!chatbotid) {
+			console.warn('El chatbot ID no está definido. No se puede navegar.')
+			return
+		}
+		goto(`/${botName}/${pageId}`)
+	}
+
+	let isSidebarOpen = false
+
+	const toggleSidebar = () => {
+		isSidebarOpen = !isSidebarOpen
+		console.log('Sidebar toggled. Estado actual:', isSidebarOpen)
+	}
+</script>
+
+<!-- Contenedor general -->
+<div class="flex flex-col md:flex-row h-screen bg-black text-white">
+	<!-- Botón para mostrar/ocultar el sidebar en versión móvil -->
+	<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
+		<a href="/video" class="flex items-center">
+			<img src="/troc.png" alt="" class="w-12 h-12" />
+			<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
+		</a>
+		<Button on:click={toggleSidebar} class="bg-zinc-800 p-2">
+			<Menu class="h-6 w-6 text-white" />
+		</Button>
+	</div>
+
+	<!-- Sidebar -->
+	<div
+		class={`w-full md:w-64 bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
+	>
+		<div class="flex items-center justify-between mb-4">
+			<div class="flex items-center w-full">
+				<a href="/video" class="flex justify-center items-center">
+					<img src="/troc.png" alt="" class="w-12 h-12" />
+					<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
+				</a>
+
+				<!-- Botón alineado a la derecha -->
+				<Button on:click={toggleSidebar} class="bg-zinc-800 p-2 md:hidden ml-auto">
+					<Menu class="h-6 w-6 text-white" />
+				</Button>
+			</div>
+		</div>
+
+		<Button
+			href="/video"
+			class="mb-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+		>
+			<Plus class="h-4 w-4 mr-2" /> New Chat
+		</Button>
+
+		<div class="relative mb-4">
+			<Search class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+			<Input
+				placeholder="Search chats..."
+				class="pl-8 bg-gray-800 border-gray-700 text-white"
+				bind:value={searchTerm}
+			/>
+		</div>
+
+		<nav class="space-y-6 flex-grow overflow-hidden">
+			<div>
+				<h2 class="text-sm font-semibold mb-2">List Chats</h2>
+				<ScrollArea
+					class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800"
+				>
+					{#if isLoading}
+						<LoaderCustom />
+
+						loader
+					{:else if filteredPageData.length == 0}
+						<p class="absolute inset-0 flex justify-center items-center text-center text-gray-400">
+							No chat found.
+						</p>
+					{:else}
+						{#each filteredPageData.slice().reverse() as data}
+							{#if isDifferentDate(data.at)}
+								<div class="px-2 py-2 text-sm font-semibold text-gray-400">
+									{formatDate(data.at)}
+								</div>
+							{/if}
+							<div class="hover:bg-gray-800 rounded-lg flex items-center justify-between group">
+								<a
+									href={`/${botName}/${data.pageId}`}
+									class="flex items-center w-full text-white dark:text-white group"
+								>
+									<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
+										<MessageSquare size={18} />
+										<span class="text-sm truncate">
+											{data.query.length > 25 ? `${data.query.slice(0, 25)}...` : data.query}
+										</span>
+									</div>
+								</a>
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger>
+										<Button
+											variant="ghost"
+											size="icon"
+											class="h-8 w-8 p-0 opacity-0 group-hover:opacity-100"
+										>
+											<MoreVertical size={18} />
+										</Button>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content align="end" class="w-32">
+										<DropdownMenu.Item on:click={() => deletePageId(data.pageId)}>
+											<Trash2 class="mr-2 h-4 w-4" />
+											<span>Delete</span>
+										</DropdownMenu.Item>
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
+							</div>
+						{/each}
+					{/if}
+				</ScrollArea>
+			</div>
+		</nav>
+
+		<Separator class="my-4" />
+
+		<div class="mt-auto">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					<div class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-800 p-2 rounded-lg">
+						<Avatar.Root>
+							<Avatar.Fallback class="bg-gray-600">
+								{session.first_name[0] + session.last_name[0]}</Avatar.Fallback
+							>
+						</Avatar.Root>
+						<div class="flex-grow">
+							<p class="text-sm font-medium text-left">{session.first_name} {session.last_name}</p>
+							<p class="text-xs text-gray-400">{session.email}</p>
+						</div>
+					</div>
+				</DropdownMenu.Trigger>
+
+				<DropdownMenu.Content class="w-56">
+					<DropdownMenu.Group>
+						<DropdownMenu.Item href="/bots" class="cursor-pointer">
+							<Home class="mr-2 h-4 w-4" />
+							<span>Home</span>
+						</DropdownMenu.Item>
+
+						<DropdownMenu.Item class="cursor-pointer">
+							<LogOut class="mr-2 h-4 w-4" />
+							<form action="/logout" method="POST" use:enhance>
+								<button type="submit">
+									<span>Logout</span>
+								</button>
+							</form>
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
+	</div>
+
+	<!-- Main Content -->
+	<slot />
+</div>

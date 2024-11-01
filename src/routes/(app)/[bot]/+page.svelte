@@ -7,10 +7,8 @@
 	import { fetchChatData } from '$lib/services/chatService'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { storeUser } from '$lib/stores'
-	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import CardLibrary from '$lib/components/chat/CardLibrary.svelte'
-	import LoaderCustom from '$lib/components/common/LoaderCustom.svelte'
 	import * as Card from '$lib/components/ui/card/index.js'
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Menu } from 'lucide-svelte'
@@ -55,6 +53,7 @@
 					}
 				}
 			)
+
 			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
 			if (matchedBot) {
 				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
@@ -79,7 +78,7 @@
 			errorMessage = 'Error fetching bot data.'
 			console.error(error)
 		} finally {
-			initialLoad = false
+			initialLoad = false // Marcar que la carga inicial ha terminado
 		}
 	})
 
@@ -89,7 +88,6 @@
 		isSidebarOpen = !isSidebarOpen
 	}
 
-	// Manejo del envío de la consulta con control de errores y carga
 	const handleFetchData = async () => {
 		isLoading = true
 		try {
@@ -104,7 +102,7 @@
 				chat_history,
 				sid,
 				user_id: session.user_id,
-				chatbot_id: botData.chatbot_id,
+				chatbot_id: botData?.chatbot_id, // Acceso seguro
 				at
 			}
 			messages = [...messages, newMessage]
@@ -115,7 +113,6 @@
 				uuid = uuidv4()
 				const pageUrl = `/${botName}/${uuid}`
 				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
-				console.log('Mensajes guardados en IndexedDB:', messages)
 				localStorage.setItem('messages', JSON.stringify(messages))
 				await goto(pageUrl) // Redirigir a la nueva página
 			} else {
@@ -124,7 +121,6 @@
 				localStorage.setItem('messages', JSON.stringify(messages))
 			}
 		} catch (error) {
-			console.error('Fetch operation failed:', error)
 			sendErrorNotification('Error: Unable to fetch data. Please try again.')
 		} finally {
 			isLoading = false
@@ -138,44 +134,36 @@
 	}
 </script>
 
-<!-- Mostrar la UI -->
-{#if initialLoad}
-	<LoaderCustom />
-{:else if errorMessage}
-	<p class="error">{errorMessage}</p>
-{:else if botData && botData.chatbot_id}
-	<div class="flex flex-col md:flex-row h-screen bg-black text-white">
-		<!-- Sidebar y secciones de UI -->
-		<SidebarBot chatbotid={botData.chatbot_id} {isSidebarOpen} {toggleSidebar} {session} />
-		<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
-			<Card.Root class="flex flex-col flex-1">
-				<Card.Content class="flex-1 flex flex-col justify-between">
-					<div class="flex-1 flex flex-col items-center justify-center">
-						<div class="w-full max-w-2xl">
-							<header class="text-center mb-8">
-								<h1 class="text-2xl font-bold">{botData.name}</h1>
-								<p class="text-xl text-gray-400">How can I help you today?</p>
-							</header>
-							<CardLibrary {session} chatbotId={botData.chatbot_id} />
-						</div>
+<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
+	<Card.Root class="flex flex-col flex-1">
+		<Card.Content class="flex-1 flex flex-col justify-between">
+			<div class="flex-1 flex flex-col items-center justify-center">
+				<div class="w-full max-w-2xl">
+					<header class="text-center mb-8">
+						{#if botData}
+							<h1 class="text-2xl font-bold">{botData.name}</h1>
+						{:else if initialLoad}
+							<p class="text-gray-400">Loading bot data...</p>
+						{:else}
+							<p class="text-red-500">Bot data is not available. Please try again later.</p>
+						{/if}
+						<p class="text-xl text-gray-400">How can I help you today?</p>
+					</header>
+					{#if botData}
+						<CardLibrary {session} chatbotId={botData.chatbot_id} />
+					{/if}
+				</div>
+			</div>
+			<div class="p-6">
+				<div class="max-w-2xl mx-auto">
+					<div class="relative">
+						<ChatInput {isLoading} on:submit={handleSubmit} bind:this={chatInputRef} bind:query />
+						<p class="text-xs text-gray-500 mt-2 text-center">
+							Chatbots can make mistakes. Verify important information.
+						</p>
 					</div>
-					<div class="p-6">
-						<div class="max-w-2xl mx-auto">
-							<div class="relative">
-								<ChatInput
-									{isLoading}
-									on:submit={handleSubmit}
-									bind:this={chatInputRef}
-									bind:query
-								/>
-								<p class="text-xs text-gray-500 mt-2 text-center">
-									Chatbots can make mistakes. Verify important information.
-								</p>
-							</div>
-						</div>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
-	</div>
-{/if}
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
+</div>

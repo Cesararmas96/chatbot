@@ -144,7 +144,7 @@
 </script>
 
 <div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
-	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-gray-800">
+	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-none">
 		<Card.Content class="flex-1 flex flex-col justify-between">
 			<div class="flex-1 flex flex-col items-center justify-center">
 				<div class="w-full max-w-2xl">
@@ -152,9 +152,9 @@
 						{#if botData}
 							<div class="flex justify-center mt-2">
 								<img
-									src="/images/bots/{botData.name}.png"
+									src="/images/bots/{botData.name.toLowerCase()}.png"
 									class="w-32 md:w-36"
-									alt="{botData.name}-logo"
+									alt="{botData.name.toLowerCase()}-logo"
 								/>
 							</div>
 
@@ -186,12 +186,12 @@
 					{/if}
 				</div>
 			</div>
-			<div class="p-6">
+			<div class="border-t border-gray-800 p-4 bottom-0 left-0 right-0 pt-[60px]">
 				<div class="max-w-2xl mx-auto">
 					<div class="relative">
 						<ChatInput {isLoading} on:submit={handleSubmit} bind:this={chatInputRef} bind:query />
 						<p class="text-xs text-gray-500 mt-2 text-center">
-							Chatbots can make mistakes. Verify important information.
+							Chatbots can make mistakes. Verify important informationsss.
 						</p>
 					</div>
 				</div>
@@ -199,24 +199,3 @@
 		</Card.Content>
 	</Card.Root>
 </div>
-
-<style>
-	/* Estilos para la barra de scroll */
-	.custom-scrollbar::-webkit-scrollbar {
-		width: 0px; /* Ancho de la barra */
-	}
-
-	.custom-scrollbar::-webkit-scrollbar-track {
-		background: #1f2937; /* Color de fondo de la pista */
-	}
-
-	.custom-scrollbar::-webkit-scrollbar-thumb {
-		background-color: #4b5563; /* Color del pulgar (thumb) */
-		border-radius: 4px; /* Esquinas redondeadas */
-		border: 2px solid #1f2937; /* Espacio alrededor del pulgar */
-	}
-
-	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-		background-color: #6b7280; /* Color al pasar el mouse */
-	}
-</style>

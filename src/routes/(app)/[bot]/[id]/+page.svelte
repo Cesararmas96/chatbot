@@ -9,6 +9,9 @@
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { get } from 'svelte/store'
 	import { marked } from 'marked'
+	import Avatar from '$lib/components/common/Avatar.svelte'
+
+	import { Clipboard, Share2, RefreshCw, ThumbsUp, ThumbsDown, Flag } from 'lucide-svelte'
 
 	let bot = ''
 	let chatbotId = ''
@@ -106,15 +109,18 @@
 {#if messages.length > 0}
 	<div class="chatbox flex flex-col h-screen w-full">
 		<div class="main-content flex-1 flex flex-col">
-			<div class="scroll-area flex-1 p-6 overflow-auto" bind:this={messagesContainer}>
-				<div class="mx-auto space-y-4">
+			<div
+				class="scroll-area custom-scrollbar2 flex-1 p-6 overflow-auto"
+				bind:this={messagesContainer}
+			>
+				<div class="mx-auto space-y-4 md:px-32">
 					{#each messages as message}
 						{#if message.query}
-							<div class="message-container flex items-start gap-3 flex-row-reverse">
+							<div class="message-container flex items-start gap-3 flex-row-reverse pb-5">
 								<div
 									class="avatar w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0"
 								>
-									U
+									<Avatar showFullName={false} />
 								</div>
 								<div class="message bg-purple-600 p-4 rounded-lg max-w-[80%]">
 									{message.query}
@@ -122,19 +128,44 @@
 							</div>
 						{/if}
 						{#if message.text}
-							<div class="message-container flex items-start gap-3">
-								<div
-									class="avatar w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0"
-								>
-									<svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor">
-										<path
-											d="M4.5 10.5C4.5 6.91015 7.41015 4 11 4C13.9124 4 16.3953 5.90328 17.2809 8.5H17.5C20.2614 8.5 22.5 10.7386 22.5 13.5C22.5 16.2614 20.2614 18.5 17.5 18.5H6.5C4.01472 18.5 2 16.4853 2 14C2 11.9621 3.37432 10.2292 5.25 9.76221Z"
-										></path>
-									</svg>
+							<div class="message-container flex flex-col gap-3">
+								<div class="flex">
+									<div class="h-10 w-10 flex-shrink-0 mr-3">
+										<img
+											src={`/images/bots/${bot.toLowerCase() ? bot.toLowerCase() : 'default'}.png`}
+											alt="{bot}-logo"
+											class="h-10 w-10"
+										/>
+									</div>
+
+									<div class="message">
+										{@html marked(message.text)}
+									</div>
 								</div>
-								<div class="message bg-gray-800 p-4 rounded-lg max-w-[80%]">
-									{message.text}
-									{@html marked(message.text)}
+								<div class="flex mt-2 mb-2 ml-12">
+									<button class="mr-3">
+										<Share2 class="h-4 w-4" />
+									</button>
+
+									<button class="mr-3">
+										<Clipboard class="h-4 w-4" />
+									</button>
+
+									<button class="mr-3">
+										<RefreshCw class="h-4 w-4" />
+									</button>
+
+									<button class="mr-3">
+										<ThumbsUp class="h-4 w-4" />
+									</button>
+
+									<button class="mr-3">
+										<ThumbsDown class="h-4 w-4" />
+									</button>
+
+									<button class="mr-3">
+										<Flag class="h-4 w-4" />
+									</button>
 								</div>
 							</div>
 						{/if}
@@ -147,9 +178,9 @@
 					<div class="relative">
 						<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
 					</div>
-					<div class="text-center mt-2 text-sm text-gray-400">
+					<p class="text-xs text-gray-500 mt-2 text-center">
 						Chatbots can make mistakes. Verify important information.
-					</div>
+					</p>
 				</div>
 			</div>
 		</div>

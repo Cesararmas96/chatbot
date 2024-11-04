@@ -39,7 +39,9 @@
 				true
 			)
 
-			bots = fetchedBots.sort((a, b) => a.name.localeCompare(b.name))
+			bots = fetchedBots
+				.filter((bot) => bot.name === 'AskBrett')
+				.sort((a, b) => a.name.localeCompare(b.name))
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {

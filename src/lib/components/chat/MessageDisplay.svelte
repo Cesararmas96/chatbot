@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { convert } from 'html-to-text'
+	import { onMount } from 'svelte'
 	import { marked, options } from 'marked'
 	import { createEventDispatcher } from 'svelte'
 	import { Button } from '$lib/components/ui/button/index.js'
@@ -18,6 +19,7 @@
 	export let token
 
 	export let onRegenerate: (message: { text: string; sid: string; query?: string }) => void
+	export let isLastMessage: boolean
 
 	const dispatch = createEventDispatcher()
 	let clipboard = marked(message.text)
@@ -26,6 +28,42 @@
 
 	let dislike = false
 	let like = false
+
+	let displayedText = ''
+	let fullText = addTargetBlank(marked(message.text))
+	let isInTag = false
+
+	onMount(() => {
+		if (isLastMessage) {
+			let i = 0
+			displayedText = '' // Reinicia el texto mostrado al montar el componente
+
+			const typingInterval = setInterval(() => {
+				if (i < fullText.length) {
+					const currentChar = fullText[i]
+
+					// Verificar si estamos entrando o saliendo de una etiqueta HTML
+					if (currentChar === '<') {
+						isInTag = true // Inicia la etiqueta
+					}
+					if (isInTag) {
+						displayedText += currentChar // Añade el carácter para mantener la etiqueta completa
+						if (currentChar === '>') {
+							isInTag = false // Finaliza la etiqueta
+						}
+					} else {
+						displayedText += currentChar // Añade solo los caracteres fuera de las etiquetas
+					}
+
+					i++
+				} else {
+					clearInterval(typingInterval) // Detener el temporizador cuando termine de mostrar el texto
+				}
+			}, 15) // Ajusta la velocidad del efecto de escritura (15 ms por carácter)
+		} else {
+			displayedText = fullText // Muestra el texto completo si no es el último mensaje
+		}
+	})
 
 	function copyToClipboardUrl() {
 		const shareUrlInput = document.getElementById('shareUrl') as HTMLInputElement
@@ -58,6 +96,10 @@
 				sendErrorNotification('Failed to copy to clipboard')
 			})
 	}
+
+	function addTargetBlank(html) {
+		return html.replace(/<a href="(.*?)">/g, '<a class="sourceLink" href="$1" target="_blank">')
+	}
 </script>
 
 <div class="message-container flex flex-col gap-3">
@@ -70,7 +112,7 @@
 			/>
 		</div>
 		<div class="message response">
-			{@html marked(message.text)}
+			{@html displayedText}
 		</div>
 	</div>
 	<div class="flex mb-2 ml-12 acciones">

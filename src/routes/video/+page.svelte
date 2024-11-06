@@ -310,13 +310,12 @@
 		border-radius: 8px;
 		padding: 20px;
 		height: 200px;
-		background-color: #1a1a1a;
 		cursor: pointer;
 		transition: background-color 0.3s ease;
 	}
 
 	.dropzone:hover {
-		background-color: #333;
+		background-color: #dad9d9;
 	}
 
 	.file-info {

@@ -8,6 +8,7 @@
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { storeUser } from '$lib/stores'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
+
 	import CardLibrary from '$lib/components/chat/CardLibrary.svelte'
 	import * as Card from '$lib/components/ui/card/index.js'
 	import { Button } from '$lib/components/ui/button/index.js'
@@ -19,6 +20,8 @@
 	let isLoading = false // Estado de carga
 	let initialLoad = true // Estado de carga inicial de la página
 	let botName = ''
+
+	
 	let query = ''
 	let chatInputRef: any
 	let uuid = ''
@@ -141,7 +144,14 @@
 			chatInputRef.submitQuery() // Llama al método público para enviar el formulario
 		}
 	}
+
+	let showMessage = true
+
+	function closeMessage() {
+		showMessage = false
+	}
 </script>
+
 
 <div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
 	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-none">
@@ -193,6 +203,7 @@
 						<p class="text-xs text-gray-500 mt-2 text-center">
 							Chatbots can make mistakes. Verify important informationsss.
 						</p>
+
 					</div>
 				</div>
 			</div>

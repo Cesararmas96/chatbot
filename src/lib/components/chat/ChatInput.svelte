@@ -1,77 +1,49 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount, afterUpdate } from 'svelte'
-	export let isLoading
-	export let query = ''
+	import { createEventDispatcher } from 'svelte'
+	import { SendHorizontal, Loader } from 'lucide-svelte'
+	import { Input } from '$lib/components/ui/input/index.js'
+
+	export let isLoading = false // Estado de carga desde el padre
 	const dispatch = createEventDispatcher()
+	export let query = ''
 
-	let answerInput: HTMLInputElement
-
-	const handleSubmit = (event: Event) => {
-		event.preventDefault()
-		dispatch('submit')
-		setFocus()
-	}
-
-	onMount(() => {
-		setFocus()
-	})
-
-	function setFocus() {
-		if (answerInput && !isLoading) {
-			answerInput.focus()
+	export function submitQuery() {
+		if (!isLoading && query.trim() !== '') {
+			dispatch('submit', { query })
 		}
 	}
 
-	export function submitForm() {
-		dispatch('submit')
+	const handleSubmit = (event: Event) => {
+		event.preventDefault()
+		submitQuery()
 	}
-
-	afterUpdate(() => {
-		setFocus() // Asegura el foco después de cualquier actualización
-	})
 </script>
 
-<form on:submit={handleSubmit} class="mr-2 ml-2">
-	<div class="flex flex-row items-center h-16 rounded-xl w-full md:auto">
-		<div class="flex-grow">
-			<div class="relative">
-				<input
-					placeholder="Send a message."
-					type="text"
-					disabled={isLoading}
-					bind:this={answerInput}
-					bind:value={query}
-					class="dark:text-white text-sm md:text-base dark:bg-gray-800 flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-10 h-10 {isLoading
-						? 'bg-gray-200 cursor-not-allowed opacity-50'
-						: ''}"
-					on:load={() => setFocus()}
-				/>
-				<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-					{#if isLoading}
-						<i class="fa-solid fa-spinner animate-spin text-gray-400"></i>
-					{:else}
-						<i class="fas fa-search text-gray-400"></i>
-					{/if}
-				</div>
-			</div>
-		</div>
-		<div class="ml-4">
+<form class="flex items-center" on:submit|preventDefault={handleSubmit}>
+	<Input
+		name="message"
+		placeholder="Send a message"
+		class="w-full bg-gray-800 border-gray-700 text-white  pr-20 "
+		disabled={isLoading}
+		bind:value={query}
+		autofocus
+	/>
+	<div class="absolute right-4 flex items-center gap-2">
+		{#if isLoading}
+			<!-- Mostrar Loader mientras isLoading es true -->
+			<Loader class="h-4 w-4 animate-spin" />
+		{:else}
+			<!-- Botón de tipo button para controlar el submit sin recargas -->
 			<button
+				type="button"
+				size="icon"
+				variant="ghost"
+				on:click={handleSubmit}
 				disabled={isLoading}
-				type="submit"
-				class="flex items-center justify-center bg-pink-600 hover:bg-pink-700 rounded-full text-white px-3 py-3 flex-shrink-0 {isLoading
-					? 'bg-gray-200 cursor-not-allowed opacity-50'
-					: ''}"
+				class=" h-8 w-8 bg-purple-600 hover:bg-purple-700 transition-colors rounded-sm flex justify-center items-center"
 			>
-				<span>
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32">
-						<path
-							fill="currentColor"
-							d="m27.45 15.11l-22-11a1 1 0 0 0-1.08.12a1 1 0 0 0-.33 1L7 16L4 26.74A1 1 0 0 0 5 28a1 1 0 0 0 .45-.11l22-11a1 1 0 0 0 0-1.78m-20.9 10L8.76 17H18v-2H8.76L6.55 6.89L24.76 16Z"
-						/>
-					</svg>
-				</span>
+				<SendHorizontal class="h-4 w-4 text-white" />
 			</button>
-		</div>
+		{/if}
 	</div>
 </form>

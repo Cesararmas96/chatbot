@@ -1,43 +1,28 @@
 <script lang="ts">
 	import { marked } from 'marked'
 	import { onMount } from 'svelte'
-	import { Input } from '$lib/components/ui/input/index.js'
 	import { Button } from '$lib/components/ui/button/index.js'
-	import { Textarea } from '$lib/components/ui/textarea/index.js'
 	import * as Card from '$lib/components/ui/card'
-	import { Separator } from '$lib/components/ui/separator/index.js'
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
-	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar'
 	import { Badge } from '$lib/components/ui/badge'
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
 	import {
-		Download,
 		Copy,
 		FileTextIcon,
-		LogOut,
-		Settings,
 		FileAudio,
 		FileIcon,
 		AlertCircle,
-		VideoIcon,
 		Headphones,
-		FolderArchive,
-		SquareCheckBig,
-		ImageDown
+		FolderArchive
 	} from 'lucide-svelte'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { getApiData } from '$lib/services/getData'
 	import { page } from '$app/stores'
 
 	import { storeUser } from '$lib/stores'
-	import { Footer } from 'flowbite-svelte'
 
-	import { Lightbox, LightboxGallery, GalleryThumbnail, GalleryImage } from 'svelte-lightbox'
+	import { Lightbox } from 'svelte-lightbox'
 
 	import JSZip from 'jszip' // Importa JSZip
 	import saveAs from 'file-saver' // Importa FileSaver para la descarga
-
-	let lightboxProgrammaticController
 
 	export let data: any
 
@@ -180,7 +165,6 @@
 			document.body.removeChild(element) // Elimina el elemento <a> del DOM
 			URL.revokeObjectURL(downloadUrl) // Libera el URL del blob
 		} catch (error) {
-			console.error('Error downloading the file:', error)
 			sendErrorNotification(`Failed to download the ${fileExtension} file.`)
 		}
 	}

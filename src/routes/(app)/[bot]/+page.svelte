@@ -1,105 +1,148 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import { page } from '$app/stores'
-	import { goto } from '$app/navigation'
 	import { v4 as uuidv4 } from 'uuid'
-	import { storeUser } from '$lib/stores/session.js'
-	import { storeBots } from '$lib/stores/bots'
-	import { storePromptLibrary } from '$lib/stores/promptlibrary'
-	import { storeGood } from '$lib/stores/good'
-	import { storeBad } from '$lib/stores/bad'
-	import { storeChatbotid } from '$lib/stores/chatbotid'
+	import { goto } from '$app/navigation'
+	import { getApiData } from '$lib/services/getData.js'
 	import { fetchChatData } from '$lib/services/chatService'
+	import { sendErrorNotification } from '$lib/stores/toast'
+	import { storeUser } from '$lib/stores'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
-	import { DarkMode } from 'flowbite-svelte'
-	import SidebarBot from '$lib/components/SidebarBot.svelte'
-	import Header from '$lib/components/chat/Header.svelte'
-	import WelcomeChat from '$lib/components/chat/WelcomeChat.svelte'
-	import { db } from '$lib/db'
-	import { sharedBot } from '$lib/stores/preferences.js'
-	import { X } from 'lucide-svelte'
 
-	export let data
+	import CardLibrary from '$lib/components/chat/CardLibrary.svelte'
+	import * as Card from '$lib/components/ui/card/index.js'
+	import { Button } from '$lib/components/ui/button/index.js'
+	import { Menu } from 'lucide-svelte'
+	import { db } from '$lib/db' // Importa tu base de datos IndexedDB
 
-	const { user, bots, promptLibrary, good, bad, chatbotid } = data
-	storeUser.set(user)
-	storeBots.set(bots)
-	storePromptLibrary.set(promptLibrary)
-	storeGood.set(good)
-	storeBad.set(bad)
-	storeChatbotid.set(chatbotid)
+	let botData = null
+	let errorMessage = ''
+	let isLoading = false // Estado de carga
+	let initialLoad = true // Estado de carga inicial de la página
+	let botName = ''
 
-	let isLoading = false
-	let messages: any[] = []
+	
 	let query = ''
-	let bot = ''
-	let shared = $page.url.searchParams.get('shared') === 'true'
-	let showSettings = false
 	let chatInputRef: any
 	let uuid = ''
-	let user_id = user.user_id
-	let chatbotId
+	let messages = []
+	let chatStarted = false
 
-	sharedBot.set(shared)
+	$: botName = $page.params.bot?.toLowerCase()
 
-	onMount(() => {
-		bot = $page.params.bot
-		const currentBot = bots.find((b) => b.name.toLowerCase() === bot)
-		if (currentBot) {
-			chatbotId = currentBot.chatbot_id
-		} else {
-			console.error('Bot not found')
+	export let data: any
+
+	$storeUser = data.user
+	const session = data.user ? data.user : $storeUser
+
+	onMount(async () => {
+		if (!botName) {
+			errorMessage = 'Bot name is missing in the URL'
+			initialLoad = false
+			return
+		}
+
+		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
+		try {
+			const botsList = await getApiData(
+				apiUrl,
+				'GET',
+				{},
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${session.token}`,
+						'Content-Type': 'application/json'
+					}
+				}
+			)
+
+			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
+			if (matchedBot) {
+				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
+				const data = await getApiData(
+					botApiUrl,
+					'GET',
+					{},
+					{},
+					{
+						headers: {
+							Authorization: `Bearer ${session.token}`,
+							'Content-Type': 'application/json'
+						}
+					}
+				)
+				botData = data ? data[0] : null
+				errorMessage = botData ? '' : `Bot with name ${botName} not found.`
+			} else {
+				errorMessage = `Bot with name ${botName} not found.`
+			}
+		} catch (error) {
+			errorMessage = 'Error fetching bot data.'
+			console.error(error)
+		} finally {
+			initialLoad = false // Marcar que la carga inicial ha terminado
 		}
 	})
 
-	const handleFetchData = async (lastQuery = '') => {
+	let isSidebarOpen = false
+
+	const toggleSidebar = () => {
+		isSidebarOpen = !isSidebarOpen
+	}
+
+	const handleFetchData = async () => {
 		isLoading = true
 		try {
 			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
-				bot,
-				query || lastQuery
+				botName,
+				query
 			)
 			const newMessage = {
 				text: response,
-				query: query,
-				answer: answer,
-				chat_history: chat_history,
-				sid: sid,
-				user_id: user_id,
-				chatbot_id: chatbotId,
-				at: at
+				query,
+				answer,
+				chat_history,
+				sid,
+				user_id: session.user_id,
+				chatbot_id: botData?.chatbot_id, // Acceso seguro
+				at
 			}
 			messages = [...messages, newMessage]
-			query = ''
+			query = '' // Limpiar el input solo si la respuesta es exitosa
 
+			// Guardar el primer mensaje en IndexedDB y redirigir
 			if (!uuid) {
 				uuid = uuidv4()
-				// Guardar los datos en IndexedDB con el nuevo pageId
-				const pageUrl = `/${bot}/${uuid}`
+				const pageUrl = `/${botName}/${uuid}`
 				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
 				localStorage.setItem('messages', JSON.stringify(messages))
-				goto(pageUrl)
+				await goto(pageUrl) // Redirigir a la nueva página
 			} else {
-				// Actualizar los mensajes en IndexedDB para la página actual
 				const pageUrl = $page.url.pathname
 				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
 				localStorage.setItem('messages', JSON.stringify(messages))
 			}
 		} catch (error) {
-			console.error('There was a problem with the fetch operation:', error)
+			sendErrorNotification('Error: Unable to fetch data. Please try again.')
 		} finally {
 			isLoading = false
 		}
 	}
 
-	const handleSubmit = async (event: CustomEvent) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
+		query = event.detail.query
 		await handleFetchData()
 	}
 
-	function handleSelectQuery(event: CustomEvent<{ query: string }>) {
-		query = event.detail.query
-		chatInputRef.submitForm()
+	const handleSelectQuery = async (event) => {
+		query = event.detail.query // Actualiza el query
+		await tick() // Espera a que Svelte actualice el DOM y los bindings
+
+		if (chatInputRef) {
+			chatInputRef.submitQuery() // Llama al método público para enviar el formulario
+		}
 	}
 
 	let showMessage = true
@@ -109,128 +152,61 @@
 	}
 </script>
 
-<div class:sm:ml-64={!shared}>
-	<!-- <Header /> -->
-	<button
-		id="toggle-drawer-button"
-		type="button"
-		class="p-2 sm:hidden text-gray-500 hover:text-gray-900 dark:hover:text-white focus:outline-none"
-	>
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			class="w-6 h-6"
-			fill="none"
-			viewBox="0 0 24 24"
-			stroke="currentColor"
-		>
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="2"
-				d="M4 6h16M4 12h16m-7 6h7"
-			/>
-		</svg>
-	</button>
-	<div class="flex flex-row h-full overflow-x-hidden">
-		{#if !shared}
-			<SidebarBot {chatbotid} {user_id} />
-		{/if}
-		<div class="flex flex-col h-screen flex-auto p-2 w-20">
-			{#if !shared}
-				<div class="flex justify-end px-2 py-2">
-					<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
-				</div>
-			{/if}
 
-			{#if showMessage && bot === 'askbuddy'}
-				<div class="w-full" id="mensaje">
-					<div class="relative">
-						<div
-							class="bg-yellow-50 dark:bg-gray-800 text-yellow-800 dark:text-yellow-300 rounded-lg border border-yellow-300 dark:border-yellow-800 divide-yellow-300 dark:divide-yellow-800 p-4 gap-3 text-sm animate__animated animate__fadeIn mb-2 ml-[5px] mr-[12px] px-4 py-2"
-							role="alert"
-						>
-							<div class="flex flex-col justify-between">
-								<div class="flex flex-col items-start justify-center">
-									<div class="flex items-center gap-3 text-lg font-medium">
-										<span class="dark:text-gray-300">Disclaimer</span>
-									</div>
-									<p class="mb-2 mt-2 text-base dark:text-gray-400">
-										The MSO AskBuddy Bot is designed to support MSO employees by providing quick
-										access to training materials, guides, and step-by-step resources that have been
-										covered during your training. This bot will not duplicate or replace the
-										information available on C2 (T-Mobile operations) or the TROC Hub. If you need
-										further assistance, please contact your team lead or refer to the specific
-										resources on the respective platforms.
-									</p>
-								</div>
-								<div class="flex flex-row justify-end gap-1"></div>
+<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
+	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-none">
+		<Card.Content class="flex-1 flex flex-col justify-between">
+			<div class="flex-1 flex flex-col items-center justify-center">
+				<div class="w-full max-w-2xl">
+					<header class="text-center mb-8">
+						{#if botData}
+							<div class="flex justify-center mt-2">
+								<img
+									src="/images/bots/{botData.name.toLowerCase()}.png"
+									class="w-32 md:w-36"
+									alt="{botData.name.toLowerCase()}-logo"
+								/>
+							</div>
+
+							<h1 class="text-2xl font-bold text-white">{botData.name}</h1>
+						{:else if initialLoad}
+							<p class="text-gray-400">Loading bot data...</p>
+						{:else}
+							<p class="text-red-500">Bot data is not available. Please try again later.</p>
+						{/if}
+						<p class="text-xl text-gray-400">How can I help you today?</p>
+					</header>
+					{#if botData}
+						<div class="flex-1 p-6 flex flex-col items-center justify-center w-full max-w-2xl">
+							<div
+								class="overflow-y-auto w-full
+                max-h-[calc(100vh-550px)]
+                md:max-h-[calc(100vh-400px)]
+                lg:max-h-[calc(100vh-470px)] custom-scrollbar"
+							>
+								<!-- Agrega un scroll con altura máxima -->
+								<CardLibrary
+									{session}
+									chatbotId={botData.chatbot_id}
+									on:selectQuery={handleSelectQuery}
+									class="w-full"
+								/>
 							</div>
 						</div>
-
-						<!-- Botón para cerrar el mensaje usando el componente X de lucide-svelte -->
-						<button
-							class="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mr-3 mt-1"
-							on:click={closeMessage}
-						>
-							<X class="w-4 h-4" />
-						</button>
-					</div>
+					{/if}
 				</div>
-			{/if}
-
-			{#if showMessage && bot === 'askbrett'}
-				<div class="w-full" id="mensaje">
+			</div>
+			<div class="border-t border-gray-800 p-4 bottom-0 left-0 right-0 pt-[60px]">
+				<div class="max-w-2xl mx-auto">
 					<div class="relative">
-						<div
-							class="bg-yellow-50 dark:bg-gray-800 text-yellow-800 dark:text-yellow-300 rounded-lg border border-yellow-300 dark:border-yellow-800 divide-yellow-300 dark:divide-yellow-800 p-4 gap-3 text-sm animate__animated animate__fadeIn mb-2 ml-[5px] mr-[12px] px-4 py-2"
-							role="alert"
-						>
-							<div class="flex flex-col justify-between">
-								<div class="flex flex-col items-start justify-center">
-									<div class="flex items-center gap-3 text-lg font-medium">
-										<span class="dark:text-gray-300">Disclaimer</span>
-									</div>
-									<p class="mb-2 mt-2 text-base dark:text-gray-400">
-										The AskBrett Bot is designed to support MSO employees by providing quick access
-										to training materials, guides, and step-by-step resources that have been covered
-										during your training. This bot will not duplicate or replace the information
-										available on C2 (T-Mobile operations) or the TROC Hub. If you need further
-										assistance, please contact your team lead or refer to the specific resources on
-										the respective platforms.
-									</p>
-								</div>
-								<div class="flex flex-row justify-end gap-1"></div>
-							</div>
-						</div>
+						<ChatInput {isLoading} on:submit={handleSubmit} bind:this={chatInputRef} bind:query />
+						<p class="text-xs text-gray-500 mt-2 text-center">
+							Chatbots can make mistakes. Verify important informationsss.
+						</p>
 
-						<!-- Botón para cerrar el mensaje usando el componente X de lucide-svelte -->
-						<button
-							class="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mr-3 mt-1"
-							on:click={closeMessage}
-						>
-							<X class="w-4 h-4" />
-						</button>
-					</div>
-				</div>
-			{/if}
-
-			<div id="widget-content-bottom-7a0f1182-7d3b-49a2-b1a5-6ac187209930"></div>
-
-			<div
-				class="flex flex-auto overflow-x-auto rounded-2xl bg-gray-100 chatbox dark:bg-gray-800 ml-2 mr-2"
-			>
-				<div class="flex flex-auto flex-col lg:justify-center items-center">
-					<div class="flex justify-center mt-2">
-						<img src="/images/bots/{bot}.png" class="w-32 md:w-36" alt="{bot}-logo" />
-					</div>
-
-					<div class="flex justify-center">
-						<WelcomeChat on:selectQuery={handleSelectQuery} {promptLibrary} />
 					</div>
 				</div>
 			</div>
-
-			<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
-		</div>
-	</div>
+		</Card.Content>
+	</Card.Root>
 </div>

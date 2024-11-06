@@ -42,8 +42,8 @@
 			if (Array.isArray(fetchedBot) && fetchedBot.length > 0) {
 				prompts = [...fetchedBot] // Esto debería desencadenar el cambio en Svelte
 			} else {
-				errorMessage = `No prompts found for chatbot ${chatbotId}.`
-				sendErrorNotification(errorMessage)
+				//errorMessage = `No prompts found for chatbot ${chatbotId}.`
+				//sendErrorNotification(errorMessage)
 			}
 		} catch (error) {
 			errorMessage = 'An error occurred while fetching the prompt library.'
@@ -83,5 +83,5 @@
 		{/each}
 	</div>
 {:else}
-	<p>No prompts available</p>
+	<!-- <p>No prompts available</p> -->
 {/if}

@@ -7,7 +7,7 @@
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-
+	import { Skeleton } from '$lib/components/ui/skeleton/index.js'
 	import { get } from 'svelte/store'
 	import { marked } from 'marked'
 	import Avatar from '$lib/components/common/Avatar.svelte'
@@ -20,6 +20,7 @@
 	import { Clipboard, Share2, RefreshCw, ThumbsUp, ThumbsDown, Flag } from 'lucide-svelte'
 	import MessageDisplay from '$lib/components/chat/MessageDisplay.svelte'
 
+	let isLoadingResponse = false
 	let bot = ''
 	let chatbotId = ''
 	let user_id = ''
@@ -80,6 +81,7 @@
 
 	const handleFetchData = async () => {
 		isLoading = true
+		isLoadingResponse = true
 		try {
 			const { response, question, answer, chat_history, sid, at } = await fetchChatData(bot, query)
 			const newMessage = {
@@ -97,7 +99,9 @@
 
 			const pageUrl = get(page).url.pathname
 			await db.messages.add({ ...newMessage, pageId: pageUrl })
+			isLoadingResponse = false
 		} catch (error) {
+			isLoadingResponse = false
 			sendErrorNotification('Error: Unable to fetch data. Please try again.')
 		} finally {
 			isLoading = false
@@ -131,7 +135,7 @@
 				bind:this={messagesContainer}
 			>
 				<div class="mx-auto space-y-4 md:px-32">
-					{#each messages as message}
+					{#each messages as message, index (message.sid)}
 						{#if message.query}
 							<div class="message-container flex items-start gap-3 flex-row-reverse pb-5">
 								<div
@@ -151,9 +155,36 @@
 								{bot}
 								onRegenerate={handleRegenerate}
 								{token}
+								isLastMessage={index === messages.length - 1}
 							/>
 						{/if}
 					{/each}
+
+					{#if isLoadingResponse}
+						<!-- Mostrar el Skeleton mientras se espera la respuesta -->
+						<div class="message-container flex items-start gap-3 flex-row-reverse pb-5">
+							<div
+								class="avatar w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0"
+							>
+								<Avatar showFullName={false} />
+							</div>
+							<div class="message bg-purple-600 p-4 rounded-lg max-w-[80%]">
+								{query}
+							</div>
+						</div>
+
+						<div class="flex items-center space-x-4">
+							<img
+								src={`/images/bots/${bot.toLowerCase() ? bot.toLowerCase() : 'default'}.png`}
+								alt="{bot}-logo"
+								class="h-10 w-10"
+							/>
+							<div class="space-y-2">
+								<Skeleton class="h-4 w-[350px]" />
+								<Skeleton class="h-4 w-[300px]" />
+							</div>
+						</div>
+					{/if}
 				</div>
 			</div>
 
@@ -170,7 +201,7 @@
 		</div>
 	</div>
 {:else}
-	<p>No hay mensajes en esta conversación. Comienza a chatear para ver los mensajes aquí.</p>
+	<!-- <p>No hay mensajes en esta conversación. Comienza a chatear para ver los mensajes aquí.</p> -->
 {/if}
 
 <style>

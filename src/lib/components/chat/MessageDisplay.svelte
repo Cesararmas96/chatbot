@@ -19,6 +19,7 @@
 	export let token
 
 	export let onRegenerate: (message: { text: string; sid: string; query?: string }) => void
+	export let isLastMessage: boolean
 
 	const dispatch = createEventDispatcher()
 	let clipboard = marked(message.text)
@@ -33,32 +34,37 @@
 	let isInTag = false
 
 	onMount(() => {
-		let i = 0
-		displayedText = '' // Reinicia el texto mostrado al montar el componente
+		if (isLastMessage) {
+			let i = 0
+			displayedText = '' // Reinicia el texto mostrado al montar el componente
 
-		const typingInterval = setInterval(() => {
-			if (i < fullText.length) {
-				const currentChar = fullText[i]
+			const typingInterval = setInterval(() => {
+				if (i < fullText.length) {
+					const currentChar = fullText[i]
 
-				// Verificar si estamos entrando o saliendo de una etiqueta HTML
-				if (currentChar === '<') {
-					isInTag = true // Inicia la etiqueta
-				}
-				if (isInTag) {
-					displayedText += currentChar // Añade el carácter para mantener la etiqueta completa
-					if (currentChar === '>') {
-						isInTag = false // Finaliza la etiqueta
+					// Verificar si estamos entrando o saliendo de una etiqueta HTML
+					if (currentChar === '<') {
+						isInTag = true // Inicia la etiqueta
 					}
-				} else {
-					displayedText += currentChar // Añade solo los caracteres fuera de las etiquetas
-				}
+					if (isInTag) {
+						displayedText += currentChar // Añade el carácter para mantener la etiqueta completa
+						if (currentChar === '>') {
+							isInTag = false // Finaliza la etiqueta
+						}
+					} else {
+						displayedText += currentChar // Añade solo los caracteres fuera de las etiquetas
+					}
 
-				i++
-			} else {
-				clearInterval(typingInterval) // Detener el temporizador cuando termine de mostrar el texto
-			}
-		}, 15) // Ajusta la velocidad del efecto de escritura (50 ms por carácter)
+					i++
+				} else {
+					clearInterval(typingInterval) // Detener el temporizador cuando termine de mostrar el texto
+				}
+			}, 15) // Ajusta la velocidad del efecto de escritura (15 ms por carácter)
+		} else {
+			displayedText = fullText // Muestra el texto completo si no es el último mensaje
+		}
 	})
+
 	function copyToClipboardUrl() {
 		const shareUrlInput = document.getElementById('shareUrl') as HTMLInputElement
 

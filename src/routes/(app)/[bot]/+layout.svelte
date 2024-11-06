@@ -334,7 +334,7 @@
 								{:else}
 									<!-- Vista normal del query -->
 									<a
-										href={`/${data.pageId}`}
+										href={`${data.pageId}`}
 										class="flex items-center w-full text-white dark:text-white group"
 									>
 										<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">

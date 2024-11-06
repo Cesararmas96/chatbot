@@ -125,6 +125,7 @@
 <div
 	class={`w-full md:w-64 bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
 >
+
 	<div class="flex items-center justify-between mb-4">
 		<div class="flex items-center w-full">
 			<a href="/home" class="flex justify-center items-center">

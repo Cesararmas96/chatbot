@@ -13,16 +13,29 @@
 	export let data
 	const { user } = data
 	let token = user.token
+	let email = user.email
+
+	console.log(email)
 
 	// Function to handle click events on links
 	function handleClick(event) {
 		isLoading = true // Set loading state when a link is clicked
 	}
 
-	// Function to fetch bots data from the API
 	const fetchBots = async () => {
 		isLoading = true // Set loading state during data fetching
 		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
+
+		// Lista de correos que solo pueden ver el bot 'AskBrett'
+		const allowedEmails = [
+			'jburgess1@msorocks.com',
+			'ioliver@msorocks.com',
+			'bcompton@msorocks.com',
+			'lervin@msorocks.com',
+			'amarquezleon@msorocks.com',
+			'ssumpter@msorocks.com'
+		]
+
 		try {
 			const fetchedBots = await getApiData(
 				apiUrl,
@@ -39,7 +52,16 @@
 				true
 			)
 
-			bots = fetchedBots.sort((a, b) => a.name.localeCompare(b.name))
+			// Verificar si el email del usuario está en la lista permitida
+			if (allowedEmails.includes(email)) {
+				// Mostrar solo el bot 'AskBrett' si el usuario está en la lista
+				bots = fetchedBots
+					.filter((bot) => bot.name === 'AskBrett')
+					.sort((a, b) => a.name.localeCompare(b.name))
+			} else {
+				// Mostrar todos los bots para los demás usuarios
+				bots = fetchedBots.sort((a, b) => a.name.localeCompare(b.name))
+			}
 		} catch (error) {
 			console.error('There was a problem with the fetch operation:', error)
 		} finally {

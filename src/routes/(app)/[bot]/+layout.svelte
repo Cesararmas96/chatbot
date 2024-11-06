@@ -59,7 +59,6 @@
 	})
 
 	onMount(async () => {
-		console.log('Iniciando onMount...')
 		if (!botName) {
 			errorMessage = 'Bot name is missing in the URL'
 			console.error('Error: Bot name is missing in the URL')
@@ -67,10 +66,7 @@
 			return
 		}
 
-		console.log('Nombre del bot desde la URL:', botName)
-
 		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
-		console.log('URL de la API para obtener bots:', apiUrl)
 
 		try {
 			const botsList = await getApiData(
@@ -85,17 +81,14 @@
 					}
 				}
 			)
-			console.log('Respuesta de la lista de bots:', botsList)
 
 			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
-			console.log('Bot encontrado:', matchedBot)
 
 			if (matchedBot) {
 				// chatbotid = matchedBot.id
 				// console.log('chatbotid asignado:', chatbotid)
 
 				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
-				console.log('URL de la API para obtener datos específicos del bot:', botApiUrl)
 
 				const data = await getApiData(
 					botApiUrl,
@@ -109,73 +102,61 @@
 						}
 					}
 				)
-				console.log('Datos del bot individual:', data)
 				botData = data ? data[0] : null
 				errorMessage = botData ? '' : `Bot con nombre ${botName} no encontrado.`
-				console.log('botData asignado:', botData)
 				if (botData) {
 					chatbotid = botData.chatbot_id // Asigna chatbotid desde botData.chatbot_id
-					console.log('chatbotid actualizado desde botData:', chatbotid)
 				}
 			} else {
 				errorMessage = `Bot con nombre ${botName} no encontrado.`
 				console.warn(errorMessage)
 			}
 		} catch (error) {
-			errorMessage = 'Error al obtener datos del bot.'
-			console.error('Error en la llamada a la API:', error)
+			errorMessage = 'Error getting data from bot.'
+			console.error('API call failed:', error)
 		} finally {
 			initialLoad = false
-			console.log('Carga inicial finalizada.')
 		}
 
 		if (chatbotid) {
-			console.log('Llamando a fetchPageIds...')
 			await fetchPageIds(chatbotid, user_id)
 		} else {
-			console.warn('chatbotid no está definido. No se llamará a fetchPageIds.')
+			console.warn('chatbotid is not defined. fetchPageIds will not be called.')
 		}
 	})
 
 	async function fetchPageIds(chatbotid: string, user_id: string) {
-		console.log('Llamada a fetchPageIds con chatbotid:', chatbotid, 'y user_id:', user_id)
 		isLoading = true
 		try {
 			const allMessages = await db.messages.toArray()
-			console.log('Todos los mensajes en IndexedDB:', allMessages)
 
 			const pageDataArray = allMessages.filter(
 				(message) => message.chatbot_id === chatbotid && message.user_id === user_id
 			)
-			console.log('Mensajes filtrados:', pageDataArray)
 
 			if (pageDataArray.length === 0) {
-				console.warn('No se encontraron mensajes que coincidan con el filtro')
+				console.warn('No messages were found that match the filter')
 			}
 
 			pageData = Array.from(new Map(pageDataArray.map((item) => [item.pageId, item])).values())
-			console.log('Datos de las páginas después de filtrar:', pageData)
 
 			// Actualizar filteredPageData al terminar de obtener los datos
 			filteredPageData = pageData.filter((data) =>
 				data.query.toLowerCase().includes(searchTerm.toLowerCase())
 			)
-			console.log('filteredPageData actualizado:', filteredPageData)
 		} catch (error) {
-			console.error('Error al obtener pageIds:', error)
+			console.error('Error getting pageIds:', error)
 		} finally {
 			isLoading = false
-			console.log('fetchPageIds finalizado.')
 		}
 	}
 	$: filteredPageData = pageData.filter((data) =>
 		data.query.toLowerCase().includes(searchTerm.toLowerCase())
 	)
 	async function deletePageId(pageId: string) {
-		console.log('Intentando eliminar el pageId:', pageId, 'con chatbotid:', chatbotid)
 		try {
 			if (!chatbotid) {
-				console.warn('El chatbot ID no está definido.')
+				console.warn('The chatbot ID is not defined.')
 				return
 			}
 			await db.messages
@@ -183,17 +164,15 @@
 				.equals(pageId)
 				.and((msg) => msg.chatbot_id === chatbotid)
 				.delete()
-			console.log(`PageId ${pageId} eliminado correctamente.`)
-			sendSuccessNotification('Chat eliminado exitosamente')
-			console.log('Llamando a fetchPageIds después de eliminar.')
+			sendSuccessNotification('Chat deleted successfully')
+			console.log('Calling fetchPageIds after deletion.')
 			await fetchPageIds(chatbotid, user_id)
 		} catch (error) {
-			console.error('Error al eliminar el pageId:', error)
+			console.error('Error deleting pageId:', error)
 		}
 	}
 
 	function formatDate(created_at) {
-		console.log('Formateando la fecha:', created_at)
 		const today = moment().startOf('day')
 		const yesterday = moment().subtract(1, 'days').startOf('day')
 
@@ -209,9 +188,7 @@
 	let lastDate = ''
 
 	function isDifferentDate(date) {
-		console.log('Verificando si la fecha es diferente:', date)
 		const formattedDate = formatDate(date)
-		console.log('Fecha formateada:', formattedDate, 'última fecha conocida:', lastDate)
 		if (formattedDate !== lastDate) {
 			lastDate = formattedDate
 			return true
@@ -220,9 +197,8 @@
 	}
 
 	function navigateToPage(pageId) {
-		console.log('Navegando a la página con pageId:', pageId, 'y chatbotid:', chatbotid)
 		if (!chatbotid) {
-			console.warn('El chatbot ID no está definido. No se puede navegar.')
+			console.warn('Chatbot ID is not defined. Unable to navigate.')
 			return
 		}
 		goto(`/${botName}/${pageId}`)
@@ -232,7 +208,6 @@
 
 	const toggleSidebar = () => {
 		isSidebarOpen = !isSidebarOpen
-		console.log('Sidebar toggled. Estado actual:', isSidebarOpen)
 	}
 </script>
 

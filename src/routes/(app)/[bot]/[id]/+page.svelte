@@ -6,16 +6,24 @@
 	import { db } from '$lib/db'
 	import SidebarBot from '$lib/components/SidebarBot.svelte'
 	import ChatInput from '$lib/components/chat/ChatInput.svelte'
-	import { sendErrorNotification } from '$lib/stores/toast'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+
 	import { get } from 'svelte/store'
 	import { marked } from 'marked'
 	import Avatar from '$lib/components/common/Avatar.svelte'
 
+	///feature share
+	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
+	import { Button } from '$lib/components/ui/button/index.js'
+	import { Input } from '$lib/components/ui/input'
+
 	import { Clipboard, Share2, RefreshCw, ThumbsUp, ThumbsDown, Flag } from 'lucide-svelte'
+	import MessageDisplay from '$lib/components/chat/MessageDisplay.svelte'
 
 	let bot = ''
 	let chatbotId = ''
 	let user_id = ''
+	let token = ''
 	let isLoading = false
 	let messages = []
 	let query = ''
@@ -25,6 +33,7 @@
 	export let data
 	$storeUser = data.user
 	user_id = data.user.user_id
+	token = data.user.token
 
 	const loadMessages = async () => {
 		const currentPage = get(page)
@@ -44,10 +53,8 @@
 					user_id: msg.user_id,
 					chatbot_id: msg.chatbot_id
 				}))
-				console.log('Mensajes cargados desde IndexedDB:', messages)
 			} else {
 				messages = []
-				console.log('No hay mensajes almacenados para esta conversación.')
 			}
 		} catch (error) {
 			console.error('Error al cargar mensajes desde IndexedDB:', error)
@@ -90,9 +97,7 @@
 
 			const pageUrl = get(page).url.pathname
 			await db.messages.add({ ...newMessage, pageId: pageUrl })
-			console.log('Nuevo mensaje guardado en IndexedDB:', newMessage)
 		} catch (error) {
-			console.error('Fetch operation failed:', error)
 			sendErrorNotification('Error: Unable to fetch data. Please try again.')
 		} finally {
 			isLoading = false
@@ -103,6 +108,18 @@
 		event.preventDefault()
 		query = event.detail.query
 		await handleFetchData()
+	}
+
+	///////////////////////
+	// Feature Share
+	const currentUrl = new URL($page.url.href).host
+
+	// Función para manejar la regeneración de la última pregunta
+	const handleRegenerate = async (message) => {
+		if (message.query) {
+			query = message.query // Muestra la última consulta en el input
+			await handleFetchData() // Reenvía la consulta
+		}
 	}
 </script>
 
@@ -128,46 +145,13 @@
 							</div>
 						{/if}
 						{#if message.text}
-							<div class="message-container flex flex-col gap-3">
-								<div class="flex">
-									<div class="h-10 w-10 flex-shrink-0 mr-3">
-										<img
-											src={`/images/bots/${bot.toLowerCase() ? bot.toLowerCase() : 'default'}.png`}
-											alt="{bot}-logo"
-											class="h-10 w-10"
-										/>
-									</div>
-
-									<div class="message">
-										{@html marked(message.text)}
-									</div>
-								</div>
-								<div class="flex mt-2 mb-2 ml-12">
-									<button class="mr-3">
-										<Share2 class="h-4 w-4" />
-									</button>
-
-									<button class="mr-3">
-										<Clipboard class="h-4 w-4" />
-									</button>
-
-									<button class="mr-3">
-										<RefreshCw class="h-4 w-4" />
-									</button>
-
-									<button class="mr-3">
-										<ThumbsUp class="h-4 w-4" />
-									</button>
-
-									<button class="mr-3">
-										<ThumbsDown class="h-4 w-4" />
-									</button>
-
-									<button class="mr-3">
-										<Flag class="h-4 w-4" />
-									</button>
-								</div>
-							</div>
+							<MessageDisplay
+								{message}
+								{currentUrl}
+								{bot}
+								onRegenerate={handleRegenerate}
+								{token}
+							/>
 						{/if}
 					{/each}
 				</div>

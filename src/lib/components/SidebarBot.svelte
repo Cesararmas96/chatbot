@@ -54,19 +54,16 @@
 		isLoading = true
 		try {
 			const allMessages = await db.messages.toArray()
-			console.log('Todos los mensajes en IndexedDB:', allMessages)
 
 			const pageDataArray = allMessages.filter(
 				(message) => message.chatbot_id === chatbotid && message.user_id === user_id
 			)
-			console.log('Mensajes filtrados:', pageDataArray)
 
 			if (pageDataArray.length === 0) {
 				console.warn('No se encontraron mensajes que coincidan con el filtro')
 			}
 
 			pageData = Array.from(new Map(pageDataArray.map((item) => [item.pageId, item])).values())
-			console.log('pageData:', pageData)
 		} catch (error) {
 			console.error('Error fetching pageIds:', error)
 		} finally {

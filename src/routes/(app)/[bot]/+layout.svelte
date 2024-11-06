@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { writable } from 'svelte/store'
+
 	import { onMount } from 'svelte'
 	import moment from 'moment'
 	import Dexie from 'dexie'
@@ -20,6 +22,7 @@
 		Home,
 		Search,
 		Loader,
+		Pencil,
 		Menu,
 		MoreVertical,
 		MessageSquare,
@@ -138,9 +141,12 @@
 				console.warn('No messages were found that match the filter')
 			}
 
-			pageData = Array.from(new Map(pageDataArray.map((item) => [item.pageId, item])).values())
+			// Ordena por fecha de forma descendente (más reciente primero)
+			pageData = Array.from(
+				new Map(pageDataArray.map((item) => [item.pageId, item])).values()
+			).sort((a, b) => new Date(b.at) - new Date(a.at))
 
-			// Actualizar filteredPageData al terminar de obtener los datos
+			// Actualizar `filteredPageData` después de ordenar
 			filteredPageData = pageData.filter((data) =>
 				data.query.toLowerCase().includes(searchTerm.toLowerCase())
 			)
@@ -150,6 +156,7 @@
 			isLoading = false
 		}
 	}
+
 	$: filteredPageData = pageData.filter((data) =>
 		data.query.toLowerCase().includes(searchTerm.toLowerCase())
 	)
@@ -209,6 +216,40 @@
 	const toggleSidebar = () => {
 		isSidebarOpen = !isSidebarOpen
 	}
+
+	// feature changer data.query
+	let isEditingId = null // Almacena el ID de la página en edición
+	let editQuery = '' // Almacena el valor temporal de `data.query` mientras se edita
+
+	function startEditing(pageId, currentQuery) {
+		isEditingId = pageId
+		editQuery = currentQuery // Carga el valor actual de `query` en el campo de edición
+	}
+
+	async function saveEdit(pageId) {
+		try {
+			const updatedAt = new Date().toISOString()
+			// Actualizar en Dexie
+			await db.messages.where('pageId').equals(pageId).modify({ query: editQuery, at: updatedAt })
+
+			// Actualizar el valor en `pageData` y `filteredPageData`
+			const messageIndex = pageData.findIndex((msg) => msg.pageId === pageId)
+			if (messageIndex !== -1) {
+				pageData[messageIndex].query = editQuery
+				pageData[messageIndex].at = updatedAt
+			}
+
+			// Reiniciar los estados de edición
+			isEditingId = null
+			editQuery = ''
+			sendSuccessNotification('Name updated successfully')
+		} catch (error) {
+			console.error('Error updating name:', error)
+		}
+
+		pageData = pageData.sort((a, b) => new Date(b.at) - new Date(a.at))
+		filteredPageData = filteredPageData.sort((a, b) => new Date(b.at) - new Date(a.at))
+	}
 </script>
 
 <!-- Contenedor general -->
@@ -226,7 +267,7 @@
 
 	<!-- Sidebar -->
 	<div
-		class={`w-full md:w-64 bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
+		class={`w-full md:w-[350px] bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
 	>
 		<div class="flex items-center justify-between mb-4">
 			<div class="flex items-center w-full">
@@ -262,7 +303,7 @@
 			<div>
 				<h2 class="text-sm font-semibold mb-2">List Chats</h2>
 				<ScrollArea
-					class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800"
+					class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800 "
 				>
 					{#if isLoading}
 						<LoaderCustom />
@@ -273,35 +314,48 @@
 							No chat found.
 						</p>
 					{:else}
-						{#each filteredPageData.slice().reverse() as data}
+						{#each filteredPageData.slice() as data}
 							{#if isDifferentDate(data.at)}
 								<div class="px-2 py-2 text-sm font-semibold text-gray-400">
 									{formatDate(data.at)}
 								</div>
 							{/if}
-							<div class="hover:bg-gray-800 rounded-lg flex items-center justify-between group">
-								<a
-									href={`${data.pageId}`}
-									class="flex items-center w-full text-white dark:text-white group"
-								>
-									<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
-										<MessageSquare size={18} />
-										<span class="text-sm truncate">
-											{data.query.length > 25 ? `${data.query.slice(0, 25)}...` : data.query}
-										</span>
-									</div>
-								</a>
+							<div
+								class="mx-1 hover:bg-gray-800 rounded-lg flex items-center justify-between group"
+							>
+								{#if isEditingId === data.pageId}
+									<!-- Input en modo de edición -->
+									<input
+										type="text"
+										bind:value={editQuery}
+										class="bg-gray-800 text-white p-2 rounded-lg w-full"
+										on:keydown={(e) => e.key === 'Enter' && saveEdit(data.pageId)}
+									/>
+								{:else}
+									<!-- Vista normal del query -->
+									<a
+										href={`/${data.pageId}`}
+										class="flex items-center w-full text-white dark:text-white group"
+									>
+										<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
+											<MessageSquare size={18} />
+											<span class="text-sm truncate">
+												{data.query.length > 25 ? `${data.query.slice(0, 25)}...` : data.query}
+											</span>
+										</div>
+									</a>
+								{/if}
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger>
-										<Button
-											variant="ghost"
-											size="icon"
-											class="h-8 w-8 p-0 opacity-0 group-hover:opacity-100"
-										>
-											<MoreVertical size={18} />
+										<Button variant="ghost" class="h-6 w-6 p-0 opacity-0 group-hover:opacity-100">
+											<MoreVertical class="h-4 w-4" />
 										</Button>
 									</DropdownMenu.Trigger>
 									<DropdownMenu.Content align="end" class="w-32">
+										<DropdownMenu.Item on:click={() => startEditing(data.pageId, data.query)}>
+											<Pencil class="mr-2 h-4 w-4" />
+											<span>Change name</span>
+										</DropdownMenu.Item>
 										<DropdownMenu.Item on:click={() => deletePageId(data.pageId)}>
 											<Trash2 class="mr-2 h-4 w-4" />
 											<span>Delete</span>

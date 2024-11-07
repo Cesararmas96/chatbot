@@ -59,7 +59,7 @@
 				} else {
 					clearInterval(typingInterval) // Detener el temporizador cuando termine de mostrar el texto
 				}
-			}, 15) // Ajusta la velocidad del efecto de escritura (15 ms por carácter)
+			}, 5) // Ajusta la velocidad del efecto de escritura (15 ms por carácter)
 		} else {
 			displayedText = fullText // Muestra el texto completo si no es el último mensaje
 		}

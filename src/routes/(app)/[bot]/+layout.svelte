@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { writable } from 'svelte/store'
-
+	import { get } from 'svelte/store'
 	import { onMount } from 'svelte'
 	import moment from 'moment'
 	import Dexie from 'dexie'
@@ -43,6 +43,7 @@
 	let inputType = 'file'
 	let searchTerm = ''
 	let jobsList = []
+
 	let chatbotid
 	let user_id = session.user_id
 	let isLoading = false
@@ -79,7 +80,7 @@
 				{},
 				{
 					headers: {
-						Authorization: `Bearer ${session.token}`,
+						Authorization: `Bearer ${storeUser.token}`,
 						'Content-Type': 'application/json'
 					}
 				}
@@ -88,9 +89,6 @@
 			const matchedBot = botsList.find((bot) => bot.name.toLowerCase() === botName)
 
 			if (matchedBot) {
-				// chatbotid = matchedBot.id
-				// console.log('chatbotid asignado:', chatbotid)
-
 				const botApiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots?name=${matchedBot.name}`
 
 				const data = await getApiData(
@@ -100,7 +98,7 @@
 					{},
 					{
 						headers: {
-							Authorization: `Bearer ${session.token}`,
+							Authorization: `Bearer ${storeUser.token}`,
 							'Content-Type': 'application/json'
 						}
 					}
@@ -108,7 +106,7 @@
 				botData = data ? data[0] : null
 				errorMessage = botData ? '' : `Bot con nombre ${botName} no encontrado.`
 				if (botData) {
-					chatbotid = botData.chatbot_id // Asigna chatbotid desde botData.chatbot_id
+					chatbotid = botData.chatbot_id
 				}
 			} else {
 				errorMessage = `Bot con nombre ${botName} no encontrado.`
@@ -126,8 +124,16 @@
 		} else {
 			console.warn('chatbotid is not defined. fetchPageIds will not be called.')
 		}
-	})
 
+		// Suscribirse a los cambios de la página y actualizar datos cuando se navega a una nueva URL
+		page.subscribe(async () => {
+			const currentPage = get(page)
+			botName = currentPage.params.bot
+			if (botName && user_id) {
+				await fetchPageIds(chatbotid, user_id)
+			}
+		})
+	})
 	async function fetchPageIds(chatbotid: string, user_id: string) {
 		isLoading = true
 		try {
@@ -141,15 +147,9 @@
 				console.warn('No messages were found that match the filter')
 			}
 
-			// Ordena por fecha de forma descendente (más reciente primero)
 			pageData = Array.from(
 				new Map(pageDataArray.map((item) => [item.pageId, item])).values()
-			).sort((a, b) => new Date(b.at) - new Date(a.at))
-
-			// Actualizar `filteredPageData` después de ordenar
-			filteredPageData = pageData.filter((data) =>
-				data.query.toLowerCase().includes(searchTerm.toLowerCase())
-			)
+			).sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
 		} catch (error) {
 			console.error('Error getting pageIds:', error)
 		} finally {
@@ -157,6 +157,7 @@
 		}
 	}
 
+	// Declaración reactiva para actualizar filteredPageData cuando pageData o searchTerm cambian
 	$: filteredPageData = pageData.filter((data) =>
 		data.query.toLowerCase().includes(searchTerm.toLowerCase())
 	)
@@ -256,7 +257,7 @@
 <div class="flex flex-col md:flex-row h-screen bg-black text-white">
 	<!-- Botón para mostrar/ocultar el sidebar en versión móvil -->
 	<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
-		<a href="/{botName}" class="flex items-center">
+		<a href="/bots" class="flex items-center">
 			<img src="/troc.png" alt="" class="w-12 h-12" />
 			<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
 		</a>
@@ -267,7 +268,7 @@
 
 	<!-- Sidebar -->
 	<div
-		class={`w-full md:w-[350px] bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
+		class={`w-full md:w-[300px] bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
 	>
 		<div class="flex items-center justify-between mb-4">
 			<div class="flex items-center w-full">
@@ -306,15 +307,17 @@
 					class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800 "
 				>
 					{#if isLoading}
-						<LoaderCustom />
-
-						loader
+						<div
+							class="flex justify-center items-center h-full w-full absolute top-0 left-0 text-center"
+						>
+							<LoaderCustom />
+						</div>
 					{:else if filteredPageData.length == 0}
 						<p class="absolute inset-0 flex justify-center items-center text-center text-gray-400">
 							No chat found.
 						</p>
 					{:else}
-						{#each filteredPageData.slice() as data}
+						{#each filteredPageData as data (data.pageId)}
 							{#if isDifferentDate(data.at)}
 								<div class="px-2 py-2 text-sm font-semibold text-gray-400">
 									{formatDate(data.at)}
@@ -340,23 +343,33 @@
 										<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
 											<MessageSquare size={18} />
 											<span class="text-sm truncate">
-												{data.query.length > 25 ? `${data.query.slice(0, 25)}...` : data.query}
+												{data.query.length > 26 ? `${data.query.slice(0, 26)}...` : data.query}
 											</span>
 										</div>
 									</a>
 								{/if}
 								<DropdownMenu.Root>
 									<DropdownMenu.Trigger>
-										<Button variant="ghost" class="h-6 w-6 p-0 opacity-0 group-hover:opacity-100">
+										<Button
+											variant="ghost"
+											class="h-6 w-6 p-0 m-0 opacity-0 group-hover:opacity-100"
+										>
 											<MoreVertical class="h-4 w-4" />
 										</Button>
 									</DropdownMenu.Trigger>
 									<DropdownMenu.Content align="end" class="w-32">
-										<DropdownMenu.Item on:click={() => startEditing(data.pageId, data.query)}>
+										<DropdownMenu.Item
+											on:click={() => startEditing(data.pageId, data.query)}
+											class="cursor-pointer	"
+										>
 											<Pencil class="mr-2 h-4 w-4" />
 											<span>Change name</span>
 										</DropdownMenu.Item>
-										<DropdownMenu.Item on:click={() => deletePageId(data.pageId)}>
+
+										<DropdownMenu.Item
+											on:click={() => deletePageId(data.pageId)}
+											class="cursor-pointer	"
+										>
 											<Trash2 class="mr-2 h-4 w-4" />
 											<span>Delete</span>
 										</DropdownMenu.Item>

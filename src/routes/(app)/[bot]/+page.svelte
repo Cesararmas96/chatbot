@@ -21,7 +21,6 @@
 	let initialLoad = true // Estado de carga inicial de la página
 	let botName = ''
 
-	
 	let query = ''
 	let chatInputRef: any
 	let uuid = ''
@@ -152,7 +151,6 @@
 	}
 </script>
 
-
 <div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
 	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-none">
 		<Card.Content class="flex-1 flex flex-col justify-between">
@@ -177,7 +175,7 @@
 						<p class="text-xl text-gray-400">How can I help you today?</p>
 					</header>
 					{#if botData}
-						<div class="flex-1 p-6 flex flex-col items-center justify-center w-full max-w-2xl">
+						<div class="flex-1 p-62 flex flex-col items-center justify-center w-full max-w-2xl">
 							<div
 								class="overflow-y-auto w-full
                 max-h-[calc(100vh-550px)]
@@ -203,7 +201,6 @@
 						<p class="text-xs text-gray-500 mt-2 text-center">
 							Chatbots can make mistakes. Verify important informationsss.
 						</p>
-
 					</div>
 				</div>
 			</div>

@@ -187,6 +187,42 @@
 			</div>
 		</div>
 	{/if}
+
+	{#if showMessage && botData && botData.name && botData.name.toLowerCase() === 'askbuddy'}
+		<div class="w-full" id="mensaje">
+			<div class="relative">
+				<div
+					class="bg-yellow-50 dark:bg-gray-800 text-yellow-800 dark:text-yellow-300 rounded-lg border border-yellow-300 dark:border-yellow-800 divide-yellow-300 dark:divide-yellow-800 p-4 gap-3 text-sm animate__animated animate__fadeIn mb-2 ml-[5px] mr-[12px] px-4 py-2"
+					role="alert"
+				>
+					<div class="flex flex-col justify-between">
+						<div class="flex flex-col items-start justify-center">
+							<div class="flex items-center gap-3 text-lg font-medium">
+								<span class="dark:text-gray-300 text-sm">Disclaimer</span>
+							</div>
+							<p class="mb-2 mt-2 text-sm dark:text-gray-400">
+								The MSO AskBuddy Bot is designed to support MSO employees by providing quick access
+								to training materials, guides, and step-by-step resources that have been covered
+								during your training. This bot will not duplicate or replace the information
+								available on C2 (T-Mobile operations) or the TROC Hub. If you need further
+								assistance, please contact your team lead or refer to the specific resources on the
+								respective platforms.
+							</p>
+						</div>
+						<div class="flex flex-row justify-end gap-1"></div>
+					</div>
+				</div>
+
+				<!-- Botón para cerrar el mensaje usando el componente X de lucide-svelte -->
+				<button
+					class="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white mr-3 mt-1"
+					on:click={closeMessage}
+				>
+					<X class="w-4 h-4" />
+				</button>
+			</div>
+		</div>
+	{/if}
 	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-none">
 		<Card.Content class="flex-1 flex flex-col justify-between">
 			<div class="flex-1 flex flex-col items-center justify-center">
@@ -217,14 +253,14 @@
 								class="overflow-y-auto w-full
                 max-h-[calc(100vh-550px)]
                 md:max-h-[calc(100vh-400px)]
-                lg:max-h-[calc(100vh-470px)] custom-scrollbar"
+                lg:max-h-[calc(100vh-470px)]"
 							>
 								<!-- Agrega un scroll con altura máxima -->
 								<CardLibrary
 									{session}
 									chatbotId={botData.chatbot_id}
 									on:selectQuery={handleSelectQuery}
-									class="w-full"
+									class=""
 								/>
 							</div>
 						</div>

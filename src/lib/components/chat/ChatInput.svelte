@@ -27,6 +27,7 @@
 		disabled={isLoading}
 		bind:value={query}
 		autofocus
+		required
 	/>
 	<div class="absolute right-4 flex items-center gap-2">
 		{#if isLoading}

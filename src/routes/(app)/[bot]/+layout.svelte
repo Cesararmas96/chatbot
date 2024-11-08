@@ -254,7 +254,7 @@
 </script>
 
 <!-- Contenedor general -->
-<div class="flex flex-col md:flex-row h-screen bg-black text-white">
+<div class="flex flex-col md:flex-row md:h-screen bg-black text-white">
 	<!-- Botón para mostrar/ocultar el sidebar en versión móvil -->
 	<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
 		<a href="/bots" class="flex items-center">
@@ -272,7 +272,7 @@
 	>
 		<div class="flex items-center justify-between mb-4">
 			<div class="flex items-center w-full">
-				<a href="/{botName}" class="flex justify-center items-center">
+				<a href="/bots" class="flex justify-center items-center">
 					<img src="/troc.png" alt="" class="w-12 h-12" />
 					<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
 				</a>

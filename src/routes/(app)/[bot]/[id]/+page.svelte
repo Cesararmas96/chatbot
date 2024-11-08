@@ -112,6 +112,11 @@
 		event.preventDefault()
 		query = event.detail.query
 		await handleFetchData()
+
+		// Enfocar el campo de entrada después de manejar la respuesta
+		if (chatInputRef && chatInputRef.focusInput) {
+			chatInputRef.focusInput()
+		}
 	}
 
 	///////////////////////

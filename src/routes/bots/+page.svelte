@@ -27,13 +27,20 @@
 		const apiUrl = `${import.meta.env.VITE_API_AI_URL}/api/v1/bots`
 
 		// Lista de correos que solo pueden ver el bot 'AskBrett'
-		const allowedEmails = [
+		const allowedEmailsAskBrettOnly = [
 			'jburgess1@msorocks.com',
 			'ioliver@msorocks.com',
 			'bcompton@msorocks.com',
 			'lervin@msorocks.com',
 			'amarquezleon@msorocks.com',
 			'ssumpter@msorocks.com'
+		]
+
+		// Lista de correos que pueden ver ciertos bots específicos
+		const allowedEmailsSpecificBots = [
+			'bkava@trocglobal.com',
+			'eschulte@trocglobal.com',
+			'esantaella@trocglobal.com'
 		]
 
 		try {
@@ -52,11 +59,18 @@
 				true
 			)
 
-			// Verificar si el email del usuario está en la lista permitida
-			if (allowedEmails.includes(email)) {
+			// Filtrar bots según la lista de correos
+			if (allowedEmailsAskBrettOnly.includes(email)) {
 				// Mostrar solo el bot 'AskBrett' si el usuario está en la lista
 				bots = fetchedBots
 					.filter((bot) => bot.name === 'AskBrett')
+					.sort((a, b) => a.name.localeCompare(b.name))
+			} else if (allowedEmailsSpecificBots.includes(email)) {
+				// Mostrar solo ciertos bots para los correos específicos
+				bots = fetchedBots
+					.filter((bot) =>
+						['AskBrett', 'AskBuddy', 'AskPage', 'BoseBot', 'ATTBot'].includes(bot.name)
+					)
 					.sort((a, b) => a.name.localeCompare(b.name))
 			} else {
 				// Mostrar todos los bots para los demás usuarios

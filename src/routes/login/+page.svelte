@@ -139,12 +139,12 @@
 						{/if}
 					</ul>
 
-					<div class="mt-6 flex w-4/5 items-center justify-center">
+					<!-- <div class="mt-6 flex w-4/5 items-center justify-center">
 						<div class="h-px flex-grow bg-gray-200 opacity-20" />
 						<span class="flex-shrik px-4 text-gray-100">Or Continue With</span>
 						<div class="h-px flex-grow bg-gray-200 opacity-20" />
-					</div>
-
+					</div> -->
+					<!-- 
 					<form
 						id="form"
 						class=" flex w-4/5 flex-col items-center"
@@ -177,8 +177,8 @@
 								required
 								maxlength="100"
 								bind:value={password}
-							>
-								<!-- <button
+							> -->
+					<!-- <button
 									slot="right"
 									on:click|preventDefault={() => (showPassword = !showPassword)}
 									class="pointer-events-auto mt-1"
@@ -213,7 +213,7 @@
 										>
 									{/if}
 								</button> -->
-							</Input>
+					<!-- </Input>
 						</div>
 						{#if errorMessage}
 							<p class="text-red-500 text-xs italic">{errorMessage}</p>
@@ -245,7 +245,7 @@
 						<a class="mt-2 text-sm text-gray-100 hover:underline" href="?/forgot-password"
 							>Forgot your password?</a
 						>
-					</div>
+					</div> -->
 				</div>
 			</div>
 		</div>

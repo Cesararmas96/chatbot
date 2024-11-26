@@ -23,6 +23,7 @@
 
 	import JSZip from 'jszip' // Importa JSZip
 	import saveAs from 'file-saver' // Importa FileSaver para la descarga
+	import { json } from '@sveltejs/kit'
 
 	export let data: any
 
@@ -244,14 +245,29 @@
 
 		// Convertir Set a Array para usar con Promise.all
 		const framesArray = Array.from(selectedFrames)
-
+		
 		try {
 			// Realizar todas las solicitudes fetch en paralelo usando Promise.all
 			const fetchPromises = framesArray.map(async (frame) => {
-				const response = await fetch(`${import.meta.env.VITE_API_AI_URL}/gcs/files/${frame}`)
+				const urlImagen = `${import.meta.env.VITE_API_AI_URL}/gcs/files/${frame}`
+				
+				const response = await fetch(
+					`${import.meta.env.VITE_API_AI_URL}/api/v1/fetch_image`,
+					{
+						method: 'POST',
+						headers: {
+						Authorization: `Bearer ${session.token}`,
+						'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ url: urlImagen }),
+					}
+				 );
+
 				if (!response.ok) throw new Error(`Failed to fetch ${frame}`)
 				const blob = await response.blob()
-				folder.file(frame.split('/').pop(), blob) // Guardar la imagen en el ZIP
+				const fileName = urlImagen.split('/').pop() || 'download.jpg';
+
+				folder?.file(fileName, blob) // Guardar la imagen en el ZIP
 			})
 
 			// Esperar que todas las promesas de fetch se resuelvan

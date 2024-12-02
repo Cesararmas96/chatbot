@@ -17,6 +17,7 @@
 	export let form: ActionData
 
 	const apiUrl = import.meta.env.VITE_API_AI_URL
+	const isAIEnabled = import.meta.env.VITE_API_AI_URL === 'https://ai.trocdigital.net'
 	const redirecURI = `${$page.url.origin}/login/callback`
 
 	let showPassword: boolean = false
@@ -138,114 +139,83 @@
 							{/each}
 						{/if}
 					</ul>
-
-					<!-- <div class="mt-6 flex w-4/5 items-center justify-center">
-						<div class="h-px flex-grow bg-gray-200 opacity-20" />
-						<span class="flex-shrik px-4 text-gray-100">Or Continue With</span>
-						<div class="h-px flex-grow bg-gray-200 opacity-20" />
-					</div>
-					
-					<form
-						id="form"
-						class=" flex w-4/5 flex-col items-center"
-						method="POST"
-						action="?/login"
-						on:submit={() => (_loading = true)}
-						use:enhance
-					>
-						<div class="w-full">
-							<Label for="email" class="mb-1 font-semibold text-gray-100">Email</Label>
-							<Input
-								bind:value={username}
-								type="text"
-								id="username"
-								defaultClass="block w-full mb-4 p-2.5 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded "
-								name="username"
-								placeholder="Email@email.com"
-								required
-								maxlength="100"
-							></Input>
+					{#if !isAIEnabled}
+						<div class="mt-6 flex w-4/5 items-center justify-center">
+							<div class="h-px flex-grow bg-gray-200 opacity-20" />
+							<span class="flex-shrik px-4 text-gray-100">Or Continue With</span>
+							<div class="h-px flex-grow bg-gray-200 opacity-20" />
 						</div>
-						<div class="w-full">
-							<Label for="password" class="font-semibold text-gray-100">Password</Label>
-							<Input
-								id="password"
-								type={showPassword ? 'text' : 'password'}
-								defaultClass="flex block w-full !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-2"
-								name="password"
-								placeholder="**********"
-								required
-								maxlength="100"
-								bind:value={password}
-							> -->
-					<!-- <button
-									slot="right"
-									on:click|preventDefault={() => (showPassword = !showPassword)}
-									class="pointer-events-auto mt-1"
+
+						<form
+							id="form"
+							class=" flex w-4/5 flex-col items-center"
+							method="POST"
+							action="?/login"
+							on:submit={() => (_loading = true)}
+							use:enhance
+						>
+							<div class="w-full">
+								<Label for="email" class="mb-1 font-semibold text-gray-100">Email</Label>
+								<Input
+									bind:value={username}
+									type="text"
+									id="username"
+									defaultClass="block w-full mb-4 p-2.5 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded "
+									name="username"
+									placeholder="Email@email.com"
+									required
+									maxlength="100"
+								></Input>
+							</div>
+							<div class="w-full">
+								<Label for="password" class="font-semibold text-gray-100">Password</Label>
+								<Input
+									id="password"
+									type={showPassword ? 'text' : 'password'}
+									defaultClass="flex block w-full !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded mb-2"
+									name="password"
+									placeholder="**********"
+									required
+									maxlength="100"
+									bind:value={password}
+								></Input>
+							</div>
+							{#if errorMessage}
+								<p class="text-red-500 text-xs italic">{errorMessage}</p>
+							{/if}
+							<Button
+								disabled={_loading}
+								type="submit"
+								class="mt-8 w-full p-3 rounded font-semibold text-sm">Sign In</Button
+							>
+
+							{#if form?.invalid}
+								<p
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
 								>
-									{#if showPassword}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 32 32"
-											class="h-5 w-5"
-											stroke-width="1.5"
-											><path
-												fill="currentColor"
-												d="M30.94 15.66A16.69 16.69 0 0 0 16 5A16.69 16.69 0 0 0 1.06 15.66a1 1 0 0 0 0 .68A16.69 16.69 0 0 0 16 27a16.69 16.69 0 0 0 14.94-10.66a1 1 0 0 0 0-.68M16 25c-5.3 0-10.9-3.93-12.93-9C5.1 10.93 10.7 7 16 7s10.9 3.93 12.93 9C26.9 21.07 21.3 25 16 25"
-											/><path
-												fill="currentColor"
-												d="M16 10a6 6 0 1 0 6 6a6 6 0 0 0-6-6m0 10a4 4 0 1 1 4-4a4 4 0 0 1-4 4"
-											/></svg
-										>
-									{:else}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 32 32"
-											class="h-5 w-5 mr-5"
-											stroke-width="1.5"
-											><path
-												fill="currentColor"
-												d="m5.24 22.51l1.43-1.42A14.06 14.06 0 0 1 3.07 16C5.1 10.93 10.7 7 16 7a12.4 12.4 0 0 1 4 .72l1.55-1.56A14.7 14.7 0 0 0 16 5A16.69 16.69 0 0 0 1.06 15.66a1 1 0 0 0 0 .68a16 16 0 0 0 4.18 6.17"
-											/><path
-												fill="currentColor"
-												d="M12 15.73a4 4 0 0 1 3.7-3.7l1.81-1.82a6 6 0 0 0-7.33 7.33zm18.94-.07a16.4 16.4 0 0 0-5.74-7.44L30 3.41L28.59 2L2 28.59L3.41 30l5.1-5.1A15.3 15.3 0 0 0 16 27a16.69 16.69 0 0 0 14.94-10.66a1 1 0 0 0 0-.68M20 16a4 4 0 0 1-6 3.44L19.44 14a4 4 0 0 1 .56 2m-4 9a13.05 13.05 0 0 1-6-1.58l2.54-2.54a6 6 0 0 0 8.35-8.35l2.87-2.87A14.54 14.54 0 0 1 28.93 16C26.9 21.07 21.3 25 16 25"
-											/></svg
-										>
-									{/if}
-								</button> -->
-					<!-- </Input>
+									Username and password is required.
+								</p>
+							{/if}
+
+							{#if form?.credentials}
+								<p
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
+								>
+									{@html errorCodes[form?.message?.status]
+										? `${errorCodes[form?.message?.status].title}. ${
+												errorCodes[form?.message?.status].message
+											}`
+										: form?.message?.reason}
+								</p>
+							{/if}
+						</form>
+
+						<div class="mt-4 flex w-4/5 items-center justify-center">
+							<a class="mt-2 text-sm text-gray-100 hover:underline" href="?/forgot-password"
+								>Forgot your password?</a
+							>
 						</div>
-						{#if errorMessage}
-							<p class="text-red-500 text-xs italic">{errorMessage}</p>
-						{/if}
-						<Button
-							disabled={_loading}
-							type="submit"
-							class="mt-8 w-full p-3 rounded font-semibold text-sm">Sign In</Button
-						>
-
-						{#if form?.invalid}
-							<p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
-								Username and password is required.
-							</p>
-						{/if}
-
-						{#if form?.credentials}
-							<p class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500">
-								{@html errorCodes[form?.message?.status]
-									? `${errorCodes[form?.message?.status].title}. ${
-											errorCodes[form?.message?.status].message
-										}`
-									: form?.message?.reason}
-							</p>
-						{/if}
-					</form>
-
-					<div class="mt-4 flex w-4/5 items-center justify-center">
-						<a class="mt-2 text-sm text-gray-100 hover:underline" href="?/forgot-password"
-							>Forgot your password?</a
-						>
-					</div> -->
+					{/if}
 				</div>
 			</div>
 		</div>

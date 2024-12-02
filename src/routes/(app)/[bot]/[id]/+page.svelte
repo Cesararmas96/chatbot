@@ -11,6 +11,20 @@
 	import { get } from 'svelte/store'
 	import { marked } from 'marked'
 	import Avatar from '$lib/components/common/Avatar.svelte'
+	import * as Tooltip from '$lib/components/ui/tooltip'
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
+
+	import {
+		Clipboard,
+		Share2,
+		RefreshCw,
+		ThumbsUp,
+		ThumbsDown,
+		Flag,
+		X,
+		ChevronDown,
+		Check
+	} from 'lucide-svelte'
 
 	///feature share
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
@@ -31,6 +45,13 @@
 	let chatInputRef: any
 	let messagesContainer: HTMLDivElement
 
+	let selectedLlm = 'Gemeni' // Inicialmente no hay LLM seleccionado
+
+	let llmOptions = [
+		{ name: 'Groq', description: 'Fast summaries and concise text generation.' },
+		{ name: 'Claude', description: 'Great for natural and coherent conversations.' },
+		{ name: 'Gemeni', description: 'Versatile, multi-domain content creation.' }
+	]
 	export let data
 	$storeUser = data.user
 	user_id = data.user.user_id
@@ -83,7 +104,11 @@
 		isLoading = true
 		isLoadingResponse = true
 		try {
-			const { response, question, answer, chat_history, sid, at } = await fetchChatData(bot, query)
+			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
+				bot,
+				query,
+				selectedLlm
+			)
 			const newMessage = {
 				text: response,
 				query,
@@ -96,15 +121,11 @@
 			}
 			messages = [...messages, newMessage]
 			query = '' // Limpiar input después de recibir la respuesta
-
-			const pageUrl = get(page).url.pathname
-			await db.messages.add({ ...newMessage, pageId: pageUrl })
-			isLoadingResponse = false
 		} catch (error) {
-			isLoadingResponse = false
 			sendErrorNotification('Error: Unable to fetch data. Please try again.')
 		} finally {
 			isLoading = false
+			isLoadingResponse = false
 		}
 	}
 
@@ -124,17 +145,54 @@
 	const currentUrl = new URL($page.url.href).host
 
 	// Función para manejar la regeneración de la última pregunta
-	const handleRegenerate = async (message) => {
+	const handleRegenerate = async (message, llm = selectedLlm) => {
+		selectedLlm = llm // Actualiza el LLM seleccionado
 		if (message.query) {
 			query = message.query // Muestra la última consulta en el input
 			await handleFetchData() // Reenvía la consulta
 		}
+	}
+
+	const handleChangeLlm = (llm) => {
+		selectedLlm = llm // Actualiza el LLM seleccionado
 	}
 </script>
 
 {#if messages.length > 0}
 	<div class="chatbox flex flex-col h-screen w-full">
 		<div class="main-content flex-1 flex flex-col">
+			<div class="flex border-b border-gray-700">
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						<Button variant="" class="relative group p-2 w-auto my-5 ml-5">
+							<span class="font-semibold text-xl">{selectedLlm}</span>
+							<ChevronDown class="ml-1 h-4 w-4" />
+						</Button>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content>
+						<DropdownMenu.Group>
+							<DropdownMenu.Label>
+								<span class="opacity-95">Change model</span>
+							</DropdownMenu.Label>
+							<DropdownMenu.Separator />
+							{#each llmOptions as llm}
+								<DropdownMenu.Item
+									class="cursor-pointer flex flex-col items-start gap-1"
+									on:click={() => handleChangeLlm(llm.name)}
+								>
+									<div class="flex items-center w-full gap-2">
+										<span class="font-bold">{llm.name}</span>
+										{#if selectedLlm === llm.name}
+											<Check class="h-4 w-4 " />
+										{/if}
+									</div>
+									<div class="text-sm text-gray-500">{llm.description}</div>
+								</DropdownMenu.Item>
+							{/each}
+						</DropdownMenu.Group>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			</div>
 			<div
 				class="scroll-area custom-scrollbar2 flex-1 p-6 overflow-auto"
 				bind:this={messagesContainer}
@@ -158,6 +216,8 @@
 								{message}
 								{currentUrl}
 								{bot}
+								{selectedLlm}
+								{llmOptions}
 								onRegenerate={handleRegenerate}
 								{token}
 								isLastMessage={index === messages.length - 1}

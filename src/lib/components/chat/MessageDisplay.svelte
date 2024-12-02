@@ -6,7 +6,18 @@
 	import { Button } from '$lib/components/ui/button/index.js'
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js'
 	import { Input } from '$lib/components/ui/input'
-	import { Clipboard, Share2, RefreshCw, ThumbsUp, ThumbsDown, Flag, X } from 'lucide-svelte'
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
+	import {
+		Clipboard,
+		Share2,
+		RefreshCw,
+		ThumbsUp,
+		ThumbsDown,
+		Flag,
+		X,
+		ChevronDown,
+		Check
+	} from 'lucide-svelte'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import MessageLike from './MessageLike.svelte'
 	import MessageDislike from './MessageDislike.svelte'
@@ -20,6 +31,9 @@
 
 	export let onRegenerate: (message: { text: string; sid: string; query?: string }) => void
 	export let isLastMessage: boolean
+
+	export let selectedLlm = null // Por defecto, no hay LLM seleccionado
+	export let llmOptions = ['Model A', 'Model B', 'Model C'] // Opciones disponibles
 
 	const dispatch = createEventDispatcher()
 	let clipboard = marked(message.text)
@@ -167,17 +181,6 @@
 			</Tooltip.Content>
 		</Tooltip.Root>
 
-		<Tooltip.Root>
-			<Tooltip.Trigger>
-				<Button class="w-8 h-8 p-0" variant="ghost" on:click={() => onRegenerate(message)}>
-					<RefreshCw class="h-4 w-4" />
-				</Button>
-			</Tooltip.Trigger>
-			<Tooltip.Content>
-				<p>Refresh</p>
-			</Tooltip.Content>
-		</Tooltip.Root>
-
 		<AlertDialog.Root>
 			<AlertDialog.Trigger asChild let:builder>
 				<Tooltip.Root>
@@ -273,16 +276,46 @@
 				</AlertDialog.Header>
 			</AlertDialog.Content>
 		</AlertDialog.Root>
+		{#if isLastMessage}
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger>
+							<Button variant="ghost" class="flex items-center relative group p-2 w-auto h-auto">
+								<RefreshCw class="h-4 w-4" />
+
+								<ChevronDown class="ml-1 h-4 w-4" />
+							</Button>
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Group>
+								<DropdownMenu.Label>
+									<span class="opacity-95">Change model</span>
+								</DropdownMenu.Label>
+								<DropdownMenu.Separator />
+
+								{#each llmOptions as llm}
+									<DropdownMenu.Item
+										class="cursor-pointer flex flex-col items-start gap-1"
+										on:click={() => handleChangeLlm(llm.name)}
+									>
+										<div class="flex items-center w-full gap-2">
+											<span class="font-bold">{llm.name}</span>
+											{#if selectedLlm === llm.name}
+												<Check class="h-4 w-4 " />
+											{/if}
+										</div>
+										<div class="text-sm text-gray-500">{llm.description}</div>
+									</DropdownMenu.Item>
+								{/each}
+							</DropdownMenu.Group>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</Tooltip.Trigger>
+				<Tooltip.Content>
+					<p>Refresh with {selectedLlm}</p>
+				</Tooltip.Content>
+			</Tooltip.Root>
+		{/if}
 	</div>
 </div>
-
-<style>
-	.acciones {
-		opacity: 0;
-		transition: opacity 0.3s ease;
-	}
-
-	.message-container:hover .acciones {
-		opacity: 1;
-	}
-</style>

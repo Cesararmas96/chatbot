@@ -245,27 +245,24 @@
 
 		// Convertir Set a Array para usar con Promise.all
 		const framesArray = Array.from(selectedFrames)
-		
+
 		try {
 			// Realizar todas las solicitudes fetch en paralelo usando Promise.all
 			const fetchPromises = framesArray.map(async (frame) => {
 				const urlImagen = `${import.meta.env.VITE_API_AI_URL}/gcs/files/${frame}`
-				
-				const response = await fetch(
-					`${import.meta.env.VITE_API_AI_URL}/api/v1/fetch_image`,
-					{
-						method: 'POST',
-						headers: {
+
+				const response = await fetch(`${import.meta.env.VITE_API_AI_URL}/api/v1/fetch_image`, {
+					method: 'POST',
+					headers: {
 						Authorization: `Bearer ${session.token}`,
-						'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({ url: urlImagen }),
-					}
-				 );
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ url: urlImagen })
+				})
 
 				if (!response.ok) throw new Error(`Failed to fetch ${frame}`)
 				const blob = await response.blob()
-				const fileName = urlImagen.split('/').pop() || 'download.jpg';
+				const fileName = urlImagen.split('/').pop() || 'download.jpg'
 
 				folder?.file(fileName, blob) // Guardar la imagen en el ZIP
 			})
@@ -282,17 +279,52 @@
 	}
 
 	let currentPage = 1 // Página actual
-	const itemsPerPage = 30 // 6 columnas x 5 filas = 30 imágenes por página
-	// Función para obtener las imágenes de la página actual
-	const getCurrentPageItems = () => {
-		const start = (currentPage - 1) * itemsPerPage
-		const end = start + itemsPerPage
-		return audioFile.video.frames.slice(start, end)
+	const itemsPerPage = 30 // Número de elementos por página
+	let currentPageFrames = [] // Frames actuales visibles
+	let totalPages = 1 // Total de páginas disponibles
+
+	// Calcular el total de páginas basado en los frames disponibles
+	$: totalPages = Math.ceil((audioFile?.video?.frames?.length || 0) / itemsPerPage)
+
+	// Actualizar los frames visibles al cambiar de página o cuando los datos estén disponibles
+	$: {
+		if (audioFile?.video?.frames && audioFile.video.frames.length > 0) {
+			const start = (currentPage - 1) * itemsPerPage
+			const end = start + itemsPerPage
+			currentPageFrames = audioFile.video.frames.slice(start, end)
+			errorMessage = '' // Limpiar mensaje de error
+		} else {
+			currentPageFrames = []
+			errorMessage = 'No frames available for this video.'
+		}
 	}
 
 	// Función para cambiar de página
 	const changePage = (page) => {
-		currentPage = page
+		if (page > 0 && page <= totalPages) {
+			currentPage = page // Cambiar página actual
+		}
+	}
+
+	// Función para generar el rango de páginas en la paginación
+	const getPaginationRange = () => {
+		const delta = 2 // Número de páginas visibles alrededor de la página actual
+		const range = []
+
+		// Calcular rango dinámico de páginas
+		for (
+			let i = Math.max(1, currentPage - delta);
+			i <= Math.min(totalPages, currentPage + delta);
+			i++
+		) {
+			range.push(i)
+		}
+
+		// Agregar puntos suspensivos si es necesario
+		if (currentPage - delta > 1) range.unshift('...')
+		if (currentPage + delta < totalPages) range.push('...')
+
+		return range
 	}
 </script>
 
@@ -432,9 +464,10 @@
 				<Card.Content>
 					<div class="gallery-container">
 						<!-- Mostrar mensaje si no hay imágenes disponibles -->
-						{#if getCurrentPageItems().length === 0}
-							<p>No frames available for this video.</p>
+						{#if errorMessage}
+							<p>{errorMessage}</p>
 						{:else}
+							<!-- Galería con CSS Grid -->
 							<div class="mb-5 flex justify-end">
 								<!-- Botón para activar los checkboxes -->
 								<Button variant="outline" size="sm" on:click={toggleShowCheckboxes}>
@@ -454,11 +487,9 @@
 								{/if}
 							</div>
 
-							<!-- Galería con CSS Grid de 5 columnas -->
 							<div class="grid-container">
-								{#each getCurrentPageItems() as framesImg}
+								{#each currentPageFrames as framesImg}
 									<div class="image-item">
-										<!-- Solo mostrar checkboxes si se ha activado la selección -->
 										{#if showCheckboxes}
 											<input
 												type="checkbox"
@@ -467,6 +498,7 @@
 												class="checkboxGallery"
 											/>
 										{/if}
+
 										<Lightbox description={framesImg}>
 											<figure class="shrink-0">
 												<div class="overflow-hidden rounded-md">
@@ -474,8 +506,6 @@
 														src={`${import.meta.env.VITE_API_AI_URL}/gcs/files/${framesImg}`}
 														alt={framesImg}
 														class="gallery-image"
-														width="350"
-														height="250"
 													/>
 												</div>
 											</figure>
@@ -486,17 +516,37 @@
 
 							<!-- Paginación -->
 							<div class="pagination">
-								{#if currentPage > 1}
-									<Button variant="outline" size="sm" on:click={() => changePage(currentPage - 1)}>
-										Previous
-									</Button>
-								{/if}
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={currentPage === 1}
+									on:click={() => changePage(currentPage - 1)}
+								>
+									Previous
+								</Button>
 
-								{#if getCurrentPageItems().length === itemsPerPage}
-									<Button variant="outline" size="sm" on:click={() => changePage(currentPage + 1)}>
-										Next
-									</Button>
-								{/if}
+								{#each getPaginationRange() as page}
+									{#if page === '...'}
+										<span class="pagination-ellipsis">...</span>
+									{:else}
+										<Button
+											variant={page === currentPage ? 'primary' : 'outline'}
+											size="sm"
+											on:click={() => changePage(page)}
+										>
+											{page}
+										</Button>
+									{/if}
+								{/each}
+
+								<Button
+									variant="outline"
+									size="sm"
+									disabled={currentPage === totalPages}
+									on:click={() => changePage(currentPage + 1)}
+								>
+									Next
+								</Button>
 							</div>
 						{/if}
 					</div>
@@ -578,12 +628,12 @@
 		z-index: 10;
 	}
 
-	/* .gallery-image {
-		width: 100%;
+	.gallery-image {
+		width: 700px !important;
 		height: auto;
 		object-fit: cover;
 		transition: transform 0.3s ease;
-	} */
+	}
 
 	.gallery-image:hover {
 		transform: scale(1.05); /* Efecto de hover */
@@ -593,5 +643,49 @@
 		display: flex;
 		justify-content: center;
 		margin-top: 20px;
+	}
+
+	.gallery-container {
+		padding: 20px;
+	}
+
+	.grid-container {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr); /* Ajusta el número de columnas según el diseño */
+		gap: 10px;
+	}
+
+	.image-item {
+		width: 100%;
+		height: 100%;
+	}
+
+	.gallery-image {
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+	}
+
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 5px;
+		margin-top: 20px;
+	}
+
+	.pagination-ellipsis {
+		padding: 0 10px;
+		font-size: 14px;
+		color: #888;
+	}
+
+	/* Estilo base para el Lightbox */
+
+	/* Asegúrate de que la imagen esté centrada y escalada correctamente */
+	.lightbox img {
+		max-width: 80%; /* Ajusta según lo que prefieras */
+		max-height: 80%; /* Limitar el tamaño de la imagen al 90% de la pantalla */
+		object-fit: contain; /* Mantener las proporciones de la imagen */
 	}
 </style>

@@ -194,10 +194,29 @@
 		handleDownloadFile(audioUrl, fileName, 'mp3')
 	}
 
-	const handleDownloadZip = () => {
+	let isDownloadingZip = false // Variable reactiva para controlar el estado de la descarga
+
+	const handleDownloadZip = async () => {
 		const audioZip = audioFile.video.zip
 		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
-		handleDownloadFile(audioZip, fileName, 'zip')
+
+		try {
+			// Mostrar notificación de que la descarga está en progreso
+			isDownloadingZip = true
+			sendSuccessNotification('Preparing your ZIP file, please wait...')
+
+			// Intentar descargar el archivo ZIP
+			await handleDownloadFile(audioZip, fileName, 'zip')
+
+			// Mostrar notificación de éxito
+			sendSuccessNotification('ZIP file downloaded successfully!')
+		} catch (error) {
+			// Mostrar notificación de error si algo falla
+			sendErrorNotification('Failed to download the ZIP file.')
+		} finally {
+			// Asegurarse de que isDownloadingZip se restablezca
+			isDownloadingZip = false
+		}
 	}
 
 	const handleDownloadVideo = () => {

@@ -135,9 +135,9 @@
 				return
 			}
 
-			const maxSizeInBytes = 500 * 1024 * 1024
+			const maxSizeInBytes = 600 * 1024 * 1024
 			if (file.size > maxSizeInBytes) {
-				sendErrorNotification('File size must be less than 500MB.')
+				sendErrorNotification('File size must be less than 600MB.')
 				selectedFile = null
 				return
 			}

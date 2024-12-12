@@ -145,30 +145,7 @@
 		fetchAudioData()
 	})
 
-	const handleDownloadFile = async (fileUrl, fileName, fileExtension) => {
-		try {
-			// Realiza una solicitud para obtener el archivo
-			const response = await fetch(fileUrl)
-			if (!response.ok) throw new Error('Error fetching the file')
 
-			// Obtiene el blob del archivo
-			const blob = await response.blob()
-
-			// Crea un objeto URL para el blob
-			const downloadUrl = URL.createObjectURL(blob)
-
-			// Crea un elemento <a> dinámicamente y establece los atributos para forzar la descarga
-			const element = document.createElement('a')
-			element.href = downloadUrl
-			element.download = `${fileName}.${fileExtension}` // Nombre del archivo con extensión
-			document.body.appendChild(element)
-			element.click() // Desencadena la descarga
-			document.body.removeChild(element) // Elimina el elemento <a> del DOM
-			URL.revokeObjectURL(downloadUrl) // Libera el URL del blob
-		} catch (error) {
-			sendErrorNotification(`Failed to download the ${fileExtension} file.`)
-		}
-	}
 
 	const handleDownloadTranscript = () => {
 		const transcriptUrl = audioFile.video.transcript
@@ -196,28 +173,36 @@
 
 	let isDownloadingZip = false // Variable reactiva para controlar el estado de la descarga
 
-	const handleDownloadZip = async () => {
-		const audioZip = audioFile.video.zip
-		const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '')
 
-		try {
-			// Mostrar notificación de que la descarga está en progreso
-			isDownloadingZip = true
-			sendSuccessNotification('Preparing your ZIP file, please wait...')
+	const handleDownloadFile = async (fileUrl, fileName) => {
+    try {
+        // Inicia la descarga directamente desde el servidor
+        const downloadLink = document.createElement('a');
+        downloadLink.href = fileUrl;
+        downloadLink.download = fileName;
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click(); // Simula el clic en el enlace de descarga
+        document.body.removeChild(downloadLink); // Limpia el DOM
+    } catch (error) {
+        sendErrorNotification('Failed to initiate the download.');
+    }
+};
 
-			// Intentar descargar el archivo ZIP
-			await handleDownloadFile(audioZip, fileName, 'zip')
+const handleDownloadZip = async () => {
+    const audioZip = audioFile.video.zip; // URL del archivo ZIP en el backend
+    const fileName = audioFile.video_path.replace('/tmp/', '').replace(/\.(mp4|avi)$/, '') + '.zip';
 
-			// Mostrar notificación de éxito
-			sendSuccessNotification('ZIP file downloaded successfully!')
-		} catch (error) {
-			// Mostrar notificación de error si algo falla
-			sendErrorNotification('Failed to download the ZIP file.')
-		} finally {
-			// Asegurarse de que isDownloadingZip se restablezca
-			isDownloadingZip = false
-		}
-	}
+    try {
+        sendSuccessNotification('Download is starting...');
+        handleDownloadFile(audioZip, fileName); // Llama a la función para iniciar la descarga
+    } catch (error) {
+        sendErrorNotification('Failed to download the ZIP file.');
+    }
+};
+
+
+
 
 	const handleDownloadVideo = () => {
 		const audioVideo = audioFile.video.video

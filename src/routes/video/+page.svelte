@@ -213,7 +213,7 @@
 											<p class="mb-2 text-sm text-gray-400">
 												<span class="font-semibold">Click to upload</span> or drag and drop
 											</p>
-											<p class="text-xs text-gray-400">MP4 or AVI (MAX. 500MB)</p>
+											<p class="text-xs text-gray-400">MP4 or AVI (MAX. 600MB)</p>
 										{/if}
 										<input
 											type="file"

@@ -162,7 +162,7 @@
 	<div class="chatbox flex flex-col h-screen w-full">
 		<div class="main-content flex-1 flex flex-col">
 			<div class="flex border-b border-gray-700">
-				<DropdownMenu.Root>
+				<!-- <DropdownMenu.Root>
 					<DropdownMenu.Trigger>
 						<Button variant="" class="relative group p-2 w-auto my-5 ml-5">
 							<span class="font-semibold text-xl">{selectedLlm}</span>
@@ -191,7 +191,7 @@
 							{/each}
 						</DropdownMenu.Group>
 					</DropdownMenu.Content>
-				</DropdownMenu.Root>
+				</DropdownMenu.Root> -->
 			</div>
 			<div
 				class="scroll-area custom-scrollbar2 flex-1 p-6 overflow-auto"

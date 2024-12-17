@@ -277,7 +277,7 @@
 			</AlertDialog.Content>
 		</AlertDialog.Root>
 		{#if isLastMessage}
-			<Tooltip.Root>
+			<!-- <Tooltip.Root>
 				<Tooltip.Trigger>
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger>
@@ -315,7 +315,7 @@
 				<Tooltip.Content>
 					<p>Refresh with {selectedLlm}</p>
 				</Tooltip.Content>
-			</Tooltip.Root>
+			</Tooltip.Root> -->
 		{/if}
 	</div>
 </div>

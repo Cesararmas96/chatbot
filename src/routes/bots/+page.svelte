@@ -37,11 +37,7 @@
 		]
 
 		// Lista de correos que pueden ver ciertos bots específicos
-		const allowedEmailsSpecificBots = [
-			'bkava@trocglobal.com',
-			'eschulte@trocglobal.com',
-			'esantaella@trocglobal.com'
-		]
+		const allowedEmailsSpecificBots = ['bkava@trocglobal.com', 'eschulte@trocglobal.com']
 
 		try {
 			const fetchedBots = await getApiData(

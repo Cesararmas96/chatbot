@@ -45,12 +45,12 @@
 	let chatInputRef: any
 	let messagesContainer: HTMLDivElement
 
-	let selectedLlm = 'Gemeni' // Inicialmente no hay LLM seleccionado
+	let selectedLlm = 'Gemini' // Inicialmente no hay LLM seleccionado
 
 	let llmOptions = [
 		{ name: 'Groq', description: 'Fast summaries and concise text generation.' },
 		{ name: 'Claude', description: 'Great for natural and coherent conversations.' },
-		{ name: 'Gemeni', description: 'Versatile, multi-domain content creation.' }
+		{ name: 'Gemini', description: 'Versatile, multi-domain content creation.' }
 	]
 	export let data
 	$storeUser = data.user

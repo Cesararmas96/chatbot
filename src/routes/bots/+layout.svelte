@@ -4,7 +4,7 @@
 
 	// Importing icons from 'lucide-svelte'
 	import PanelLeft from 'lucide-svelte/icons/panel-left'
-	import { Search, LogOut, User, Bot, Settings, FileAudio } from 'lucide-svelte'
+	import { Search, LogOut, User, Bot, Settings, FileAudio, House } from 'lucide-svelte'
 
 	// Importing UI components from custom library
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
@@ -101,6 +101,11 @@
 			<ScrollArea
 				class="h-[calc(100vh-380px)] md:h-[calc(100vh-210px)] rounded-md border border-zinc-200"
 			>
+				<a href="/bots" class="p-4 flex items-center space-x-2 hover:bg-gray-300 rounded-md">
+					<House class="w-5 h-5" />
+					<!-- Ícono representativo -->
+					<span>Home</span>
+				</a>
 				<Accordion.Root type="single">
 					<!-- Sección de Bots -->
 					<Accordion.Item value="bots">
@@ -227,6 +232,11 @@
 						</a>
 						<Separator />
 						<ScrollArea class="h-[calc(100vh-260px)]  rounded-md border border-zinc-200">
+							<a href="/bots" class="p-4 flex items-center space-x-2 hover:bg-gray-300 rounded-md">
+								<House class="w-5 h-5" />
+								<!-- Ícono representativo -->
+								<span>Home</span>
+							</a>
 							<Accordion.Root type="single">
 								<!-- Sección de Bots -->
 								<Accordion.Item value="bots">
@@ -330,15 +340,29 @@
 		<main
 			class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-1 xl:grid-cols-1"
 		>
-			<!-- Breadcrumb navigation -->
-			<Breadcrumb.Root class="hidden md:flex">
+			<!-- <Breadcrumb.Root class="hidden md:flex">
 				<Breadcrumb.List>
 					<Breadcrumb.Item>
-						<Breadcrumb.Link href="/bots" class="text-xl ml-4">Bots</Breadcrumb.Link>
+						<Breadcrumb.Link href="/bots" class="text-xl ml-4">Botsdd</Breadcrumb.Link>
 					</Breadcrumb.Item>
 				</Breadcrumb.List>
-			</Breadcrumb.Root>
-			<slot />
+			</Breadcrumb.Root> -->
+
+			<div class="">
+				<div class="flex items-center justify-between mb-6 mx-4">
+					<h1 class="text-2xl font-semibold">Bots</h1>
+					<div class="flex gap-2">
+						<a href="/admin">
+							<Button variant="default" class="gap-2">
+								<Settings class="h-4 w-4" />
+								Bot Admin
+							</Button>
+						</a>
+					</div>
+				</div>
+
+				<slot />
+			</div>
 		</main>
 	</div>
 </div>

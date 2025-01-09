@@ -17,7 +17,7 @@
 	export let form: ActionData
 
 	const apiUrl = import.meta.env.VITE_API_AI_URL
-	const isAIEnabled = import.meta.env.VITE_API_AI_URL === 'https://ai.trocdigital.net'
+	const isAIEnabled = import.meta.env.VITE_API_AI_URL === 'https://ai-dev.trocdigital.net'
 	const redirecURI = `${$page.url.origin}/login/callback`
 
 	let showPassword: boolean = false
@@ -139,7 +139,7 @@
 							{/each}
 						{/if}
 					</ul>
-					{#if !isAIEnabled}
+					{#if isAIEnabled}
 						<div class="mt-6 flex w-4/5 items-center justify-center">
 							<div class="h-px flex-grow bg-gray-200 opacity-20" />
 							<span class="flex-shrik px-4 text-gray-100">Or Continue With</span>

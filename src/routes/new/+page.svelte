@@ -131,7 +131,7 @@
 
 <div>
 	<h2 class="font-semibold text-2xl">Create Bot</h2>
-	<div class="">
+	<div class="bg-white dark:bg-gray-700 px-4 pb-4 border mt-4 rounded-md">
 		{#if schema}
 			<Form {schema}>
 				<div
@@ -144,12 +144,12 @@
 					<div class="flex items-end justify-end mt-5">
 						<a
 							href="/bots"
-							class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+							class="text-slate-700 hover:text-white border border-slate-700 hover:bg-slate-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-slate-500 dark:focus:ring-slate-800"
 							>Cancel</a
 						>
 
 						<button
-							class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+							class="text-white border bg-slate-800 hover:bg-slate-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-slate-900 dark:hover:bg-slate-800 focus:outline-none dark:focus:ring-slate-4z00"
 							on:click={() =>
 								handleSubmitFormLocal(handleValidateForm, handleResetForm, handleSetFormErrors)}
 						>
@@ -161,6 +161,3 @@
 		{/if}
 	</div>
 </div>
-
-<style>
-</style>

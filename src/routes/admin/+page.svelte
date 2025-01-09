@@ -29,33 +29,16 @@
 
 	$storeUser = data.user
 	const session = data.user ? data.user : $storeUser
-
-	// console.log(session)
 </script>
 
-<main class="flex flex-1 flex-col gap-4 p-4 lg:gap-12 lg:p-12">
+<main class="flex flex-1 flex-col gap-4 lg:gap-4 lg:p-4">
 	<Tabs.Root value="all">
-		<div class="flex items-center">
+		<!-- <div class="flex items-center">
 			<Tabs.List>
 				<Tabs.Trigger value="all">All</Tabs.Trigger>
 				<Tabs.Trigger value="active">Active</Tabs.Trigger>
 			</Tabs.List>
 			<div class="ml-auto flex items-center gap-2">
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger asChild let:builder>
-						<Button builders={[builder]} variant="outline" size="sm" class="h-7 gap-1">
-							<ListFilter class="h-3.5 w-3.5" />
-							<span class="sr-only sm:not-sr-only sm:whitespace-nowrap"> Filter </span>
-						</Button>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content align="end">
-						<DropdownMenu.Label>Filter by</DropdownMenu.Label>
-						<DropdownMenu.Separator />
-						<DropdownMenu.CheckboxItem checked>Active</DropdownMenu.CheckboxItem>
-						<DropdownMenu.CheckboxItem>Draft</DropdownMenu.CheckboxItem>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
-
 				<Button size="sm" class="h-7 gap-1">
 					<a href="/new" class="flex items-center">
 						<CirclePlus class="h-3.5 w-3.5 mr-2" />
@@ -63,16 +46,12 @@
 					</a>
 				</Button>
 			</div>
-		</div>
+		</div> -->
 		<Tabs.Content value="all">
 			<Card.Root
 				data-x-chunk-name="dashboard-06-chunk-1"
 				data-x-chunk-description="A list of products in a table with actions. Each row has an image, name, status, price, total sales, created at and actions."
 			>
-				<Card.Header>
-					<Card.Title>Bots</Card.Title>
-					<Card.Description>Manage your Bots and view their performance.</Card.Description>
-				</Card.Header>
 				<Card.Content>
 					<Table.Root>
 						<Table.Header>

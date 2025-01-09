@@ -4,9 +4,11 @@
 
 	// Importing icons from 'lucide-svelte'
 	import PanelLeft from 'lucide-svelte/icons/panel-left'
-	import { Search, LogOut, User, Bot } from 'lucide-svelte'
+	import { Search, LogOut, User, Bot, Settings, FileAudio, House } from 'lucide-svelte'
 
 	// Importing UI components from custom library
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js'
+
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js'
 	import { Button } from '$lib/components/ui/button/index.js'
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js'
@@ -16,19 +18,22 @@
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js'
 	import { enhance } from '$app/forms'
 	import { DarkMode } from 'flowbite-svelte'
-
+	import * as Avatar from '$lib/components/ui/avatar/index.js'
+	import * as Accordion from '$lib/components/ui/accordion'
 	// Importing user data store
 	import { storeUser } from '$lib/stores'
 
 	// Setting the initial data from props
 	export let data
 	$storeUser = data.user
+	const session = data.user ? data.user : $storeUser
 
 	// Defining variables
 	const { user } = data
 	let token = user.token
 	let isLoading = false
 	let bots = []
+	let selectedItem = null
 
 	// Function to fetch bots data from the API
 	const fetchBots = async () => {
@@ -81,35 +86,116 @@
 <!-- Main container for the layout -->
 <div class="bg-muted/40 flex min-h-screen w-full flex-col">
 	<!-- Sidebar with navigation -->
-	<aside
-		class="bg-background fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r sm:flex p-2"
-	>
+	<div class="bg-background fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r sm:flex p-2">
+		<div class="flex items-center justify-between mb-4 px-1">
+			<div class="flex items-center">
+				<a href="/bots" class="flex justify-center items-center">
+					<img src="/troc.png" alt="" class="w-12 h-12" />
+					<h1 class="text-xl font-bold ml-2">T-ROC Chatbot</h1>
+				</a>
+			</div>
+		</div>
+
 		<nav class="flex flex-col items-left gap-4 px-2 py-4">
-			<a
-				href="##"
-				class="text-muted-foreground hover:text-foreground flex items-center h-9 items-right rounded-lg transition-colors w-full"
-			>
-				<img src="/images/bots/troc.png" alt="img-toc-logo" class="h-6 me-3 sm:h-12" />
-				<span class="font-bold text-xl">T-ROC Chatbot</span>
-			</a>
-			<Separator />
 			<!-- Loop through bots and display them -->
-			{#each bots as bot}
-				<Tooltip.Root>
-					<Tooltip.Trigger asChild let:builder>
-						<a
-							href="/{bot.name.toLowerCase()}"
-							on:click={handleClick}
-							class="text-muted-foreground hover:text-foreground flex h-9 w-9 items-right rounded-lg transition-colors md:h-8 md:w-8"
-							use:builder.action
-							{...builder}
+			<ScrollArea
+				class="h-[calc(100vh-380px)] md:h-[calc(100vh-210px)] rounded-md border border-zinc-200"
+			>
+				<a href="/bots" class="p-4 flex items-center space-x-2 hover:bg-gray-300 rounded-md">
+					<House class="w-5 h-5" />
+					<!-- Ícono representativo -->
+					<span>Home</span>
+				</a>
+				<Accordion.Root type="single">
+					<!-- Sección de Bots -->
+					<Accordion.Item value="bots">
+						<Accordion.Trigger
+							class="p-4 flex justify-between items-center hover:bg-gray-300 hover:no-underline"
 						>
-							<span class="">{bot.name}</span>
-						</a>
-					</Tooltip.Trigger>
-				</Tooltip.Root>
-			{/each}
+							<div class="flex items-center space-x-2">
+								<Bot class="w-5 h-5" />
+								<span class="">Bots</span>
+							</div>
+						</Accordion.Trigger>
+						<Accordion.Content>
+							{#each bots as bot}
+								<Tooltip.Root>
+									<Tooltip.Trigger asChild let:builder>
+										<a
+											href="/{bot.name.toLowerCase()}"
+											on:click={() => handleClick(bot.name)}
+											class="flex h-9 items-center pl-6 hover:bg-gray-200 cursor-pointer"
+											use:builder.action
+											{...builder}
+										>
+											<span class:font-bold={selectedItem === bot.name}>{bot.name}</span>
+										</a>
+									</Tooltip.Trigger>
+								</Tooltip.Root>
+							{/each}
+						</Accordion.Content>
+					</Accordion.Item>
+
+					<!-- Sección de Audio -->
+					<Accordion.Item value="audio">
+						<Accordion.Trigger
+							class="p-4 flex justify-between items-center hover:bg-gray-300 hover:no-underline"
+						>
+							<div class="flex items-center space-x-2">
+								<FileAudio class="w-5 h-5" />
+								<span>Video Processed</span>
+							</div>
+						</Accordion.Trigger>
+						<Accordion.Content>
+							<div class="pl-4 hover:bg-gray-200 cursor-pointer">
+								<a href="/video" class="flex items-center hover:text-foreground p-2"
+									>Video Processed</a
+								>
+							</div>
+						</Accordion.Content>
+					</Accordion.Item>
+				</Accordion.Root>
+			</ScrollArea>
 		</nav>
+
+		<Separator class="my-4" />
+
+		<div class="mt-auto hover:bg-zinc-400 rounded-lg">
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					<div class="flex items-center space-x-2 cursor-pointer p-2">
+						<Avatar.Root>
+							<Avatar.Fallback class="bg-pink-600 text-white"
+								>{session.first_name[0] + session.last_name[0]}</Avatar.Fallback
+							>
+						</Avatar.Root>
+						<div class="flex-grow">
+							<p class="text-sm font-medium text-left">{session.first_name} {session.last_name}</p>
+							<p class="text-xs text-gray-700">{session.email}</p>
+						</div>
+					</div>
+				</DropdownMenu.Trigger>
+
+				<DropdownMenu.Content class="w-56">
+					<DropdownMenu.Group>
+						<DropdownMenu.Item>
+							<Settings class="mr-2 h-4 w-4" />
+							<span>Settings</span>
+						</DropdownMenu.Item>
+
+						<DropdownMenu.Item>
+							<LogOut class="mr-2 h-4 w-4" />
+							<form action="/logout" method="POST" use:enhance>
+								<button type="submit">
+									<span>Logout</span>
+								</button>
+							</form>
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		</div>
+
 		<!-- Uncomment the following section for additional settings menu -->
 		<!-- <nav class="mt-auto flex flex-col items-center gap-4 px-2 py-4">
 			<Tooltip.Root>
@@ -122,7 +208,7 @@
 				<Tooltip.Content side="right">Settings</Tooltip.Content>
 			</Tooltip.Root>
 		</nav> -->
-	</aside>
+	</div>
 
 	<!-- Main content area -->
 	<div class="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
@@ -145,90 +231,126 @@
 							<span class="font-bold text-xl">T-ROC Chatbot</span>
 						</a>
 						<Separator />
-						{#each bots as bot}
-							<a href="##" class="text-foreground flex items-center gap-4 px-2.5">
-								{bot.name}
+						<ScrollArea class="h-[calc(100vh-260px)]  rounded-md border border-zinc-200">
+							<a href="/bots" class="p-4 flex items-center space-x-2 hover:bg-gray-300 rounded-md">
+								<House class="w-5 h-5" />
+								<!-- Ícono representativo -->
+								<span>Home</span>
 							</a>
-						{/each}
+							<Accordion.Root type="single">
+								<!-- Sección de Bots -->
+								<Accordion.Item value="bots">
+									<Accordion.Trigger
+										class="p-4 flex justify-between items-center hover:bg-gray-300 hover:no-underline"
+									>
+										<div class="flex items-center space-x-2">
+											<Bot class="w-5 h-5" />
+											<span class="">Bots</span>
+										</div>
+									</Accordion.Trigger>
+									<Accordion.Content>
+										{#each bots as bot}
+											<Tooltip.Root>
+												<Tooltip.Trigger asChild let:builder>
+													<a
+														href="/{bot.name.toLowerCase()}"
+														on:click={() => handleClick(bot.name)}
+														class="flex h-9 items-center pl-6 hover:bg-gray-200 cursor-pointer"
+														use:builder.action
+														{...builder}
+													>
+														<span class:font-bold={selectedItem === bot.name}>{bot.name}</span>
+													</a>
+												</Tooltip.Trigger>
+											</Tooltip.Root>
+										{/each}
+									</Accordion.Content>
+								</Accordion.Item>
+
+								<!-- Sección de Audio -->
+								<Accordion.Item value="video">
+									<Accordion.Trigger
+										class="p-4 flex justify-between items-center hover:bg-gray-300 hover:no-underline"
+									>
+										<div class="flex items-center space-x-2">
+											<FileAudio class="w-5 h-5" />
+											<span>Video</span>
+										</div>
+									</Accordion.Trigger>
+									<Accordion.Content>
+										<div class="pl-4 hover:bg-gray-200 cursor-pointer">
+											<a href="/video" class="flex items-center hover:text-foreground p-2"
+												>Processed video</a
+											>
+										</div>
+									</Accordion.Content>
+								</Accordion.Item>
+							</Accordion.Root>
+						</ScrollArea>
+						<Separator class="my-4" />
+
+						<div class="mt-auto">
+							<DropdownMenu.Root>
+								<DropdownMenu.Trigger>
+									<div
+										class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-800 p-2 rounded-lg"
+									>
+										<Avatar.Root>
+											<Avatar.Fallback class="bg-pink-600 text-white"
+												>{session.first_name[0] + session.last_name[0]}</Avatar.Fallback
+											>
+										</Avatar.Root>
+										<div class="flex-grow">
+											<p class="text-sm font-medium text-left">
+												{session.first_name}
+												{session.last_name}
+											</p>
+											<p class="text-xs text-gray-400">{session.email}</p>
+										</div>
+									</div>
+								</DropdownMenu.Trigger>
+
+								<DropdownMenu.Content class="w-56">
+									<DropdownMenu.Group>
+										<DropdownMenu.Item>
+											<Settings class="mr-2 h-4 w-4" />
+											<span>Settings</span>
+										</DropdownMenu.Item>
+
+										<DropdownMenu.Item>
+											<LogOut class="mr-2 h-4 w-4" />
+											<form action="/logout" method="POST" use:enhance>
+												<button type="submit">
+													<span>Logout</span>
+												</button>
+											</form>
+										</DropdownMenu.Item>
+									</DropdownMenu.Group>
+								</DropdownMenu.Content>
+							</DropdownMenu.Root>
+						</div>
 					</nav>
 				</Sheet.Content>
 			</Sheet.Root>
 
 			<DarkMode class="inline-block dark:hover:text-white hover:text-gray-900" />
-
-			<!-- Search input -->
-			<div class="relative ml-auto flex-1 md:grow-0">
-				<Search class="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
-				<Input
-					type="search"
-					placeholder="Search..."
-					class="bg-background w-full rounded-lg pl-8 md:w-[200px] lg:w-[320px]"
-				/>
-			</div>
-
-			<!-- User dropdown menu -->
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger asChild let:builder>
-					<Button
-						variant="outline"
-						size="icon"
-						class="overflow-hidden rounded-full"
-						builders={[builder]}
-					>
-						<div class="flex flex-row items-center rounded-xl p-2">
-							<div
-								class="uppercase flex items-center justify-center h-10 w-10 rounded-full bg-pink-600 flex-shrink-0 text-white"
-							>
-								{$storeUser.first_name.charAt(0)}{$storeUser.last_name.charAt(0)}
-							</div>
-						</div>
-					</Button>
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content align="end">
-					<DropdownMenu.Item class="cursor-pointer">
-						<a href="/profile" class="flex">
-							<User />
-							<DropdownMenu.Item class="group-hover:text-black dark:group-hover:text-white">
-								Profile
-							</DropdownMenu.Item>
-						</a>
-					</DropdownMenu.Item>
-					<DropdownMenu.Item class="cursor-pointer">
-						<a href="/admin" class="flex">
-							<Bot />
-							<DropdownMenu.Item class="group-hover:text-black dark:group-hover:text-white">
-								Admin
-							</DropdownMenu.Item>
-						</a>
-					</DropdownMenu.Item>
-					<Separator />
-					<DropdownMenu.Item>
-						<LogOut />
-						<DropdownMenu.Item class="group-hover:text-black dark:group-hover:text-white">
-							<form action="/logout" method="POST" use:enhance>
-								<button type="submit">
-									<span>Logout</span>
-								</button>
-							</form>
-						</DropdownMenu.Item>
-					</DropdownMenu.Item>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
 		</header>
 
 		<!-- Main content slot -->
 		<main
 			class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-1 xl:grid-cols-1"
 		>
-			<!-- Breadcrumb navigation -->
-			<Breadcrumb.Root class="hidden md:flex">
+			<!-- <Breadcrumb.Root class="hidden md:flex">
 				<Breadcrumb.List>
 					<Breadcrumb.Item>
-						<Breadcrumb.Link href="/bots">Bots</Breadcrumb.Link>
+						<Breadcrumb.Link href="/bots" class="text-xl ml-4">Botsdd</Breadcrumb.Link>
 					</Breadcrumb.Item>
 				</Breadcrumb.List>
-			</Breadcrumb.Root>
-			<slot />
+			</Breadcrumb.Root> -->
+
+			<div class="">
+				<slot />
+			</div>
 		</main>
 	</div>
 </div>

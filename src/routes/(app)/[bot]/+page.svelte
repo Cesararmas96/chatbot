@@ -72,6 +72,7 @@
 					}
 				)
 				botData = data ? data[0] : null
+				console.log(botData)
 				errorMessage = botData ? '' : `Bot with name ${botName} not found.`
 			} else {
 				errorMessage = `Bot with name ${botName} not found.`
@@ -93,10 +94,16 @@
 	const handleFetchData = async () => {
 		isLoading = true
 		try {
+			if (!botData || !botData.name) {
+				throw new Error('Bot data or bot name is missing.')
+			}
+
+			// Pasa botData.name exactamente como está
 			const { response, question, answer, chat_history, sid, at } = await fetchChatData(
-				botName,
+				botData.name, // No se modifica el texto
 				query
 			)
+
 			const newMessage = {
 				text: response,
 				query,
@@ -104,16 +111,17 @@
 				chat_history,
 				sid,
 				user_id: session.user_id,
-				chatbot_id: botData?.chatbot_id, // Acceso seguro
+				chatbot_id: botData?.chatbot_id,
 				at
 			}
+
 			messages = [...messages, newMessage]
 			query = '' // Limpiar el input solo si la respuesta es exitosa
 
 			// Guardar el primer mensaje en IndexedDB y redirigir
 			if (!uuid) {
 				uuid = uuidv4()
-				const pageUrl = `/${botName}/${uuid}`
+				const pageUrl = `/${botData.name.toLowerCase()}/${uuid}`
 				await db.messages.bulkAdd(messages.map((message) => ({ ...message, pageId: pageUrl })))
 				localStorage.setItem('messages', JSON.stringify(messages))
 				await goto(pageUrl) // Redirigir a la nueva página
@@ -152,7 +160,6 @@
 </script>
 
 <div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
-	
 	{#if showMessage && botData && botData.name && botData.name.toLowerCase() === 'askbuddy'}
 		<div class="w-full" id="mensaje">
 			<div class="relative">
@@ -237,7 +244,7 @@
 					<div class="relative pt-1">
 						<ChatInput {isLoading} on:submit={handleSubmit} bind:this={chatInputRef} bind:query />
 						<p class="text-xs text-gray-500 text-center">
-							Chatbots can make mistakes. Verify important informationsss.
+							Chatbots can make mistakes. Verify important informations.
 						</p>
 					</div>
 				</div>

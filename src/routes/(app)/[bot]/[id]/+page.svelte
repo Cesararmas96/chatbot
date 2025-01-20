@@ -33,6 +33,7 @@
 
 	import { Clipboard, Share2, RefreshCw, ThumbsUp, ThumbsDown, Flag } from 'lucide-svelte'
 	import MessageDisplay from '$lib/components/chat/MessageDisplay.svelte'
+	let shared = $page.url.searchParams.get('shared') === 'true'
 
 	let isLoadingResponse = false
 	let bot = ''
@@ -202,11 +203,11 @@
 						{#if message.query}
 							<div class="message-container flex items-start gap-3 flex-row-reverse pb-5">
 								<div
-									class="avatar w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0"
+									class="avatar w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0"
 								>
-									<Avatar showFullName={false} />
+									<Avatar showFullName={false} {shared} />
 								</div>
-								<div class="message bg-purple-600 p-4 rounded-lg max-w-[80%]">
+								<div class="message text-white bg-blue-600 p-4 rounded-lg max-w-[80%]">
 									{message.query}
 								</div>
 							</div>
@@ -229,11 +230,17 @@
 						<!-- Mostrar el Skeleton mientras se espera la respuesta -->
 						<div class="message-container flex items-start gap-3 flex-row-reverse pb-5">
 							<div
-								class="avatar w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0"
+								class="avatar w-8 h-8 rounded-full {!shared
+									? 'text-gray-500 '
+									: 'bg-blue-400'} flex items-center justify-center flex-shrink-0"
 							>
 								<Avatar showFullName={false} />
 							</div>
-							<div class="message bg-purple-600 p-4 rounded-lg max-w-[80%]">
+							<div
+								class="message {!shared
+									? 'text-gray-500 '
+									: 'bg-blue-400'} p-4 rounded-lg max-w-[80%]"
+							>
 								{query}
 							</div>
 						</div>
@@ -253,7 +260,11 @@
 				</div>
 			</div>
 
-			<div class="border-t border-gray-800 p-4 fixed bottom-0 left-0 right-0">
+			<div
+				class="border-t {!shared
+					? 'bg-white border-gray-300 '
+					: 'bg-black border-gray-800 '}   p-4 fixed bottom-0 left-0 right-0"
+			>
 				<div class="max-w-2xl mx-auto">
 					<div class="relative">
 						<ChatInput {isLoading} bind:query on:submit={handleSubmit} bind:this={chatInputRef} />
@@ -295,8 +306,8 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		background-color: black; /* Ajusta el color según tu tema */
-		z-index: 10; /* Asegura que esté por encima de otros elementos */
+
+		z-index: 10; /* Asegura que esté por encima de otros elementos background-color: black; Ajusta el color según tu tema */
 	}
 
 	@media (min-width: 1024px) {

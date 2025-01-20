@@ -125,7 +125,7 @@
 				class="h-10 w-10"
 			/>
 		</div>
-		<div class="message response">
+		<div class="message response text-blue-900">
 			{@html displayedText}
 		</div>
 	</div>

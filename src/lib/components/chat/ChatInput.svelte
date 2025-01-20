@@ -2,6 +2,7 @@
 	import { createEventDispatcher } from 'svelte'
 	import { SendHorizontal, Loader } from 'lucide-svelte'
 	import { Input } from '$lib/components/ui/input/index.js'
+	import { page } from '$app/stores'
 
 	export let isLoading = false // Estado de carga desde el padre
 	const dispatch = createEventDispatcher()
@@ -17,13 +18,17 @@
 		event.preventDefault()
 		submitQuery()
 	}
+
+	let shared = $page.url.searchParams.get('shared') === 'true'
 </script>
 
-<form class="flex items-center" on:submit|preventDefault={handleSubmit}>
+<form class="flex items-center mt-1" on:submit|preventDefault={handleSubmit}>
 	<Input
 		name="message"
 		placeholder="Send a message"
-		class="w-full bg-gray-800 border-gray-700 text-white  pr-20 "
+		class="w-full 
+			
+			'bg-white border-gray-300 text-blue-900 pr-20 "
 		disabled={isLoading}
 		bind:value={query}
 		autofocus
@@ -41,7 +46,9 @@
 				variant="ghost"
 				on:click={handleSubmit}
 				disabled={isLoading}
-				class=" h-8 w-8 bg-purple-600 hover:bg-purple-700 transition-colors rounded-sm flex justify-center items-center"
+				class=" h-8 w-8
+					
+					bg-blue-600 hover:bg-blue-700 transition-colors rounded-sm flex justify-center items-center"
 			>
 				<SendHorizontal class="h-4 w-4 text-white" />
 			</button>

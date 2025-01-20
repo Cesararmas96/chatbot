@@ -14,6 +14,7 @@
 	import { Button } from '$lib/components/ui/button/index.js'
 	import { Menu, X } from 'lucide-svelte'
 	import { db } from '$lib/db' // Importa tu base de datos IndexedDB
+	let shared = $page.url.searchParams.get('shared') === 'true'
 
 	let botData = null
 	let errorMessage = ''
@@ -151,8 +152,7 @@
 	}
 </script>
 
-<div class="flex-1 flex flex-col min-h-0 h-full p-5 bg-zinc-900">
-	
+<div class="flex-1 flex flex-col min-h-0 h-full {!shared ? 'bg-zinc-900 p-5' : 'bg-white'}">
 	{#if showMessage && botData && botData.name && botData.name.toLowerCase() === 'askbuddy'}
 		<div class="w-full" id="mensaje">
 			<div class="relative">
@@ -188,7 +188,7 @@
 			</div>
 		</div>
 	{/if}
-	<Card.Root class="flex flex-col flex-1 bg-zinc-900 border-none">
+	<Card.Root class="flex flex-col flex-1  bg-white border-none">
 		<Card.Content class="flex-1 flex flex-col justify-between">
 			<div class="flex-1 flex flex-col items-center justify-center">
 				<div class="w-full max-w-2xl">
@@ -202,13 +202,17 @@
 								/>
 							</div>
 
-							<h1 class="text-2xl font-bold text-white">{botData.name}</h1>
+							<h1 class="text-2xl font-bold {!shared ? 'text-gray-500 ' : 'text-blue-900'}">
+								{botData.name}
+							</h1>
 						{:else if initialLoad}
-							<p class="text-gray-400">Loading bot data...</p>
+							<p class={!shared ? 'text-gray-500 ' : 'text-blue-900'}>Loading bot data...</p>
 						{:else}
 							<p class="text-red-500">Bot data is not available. Please try again later.</p>
 						{/if}
-						<p class="text-normal text-gray-400">How can I help you today?</p>
+						<p class="text-normal {!shared ? 'text-gray-500 ' : 'text-blue-900'}">
+							How can I help you today?
+						</p>
 					</header>
 					{#if botData}
 						<div
@@ -232,7 +236,11 @@
 					{/if}
 				</div>
 			</div>
-			<div class=" border-t border-gray-800 bottom-0 left-0 right-0">
+			<div
+				class=" border-t {!shared
+					? 'border-gray-800  '
+					: 'border-gray-300'} bottom-0 left-0 right-0"
+			>
 				<div class="max-w-2xl mx-auto">
 					<div class="relative pt-1">
 						<ChatInput {isLoading} on:submit={handleSubmit} bind:this={chatInputRef} bind:query />

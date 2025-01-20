@@ -39,6 +39,7 @@
 
 	$storeUser = data.user
 	const session = data.user ? data.user : $storeUser
+	let shared = $page.url.searchParams.get('shared') === 'true'
 
 	let inputType = 'file'
 	let searchTerm = ''
@@ -254,7 +255,11 @@
 </script>
 
 <!-- Contenedor general -->
-<div class="flex flex-col md:flex-row md:h-screen bg-black text-white">
+<div
+	class="flex flex-col md:flex-row md:h-screen text-white
+		
+		bg-white border-gray-300 text-blue-900"
+>
 	<!-- Botón para mostrar/ocultar el sidebar en versión móvil -->
 	<div class="md:hidden p-4 bg-zinc-900 flex justify-between items-center">
 		<a href="/bots" class="flex items-center">
@@ -267,160 +272,169 @@
 	</div>
 
 	<!-- Sidebar -->
-	<div
-		class={`w-full md:w-[300px] bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
-	>
-		<div class="flex items-center justify-between mb-4">
-			<div class="flex items-center w-full">
-				<a href="/bots" class="flex justify-center items-center">
-					<img src="/troc.png" alt="" class="w-12 h-12" />
-					<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
-				</a>
 
-				<!-- Botón alineado a la derecha -->
-				<Button on:click={toggleSidebar} class="bg-zinc-800 p-2 md:hidden ml-auto">
-					<Menu class="h-6 w-6 text-white" />
-				</Button>
-			</div>
-		</div>
-
-		<Button
-			href="/{botName}"
-			class="mb-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+	{#if !shared}
+		<div
+			class={`w-full md:w-[300px] bg-zinc-900 p-4 flex flex-col transform md:transform-none ${isSidebarOpen ? 'block' : 'hidden md:flex'} z-10 transition-transform duration-300 ease-in-out md:static fixed inset-0`}
 		>
-			<Plus class="h-4 w-4 mr-2" /> New Chat
-		</Button>
+			<div class="flex items-center justify-between mb-4">
+				<div class="flex items-center w-full">
+					<a href="/bots" class="flex justify-center items-center">
+						<img src="/troc.png" alt="" class="w-12 h-12" />
+						<h1 class="text-xl font-bold ml-2">T-ROC Chatbots</h1>
+					</a>
 
-		<div class="relative mb-4">
-			<Search class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-			<Input
-				placeholder="Search chats..."
-				class="pl-8 bg-gray-800 border-gray-700 text-white"
-				bind:value={searchTerm}
-			/>
-		</div>
-
-		<nav class="space-y-6 flex-grow overflow-hidden">
-			<div>
-				<h2 class="text-sm font-semibold mb-2">List Chats</h2>
-				<ScrollArea
-					class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800 "
-				>
-					{#if isLoading}
-						<div
-							class="flex justify-center items-center h-full w-full absolute top-0 left-0 text-center"
-						>
-							<LoaderCustom />
-						</div>
-					{:else if filteredPageData.length == 0}
-						<p class="absolute inset-0 flex justify-center items-center text-center text-gray-400">
-							No chat found.
-						</p>
-					{:else}
-						{#each filteredPageData as data (data.pageId)}
-							{#if isDifferentDate(data.at)}
-								<div class="px-2 py-2 text-sm font-semibold text-gray-400">
-									{formatDate(data.at)}
-								</div>
-							{/if}
-							<div
-								class="mx-1 hover:bg-gray-800 rounded-lg flex items-center justify-between group"
-							>
-								{#if isEditingId === data.pageId}
-									<!-- Input en modo de edición -->
-									<input
-										type="text"
-										bind:value={editQuery}
-										class="bg-gray-800 text-white p-2 rounded-lg w-full"
-										on:keydown={(e) => e.key === 'Enter' && saveEdit(data.pageId)}
-									/>
-								{:else}
-									<!-- Vista normal del query -->
-									<a
-										href={`${data.pageId}`}
-										class="flex items-center w-full text-white dark:text-white group"
-									>
-										<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
-											<MessageSquare size={18} />
-											<span class="text-sm truncate">
-												{data.query.length > 26 ? `${data.query.slice(0, 26)}...` : data.query}
-											</span>
-										</div>
-									</a>
-								{/if}
-								<DropdownMenu.Root>
-									<DropdownMenu.Trigger>
-										<Button
-											variant="ghost"
-											class="h-6 w-6 p-0 m-0 opacity-0 group-hover:opacity-100"
-										>
-											<MoreVertical class="h-4 w-4" />
-										</Button>
-									</DropdownMenu.Trigger>
-									<DropdownMenu.Content align="end" class="w-32">
-										<DropdownMenu.Item
-											on:click={() => startEditing(data.pageId, data.query)}
-											class="cursor-pointer	"
-										>
-											<Pencil class="mr-2 h-4 w-4" />
-											<span>Change name</span>
-										</DropdownMenu.Item>
-
-										<DropdownMenu.Item
-											on:click={() => deletePageId(data.pageId)}
-											class="cursor-pointer	"
-										>
-											<Trash2 class="mr-2 h-4 w-4" />
-											<span>Delete</span>
-										</DropdownMenu.Item>
-									</DropdownMenu.Content>
-								</DropdownMenu.Root>
-							</div>
-						{/each}
-					{/if}
-				</ScrollArea>
+					<!-- Botón alineado a la derecha -->
+					<Button on:click={toggleSidebar} class="bg-zinc-800 p-2 md:hidden ml-auto">
+						<Menu class="h-6 w-6 text-white" />
+					</Button>
+				</div>
 			</div>
-		</nav>
 
-		<Separator class="my-4" />
+			<Button
+				href="/{botName}"
+				class="mb-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+			>
+				<Plus class="h-4 w-4 mr-2" /> New Chat
+			</Button>
 
-		<div class="mt-auto">
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<div class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-800 p-2 rounded-lg">
-						<Avatar.Root>
-							<Avatar.Fallback class="bg-gray-600">
-								{session.first_name[0] + session.last_name[0]}</Avatar.Fallback
+			<div class="relative mb-4">
+				<Search class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+				<Input
+					placeholder="Search chats..."
+					class="pl-8 bg-gray-800 border-gray-700 text-white"
+					bind:value={searchTerm}
+				/>
+			</div>
+
+			<nav class="space-y-6 flex-grow overflow-hidden">
+				<div>
+					<h2 class="text-sm font-semibold mb-2">List Chats</h2>
+					<ScrollArea
+						class="relative h-[calc(100vh-380px)] md:h-[calc(100vh-280px)] rounded-md border border-zinc-800 "
+					>
+						{#if isLoading}
+							<div
+								class="flex justify-center items-center h-full w-full absolute top-0 left-0 text-center"
 							>
-						</Avatar.Root>
-						<div class="flex-grow">
-							<p class="text-sm font-medium text-left">{session.first_name} {session.last_name}</p>
-							<p class="text-xs text-gray-400">{session.email}</p>
+								<LoaderCustom />
+							</div>
+						{:else if filteredPageData.length == 0}
+							<p
+								class="absolute inset-0 flex justify-center items-center text-center text-gray-400"
+							>
+								No chat found.
+							</p>
+						{:else}
+							{#each filteredPageData as data (data.pageId)}
+								{#if isDifferentDate(data.at)}
+									<div class="px-2 py-2 text-sm font-semibold text-gray-400">
+										{formatDate(data.at)}
+									</div>
+								{/if}
+								<div
+									class="mx-1 hover:bg-gray-800 rounded-lg flex items-center justify-between group"
+								>
+									{#if isEditingId === data.pageId}
+										<!-- Input en modo de edición -->
+										<input
+											type="text"
+											bind:value={editQuery}
+											class="bg-gray-800 text-white p-2 rounded-lg w-full"
+											on:keydown={(e) => e.key === 'Enter' && saveEdit(data.pageId)}
+										/>
+									{:else}
+										<!-- Vista normal del query -->
+										<a
+											href={`${data.pageId}`}
+											class="flex items-center w-full text-white dark:text-white group"
+										>
+											<div class="flex items-center space-x-3 overflow-hidden p-2 rounded-lg">
+												<MessageSquare size={18} />
+												<span class="text-sm truncate">
+													{data.query.length > 26 ? `${data.query.slice(0, 26)}...` : data.query}
+												</span>
+											</div>
+										</a>
+									{/if}
+									<DropdownMenu.Root>
+										<DropdownMenu.Trigger>
+											<Button
+												variant="ghost"
+												class="h-6 w-6 p-0 m-0 opacity-0 group-hover:opacity-100"
+											>
+												<MoreVertical class="h-4 w-4" />
+											</Button>
+										</DropdownMenu.Trigger>
+										<DropdownMenu.Content align="end" class="w-32">
+											<DropdownMenu.Item
+												on:click={() => startEditing(data.pageId, data.query)}
+												class="cursor-pointer	"
+											>
+												<Pencil class="mr-2 h-4 w-4" />
+												<span>Change name</span>
+											</DropdownMenu.Item>
+
+											<DropdownMenu.Item
+												on:click={() => deletePageId(data.pageId)}
+												class="cursor-pointer	"
+											>
+												<Trash2 class="mr-2 h-4 w-4" />
+												<span>Delete</span>
+											</DropdownMenu.Item>
+										</DropdownMenu.Content>
+									</DropdownMenu.Root>
+								</div>
+							{/each}
+						{/if}
+					</ScrollArea>
+				</div>
+			</nav>
+
+			<Separator class="my-4" />
+
+			<div class="mt-auto">
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						<div
+							class="flex items-center space-x-2 cursor-pointer hover:bg-zinc-800 p-2 rounded-lg"
+						>
+							<Avatar.Root>
+								<Avatar.Fallback class="bg-gray-600">
+									{session.first_name[0] + session.last_name[0]}</Avatar.Fallback
+								>
+							</Avatar.Root>
+							<div class="flex-grow">
+								<p class="text-sm font-medium text-left">
+									{session.first_name}
+									{session.last_name}
+								</p>
+								<p class="text-xs text-gray-400">{session.email}</p>
+							</div>
 						</div>
-					</div>
-				</DropdownMenu.Trigger>
+					</DropdownMenu.Trigger>
 
-				<DropdownMenu.Content class="w-56">
-					<DropdownMenu.Group>
-						<DropdownMenu.Item href="/bots" class="cursor-pointer">
-							<Home class="mr-2 h-4 w-4" />
-							<span>Home</span>
-						</DropdownMenu.Item>
+					<DropdownMenu.Content class="w-56">
+						<DropdownMenu.Group>
+							<DropdownMenu.Item href="/bots" class="cursor-pointer">
+								<Home class="mr-2 h-4 w-4" />
+								<span>Home</span>
+							</DropdownMenu.Item>
 
-						<DropdownMenu.Item class="cursor-pointer">
-							<LogOut class="mr-2 h-4 w-4" />
-							<form action="/logout" method="POST" use:enhance>
-								<button type="submit">
-									<span>Logout</span>
-								</button>
-							</form>
-						</DropdownMenu.Item>
-					</DropdownMenu.Group>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+							<DropdownMenu.Item class="cursor-pointer">
+								<LogOut class="mr-2 h-4 w-4" />
+								<form action="/logout" method="POST" use:enhance>
+									<button type="submit">
+										<span>Logout</span>
+									</button>
+								</form>
+							</DropdownMenu.Item>
+						</DropdownMenu.Group>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			</div>
 		</div>
-	</div>
-
+	{/if}
 	<!-- Main Content -->
 	<slot />
 </div>

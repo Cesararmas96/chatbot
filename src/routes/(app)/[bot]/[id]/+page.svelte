@@ -230,17 +230,13 @@
 						<!-- Mostrar el Skeleton mientras se espera la respuesta -->
 						<div class="message-container flex items-start gap-3 flex-row-reverse pb-5">
 							<div
-								class="avatar w-8 h-8 rounded-full {!shared
-									? 'text-gray-500 '
-									: 'bg-blue-400'} flex items-center justify-center flex-shrink-0"
+								class="avatar w-8 h-8 rounded-full
+									
+									bg-blue-400 flex items-center justify-center flex-shrink-0"
 							>
 								<Avatar showFullName={false} />
 							</div>
-							<div
-								class="message {!shared
-									? 'text-gray-500 '
-									: 'bg-blue-400'} p-4 rounded-lg max-w-[80%]"
-							>
+							<div class="message bg-blue-500 p-4 rounded-lg max-w-[80%]">
 								{query}
 							</div>
 						</div>
@@ -261,9 +257,9 @@
 			</div>
 
 			<div
-				class="border-t {!shared
-					? 'bg-white border-gray-300 '
-					: 'bg-black border-gray-800 '}   p-4 fixed bottom-0 left-0 right-0"
+				class="border-t
+					bg-white border-gray-300
+					  p-4 fixed bottom-0 left-0 right-0"
 			>
 				<div class="max-w-2xl mx-auto">
 					<div class="relative">

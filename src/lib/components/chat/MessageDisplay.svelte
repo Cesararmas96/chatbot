@@ -24,6 +24,8 @@
 	import ReportSubmit from './ReportSubmit.svelte'
 	import * as Tooltip from '$lib/components/ui/tooltip'
 
+	import fileMapping from '$lib/data/fileMapping.json'
+
 	export let message: { text: string; sid: string }
 	export let currentUrl: string
 	export let bot: string
@@ -36,15 +38,40 @@
 	export let llmOptions = ['Model A', 'Model B', 'Model C'] // Opciones disponibles
 
 	const dispatch = createEventDispatcher()
-	let clipboard = marked(message.text)
-	clipboard = convert(clipboard, options)
 	let copied = false
-
 	let dislike = false
 	let like = false
 
+	/**
+	 * Reemplaza enlaces en el texto Markdown.
+	 * - Maneja tanto `file://` como rutas absolutas (`/home/...`).
+	 * - Si hay múltiples URLs, genera múltiples elementos en la lista.
+	 */
+	function replaceFileLinksInMarkdown(text: string): string {
+		return text.replace(
+			/(\[([^\]]+)\]\((file:\/\/[^\)]+)\)|\/home\/[^\s]+)/g,
+			(match, fullMarkdown, linkText, fileUrl) => {
+				// Determinar la clave correcta en el JSON
+				const fileKey = fileUrl || match // Usar `fileUrl` si existe, de lo contrario `match`
+				const mappedValue = fileMapping[fileKey]
+
+				if (!mappedValue) return match // Si no hay mapeo, deja el enlace original
+
+				// Si el mapeo es un array, generar múltiples elementos `<li>`
+				if (Array.isArray(mappedValue)) {
+					return mappedValue.map((url) => `- [${linkText || 'Source'}](${url})`).join('\n') // Genera un nuevo `<li>` en Markdown para cada enlace
+				}
+
+				// Si es un string, solo reemplaza la URL manteniendo el texto original
+				return `[${linkText || 'Source'}](${mappedValue})`
+			}
+		)
+	}
+
+	// Transformar el mensaje con los enlaces corregidos
+	let processedText = replaceFileLinksInMarkdown(message.text)
+	let fullText = addTargetBlank(marked(processedText))
 	let displayedText = ''
-	let fullText = addTargetBlank(marked(message.text))
 	let isInTag = false
 
 	onMount(() => {
@@ -73,7 +100,7 @@
 				} else {
 					clearInterval(typingInterval) // Detener el temporizador cuando termine de mostrar el texto
 				}
-			}, 5) // Ajusta la velocidad del efecto de escritura (15 ms por carácter)
+			}, 5) // Ajusta la velocidad del efecto de escritura (5 ms por carácter)
 		} else {
 			displayedText = fullText // Muestra el texto completo si no es el último mensaje
 		}
@@ -92,7 +119,7 @@
 	}
 
 	function copyToClipboard() {
-		const plainText = convert(marked(message.text), {
+		const plainText = convert(marked(processedText), {
 			wordwrap: 130 // Opcional: ajusta la longitud de línea según lo necesites.
 		})
 
@@ -135,7 +162,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<Button class="w-8 h-8 p-0" builders={[builder]} variant="ghost">
-							<Share2 class="h-4 w-4" />
+							<Share2 class="h-4 w-4 text-blue-900 " />
 						</Button></Tooltip.Trigger
 					>
 					<Tooltip.Content>
@@ -173,7 +200,7 @@
 		<Tooltip.Root>
 			<Tooltip.Trigger>
 				<Button class="w-8 h-8 p-0" variant="ghost" on:click={copyToClipboard} id="copy">
-					<Clipboard class="h-4 w-4" />
+					<Clipboard class="h-4 w-4 text-blue-900" />
 				</Button></Tooltip.Trigger
 			>
 			<Tooltip.Content>
@@ -186,7 +213,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<Button class="w-8 h-8 p-0" builders={[builder]} variant="ghost"
-							><ThumbsUp class="h-4 w-4" /></Button
+							><ThumbsUp class="h-4 w-4 text-blue-900" /></Button
 						>
 					</Tooltip.Trigger>
 					<Tooltip.Content>
@@ -200,7 +227,7 @@
 					<div class="flex justify-between items-center">
 						<AlertDialog.Title>Provide Feedback</AlertDialog.Title>
 						<AlertDialog.Cancel class="border-none m-0 self-end"
-							><X class="h-4 w-4" /></AlertDialog.Cancel
+							><X class="h-4 w-4 text-blue-900" /></AlertDialog.Cancel
 						>
 					</div>
 					<AlertDialog.Description>
@@ -220,7 +247,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<Button class="w-8 h-8 p-0" builders={[builder]} variant="ghost"
-							><ThumbsDown class="h-4 w-4" /></Button
+							><ThumbsDown class="h-4 w-4 text-blue-900" /></Button
 						>
 					</Tooltip.Trigger>
 					<Tooltip.Content>
@@ -234,7 +261,7 @@
 					<div class="flex justify-between items-center">
 						<AlertDialog.Title>Provide Feedback</AlertDialog.Title>
 						<AlertDialog.Cancel class="border-none m-0 self-end"
-							><X class="h-4 w-4" /></AlertDialog.Cancel
+							><X class="h-4 w-4 text-blue-900" /></AlertDialog.Cancel
 						>
 					</div>
 					<AlertDialog.Description>
@@ -254,7 +281,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<Button class="w-8 h-8 p-0" builders={[builder]} variant="ghost"
-							><Flag class="h-4 w-4" /></Button
+							><Flag class="h-4 w-4 text-blue-900" /></Button
 						>
 					</Tooltip.Trigger>
 					<Tooltip.Content>
@@ -267,7 +294,7 @@
 					<div class="flex justify-between items-center">
 						<AlertDialog.Title>Report a problem</AlertDialog.Title>
 						<AlertDialog.Cancel class="border-none m-0 self-end"
-							><X class="h-4 w-4" /></AlertDialog.Cancel
+							><X class="h-4 w-4 text-blue-900" /></AlertDialog.Cancel
 						>
 					</div>
 					<AlertDialog.Description>
@@ -282,7 +309,7 @@
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger>
 							<Button variant="ghost" class="flex items-center relative group p-2 w-auto h-auto">
-								<RefreshCw class="h-4 w-4" />
+								<RefreshCw class="h-4 w-4 text-blue-900" />
 
 								<ChevronDown class="ml-1 h-4 w-4" />
 							</Button>
@@ -302,7 +329,7 @@
 										<div class="flex items-center w-full gap-2">
 											<span class="font-bold">{llm.name}</span>
 											{#if selectedLlm === llm.name}
-												<Check class="h-4 w-4 " />
+												<Check class="h-4 w-4 text-blue-900 " />
 											{/if}
 										</div>
 										<div class="text-sm text-gray-500">{llm.description}</div>

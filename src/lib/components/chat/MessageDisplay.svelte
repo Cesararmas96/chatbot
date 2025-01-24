@@ -42,28 +42,25 @@
 	let dislike = false
 	let like = false
 
-	/**
-	 * Reemplaza enlaces en el texto Markdown.
-	 * - Maneja tanto `file://` como rutas absolutas (`/home/...`).
-	 * - Si hay múltiples URLs, genera múltiples elementos en la lista.
-	 */
 	function replaceFileLinksInMarkdown(text: string): string {
 		return text.replace(
-			/(\[([^\]]+)\]\((file:\/\/[^\)]+)\)|\/home\/[^\s]+)/g,
-			(match, fullMarkdown, linkText, fileUrl) => {
-				// Determinar la clave correcta en el JSON
-				const fileKey = fileUrl || match // Usar `fileUrl` si existe, de lo contrario `match`
+			/(\*|-)?\s*(\[[^\]]+\]\((file:\/\/[^\)]+)\)|\/home\/[^\n\s]+\.(docx|pdf))/g, // Detecta listas `*` o `-` antes de `file://` y rutas absolutas `/home/.../*.docx`
+			(match, listMarker, fullMarkdown, fileUrl) => {
+				// Normalizar la clave para buscarla en `fileMapping.json`
+				const fileKey = (fileUrl || match).trim().replace(/\s/g, '%20') // Reemplaza espacios por `%20`
 				const mappedValue = fileMapping[fileKey]
 
 				if (!mappedValue) return match // Si no hay mapeo, deja el enlace original
 
-				// Si el mapeo es un array, generar múltiples elementos `<li>`
+				// Si el mapeo es un array, generar múltiples elementos de lista sin duplicar viñetas
 				if (Array.isArray(mappedValue)) {
-					return mappedValue.map((url) => `- [${linkText || 'Source'}](${url})`).join('\n') // Genera un nuevo `<li>` en Markdown para cada enlace
+					return mappedValue
+						.map((url) => `${listMarker || '-'} [${url.split('/').pop()}](${url})`) // Usa el nombre del archivo como texto visible
+						.join('\n') // Genera un nuevo <li> en Markdown para cada enlace
 				}
 
-				// Si es un string, solo reemplaza la URL manteniendo el texto original
-				return `[${linkText || 'Source'}](${mappedValue})`
+				// Si es un string, solo reemplaza la URL manteniendo el formato de lista si existía
+				return `${listMarker || '-'} [${mappedValue.split('/').pop()}](${mappedValue})`
 			}
 		)
 	}

@@ -44,23 +44,47 @@
 
 	function replaceFileLinksInMarkdown(text: string): string {
 		return text.replace(
-			/(\*|-)?\s*(\[[^\]]+\]\((file:\/\/[^\)]+)\)|\/home\/[^\n\s]+\.(docx|pdf))/g, // Detecta listas `*` o `-` antes de `file://` y rutas absolutas `/home/.../*.docx`
-			(match, listMarker, fullMarkdown, fileUrl) => {
-				// Normalizar la clave para buscarla en `fileMapping.json`
-				const fileKey = (fileUrl || match).trim().replace(/\s/g, '%20') // Reemplaza espacios por `%20`
-				const mappedValue = fileMapping[fileKey]
+			/(\*|-)?\s*(\[[^\]]+\]\((file:\/\/[^\)]+)\)|\/home\/[^\n]+\.(html|docx|pdf))/g,
+			(match, listMarker, fullMarkdown, fileUrl, extension) => {
+				let originalPath = fileUrl || match.trim()
 
-				if (!mappedValue) return match // Si no hay mapeo, deja el enlace original
-
-				// Si el mapeo es un array, generar múltiples elementos de lista sin duplicar viñetas
-				if (Array.isArray(mappedValue)) {
-					return mappedValue
-						.map((url) => `${listMarker || '-'} [${url.split('/').pop()}](${url})`) // Usa el nombre del archivo como texto visible
-						.join('\n') // Genera un nuevo <li> en Markdown para cada enlace
+				// 🔥 Eliminar marcador de lista antes de normalizar
+				if (originalPath.startsWith('- ') || originalPath.startsWith('* ')) {
+					originalPath = originalPath.substring(2)
 				}
 
-				// Si es un string, solo reemplaza la URL manteniendo el formato de lista si existía
-				return `${listMarker || '-'} [${mappedValue.split('/').pop()}](${mappedValue})`
+				let fileKey = originalPath.replace(/\s/g, '%20') // Normalizar espacios en la clave
+
+				// console.log(`📌 Archivo Detectado: ${match}`)
+				// console.log(`🔑 Clave Original: ${originalPath}`)
+				// console.log(`🔑 Clave Normalizada: ${fileKey}`)
+
+				const mappedValue = fileMapping[fileKey]
+
+				if (!mappedValue) {
+					// console.log(`❌ No se encontró mapeo para: ${fileKey}`)
+					// console.log(`🔄 Devolviendo archivo sin cambios: ${match}`)
+					return match
+				}
+
+				console.log(`✅ Mapeo Encontrado: ${mappedValue}`)
+
+				if (Array.isArray(mappedValue)) {
+					const result = mappedValue
+						.map(
+							(url) =>
+								`${listMarker || '-'} <a class="sourceLink" href="${url}" target="_blank">${url}</a>`
+						)
+						.join('\n')
+
+					// console.log(`🔄 Reemplazo Final (Array):\n${result}`)
+					return result
+				}
+
+				const result = `${listMarker || '-'} <a class="sourceLink" href="${mappedValue}" target="_blank">${mappedValue}</a>`
+
+				// console.log(`🔄 Reemplazo Final (String): ${result}`)
+				return result
 			}
 		)
 	}
@@ -136,7 +160,7 @@
 	}
 
 	function addTargetBlank(html) {
-		return html.replace(/<a href="(.*?)">/g, '<a class="sourceLink" href="$1" target="_blank">')
+		return html.replace(/<a href="(.*?)">/g, '<a class="sourceLink"  href="$1" target="_blank">')
 	}
 </script>
 
